@@ -1,0 +1,10 @@
+Licence agreement
+-----------------
+
+The `rpanel` library is copyright of A.W.Bowman, R.Bowman & E.Crawford (2006).
+
+Irrespective of the individual copyrights, this software is usable
+under the `GNU GENERAL PUBLIC LICENSE Version 2', a copy of which is
+distributed together with this software.  This essentially means
+that this software can be freely used and re-distributed, but no
+warranty of any sort is provided for it.
