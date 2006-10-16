@@ -18,7 +18,7 @@ rp.checkbox <-function(panel, var, action = I, parent = window, title = deparse(
     panel <- action(.geval(panelname))
 # has the panel been passed back?
     if (!is.null(panel$intname)) {      
-# assign the returned value back to the .GlobalEnv - replaces rp.return
+# assign the returned value back to the .rpenv - replaces rp.return
       .gassign(panel,panelname)
     }
     else {

@@ -3,4 +3,4 @@ rp.textentry, rp.button, rp.checkbox, rp.radiogroup,
 rp.doublebutton, rp.image, rp.line, rp.deleteline, rp.clearlines,
 rp.messagebox, rp.tkrplot, rp.tkrreplot, rp.block, rp.power,
 rp.rmplot, rp.tables, rp.plot3d, rp.regression2, rp.ancova,
-rp.gulls, rp.pos)
+rp.gulls, rp.pos, .rpenv, rp.listbox, rp.menu)

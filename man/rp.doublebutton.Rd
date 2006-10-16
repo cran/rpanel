@@ -10,7 +10,7 @@
 
 \usage{
 rp.doublebutton(panel, var, step, title = deparse(substitute(var)), action = I, 
-initval = NULL, range = c(NA, NA), log = FALSE, repeatinterval = 100, 
+initval = NULL, range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, repeatinterval = 100, 
 repeatdelay = 100, parent = window, pos = NULL)
 }
 
@@ -20,10 +20,12 @@ repeatdelay = 100, parent = window, pos = NULL)
   \item{step}{the value by which the variable "var" is incremented or decremented on pressing a button. When log is TRUE this is a factor instead.}
   \item{action}{the function which is called when a button is pressed.}
   \item{title}{the label for the doublebutton. This defaults to the name of var.}
-  \item{parent}{this specifies the widget inside which the this widget should appear. In the current version, it should not normally be used.}
+  \item{parent}{this specifies the widget inside which this widget should appear. In the current version, it should not normally be used.}
   \item{initval}{the initial value for var (optional). The initial value can also be specified in the call to \code{rp.control}.}
   \item{range}{a 2-element numeric vector containing lower and upper limits for var. Use NA for no limit (upper and/or lower).}
   \item{log}{a logical variable which determines whether the increment (step) is multiplicative or additive.}
+  \item{showvalue}{a logical variable which determines whether the present value of "var" is shown between the + and - buttons. This is forced to FALSE when log is TRUE.}
+  \item{showvaluewidth}{defines the width of the shown value in characters.}
   \item{repeatinterval}{the interval between auto-repeats (milliseconds) when the button is held down.}
   \item{repeatdelay}{the time after which the button starts to auto-repeat (milliseconds).}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
@@ -35,19 +37,23 @@ repeatdelay = 100, parent = window, pos = NULL)
 
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and global 
+  panel object is used the altered panel is assigned to both the calling level and panel's environment 
   level.
 }
 
 \section{Warning}{
   The \code{action} function should return the panel. 
   Without this assignment any widgets added or alterations made to panel parameters within 
-  the \code{action} function will be lost.
+  the \code{action} function will be lost.\cr
+\cr
+Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value shown would be incorrect 
+  (it wouldn't be the log value) and so showvalue is over-ridden and set to FALSE. A new widget rp.label is 
+  under development which would be used in these circumstances.  
 }
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \seealso{\code{\link{rp.radiogroup}},\code{\link{rp.control}}}
 

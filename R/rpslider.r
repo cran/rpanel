@@ -1,12 +1,15 @@
 # Moved to rp.slider.r and code tidied 12/07/2006 by EC.
 
 rp.slider <- function(panel, var, from, to, action = I, title = deparse(substitute(var)),
-  log = FALSE, resolution = 0, initval = NULL, parent = window, pos = NULL) {
+  log = FALSE, showvalue = FALSE, resolution = 0, initval = NULL, parent = window, pos = NULL) {
 # some preparations
   varname <- deparse(substitute(var))
   ischar <- is.character(panel)
   if (ischar) { panelname <- panel; panel <- .geval(panel) }
-  else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) }  
+  else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) }
+  
+# Over-ride! This stops the incorrect 'unlogged' value being shown.
+  if (showvalue && log) showvalue <- FALSE
   
 # create the property varname within the panel
   inittclvalue <- .rp.initialise(panelname, varname, initval, from)
@@ -25,7 +28,7 @@ rp.slider <- function(panel, var, from, to, action = I, title = deparse(substitu
     panel <- action(.geval(panelname))
 # has the panel been passed back?
     if (!is.null(panel$intname)) {      
-# assign the returned value back to the .GlobalEnv - replaces rp.return
+# assign the returned value back to the .rpenv - replaces rp.return
       .gassign(panel,panelname)
     }
     else {
@@ -37,7 +40,7 @@ rp.slider <- function(panel, var, from, to, action = I, title = deparse(substitu
 # setup the slider value and set to initial value
   tclvariable <- .geval(panelname, "$", varname, ".tcl <- tclVar(", deparse(inittclvalue), ")")
 # create the slider
-  newslider <- tkscale(panel$window, from = from, to = to, showvalue = F, command = f, orient = "horizontal",
+  newslider <- tkscale(panel$window, from = from, to = to, showvalue = showvalue, command = f, orient = "horizontal",
     label = title, resolution = resolution, variable = tclvariable)
   .rp.layout(newslider, pos)   #place the slider
 

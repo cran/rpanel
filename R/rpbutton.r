@@ -1,7 +1,7 @@
 # Moved to rptextentry.r and code tidied 18/07/2006 by EC.
 
 rp.button <- function(panel, action, title = deparse(substitute(action)), id = "", 
-  parent = window, repeatdelay = 0, repeatinterval = 0, pos = NULL) {
+  parent = window, repeatdelay = 0, repeatinterval = 0, quitbutton = FALSE, pos = NULL) {
 # some preparations
   ischar <- is.character(panel)
   if (ischar) { panelname <- panel; panel <- .geval(panel) }
@@ -13,12 +13,15 @@ rp.button <- function(panel, action, title = deparse(substitute(action)), id = "
     panel <- action(.geval(panelname))
 # has the panel been passed back?
     if (!is.null(panel$intname)) {      
-# assign the returned value back to the .GlobalEnv - replaces rp.return
+# assign the returned value back to the .rpenv - replaces rp.return
       .gassign(panel,panelname)
     }
     else {
 # no intname? no panel! Stop and complain.
       stop("The panel was not passed back from the action function.")
+    }
+    if (quitbutton) {
+      .geval("try(tkdestroy(", panelname, "$window))")
     }
   }
 

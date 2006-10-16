@@ -9,7 +9,7 @@
 
 \usage{
 rp.slider(panel, var, from, to, action = I, title = deparse(substitute(var)), 
-  log = FALSE, resolution = 0, initval = NULL, parent = window, pos = NULL)
+  log = FALSE, showvalue = FALSE, resolution = 0, initval = NULL, parent = window, pos = NULL)
 }
 
 \arguments{
@@ -19,6 +19,7 @@ rp.slider(panel, var, from, to, action = I, title = deparse(substitute(var)),
   \item{from}{the lower limit of the range of values to which the slider can be set.}
   \item{to}{the upper limit of the range of values to which the slider can be set.}
   \item{log}{a logical variable which controls whether the scale of the slider is logarithmic.}
+  \item{showvalue}{a logical variable which determines whether the present value of "var" is shown. This is forced to FALSE when log is TRUE.}
   \item{resolution}{the resolution of the slider scale. If > 0, all values are rounded to an even multiple of this value. The default is 0.}
   \item{action}{the function which is called when the slider is moved.}
   \item{title}{the label of the slider.}
@@ -33,19 +34,23 @@ rp.slider(panel, var, from, to, action = I, title = deparse(substitute(var)),
 
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and global 
+  panel object is used the altered panel is assigned to both the calling level and panel's environment 
   level.
 }
 
 \section{Warning}{
   The \code{action} function should return the panel. 
   Without this assignment any widgets added or alterations made to panel parameters within 
-  the \code{action} function will be lost.
+  the \code{action} function will be lost.\cr
+\cr
+Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value shown would be incorrect 
+  (it wouldn't be the log value) and so showvalue is over-ridden and set to FALSE. A new widget rp.label is 
+  under development which would be used in these circumstances.
 }
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \seealso{\code{\link{rp.radiogroup}},\code{\link{rp.control}}}
 

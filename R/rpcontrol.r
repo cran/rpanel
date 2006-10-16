@@ -16,15 +16,15 @@ rp.control <- function(title = "", size = NULL, panelname, realname, aschar = TR
   tkbind(panel$window, "<Destroy>", function() {
 # 'exists' is required as widgets within the panel will inherit this <destroy> function.
 # Thus as the widgets are removed from the panel as it closes this is called multiple times.
-# Destroy tcltk object.
-    if (exists(paste(panelname,"$window",sep=""))) { .geval("try(tkdestroy(", panelname, "$window))") }
-# Remove from r object from global environment.
-    if (exists(panelname)) { .geval("try(rm(", panelname, "))") }
+# Destroy tcltk object. Unlikely to work as exists can't do this!
+    if (exists(paste(panelname,"$window",sep=""), envir=.rpenv)) { .geval("try(tkdestroy(", panelname, "$window))") }
+# Remove from r object from panel's environment environment.
+    if (exists(panelname, envir=.rpenv)) { .geval("try(rm(", panelname, "))") }
   })
   
   panel$intname <- panelname
 
-# "output" the panel to the global environment.
+# "output" the panel to the panel's environment environment.
   .gassign(panel, panelname)
 
   if (aschar) invisible(panelname) else assign(panelname, .geval(panelname), envir=parent.frame())

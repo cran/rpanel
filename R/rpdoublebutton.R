@@ -1,12 +1,16 @@
 # Moved to rpdoublebutton.r and code tidied 18/07/2006 by EC.
 
 rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), action = I, initval = NULL, 
-  range = c(NA, NA), log = FALSE, repeatinterval = 100, repeatdelay = 100, parent = window, pos = NULL) {
+  range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, repeatinterval = 100, repeatdelay = 100, 
+  parent = window, pos = NULL) {
 # some preparations 
   varname <- deparse(substitute(var))
   ischar <- is.character(panel)
   if (ischar) { panelname <- panel; panel <- .geval(panel) }
-  else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) }  
+  else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) } 
+  
+# Over-ride! This stops the incorrect 'unlogged' value being shown.
+  if (showvalue && log) showvalue <- FALSE   
   
 # create the property varname within the panel
   inittclvalue <- .rp.initialise(panelname,varname,initval)  # formerly had ,1 at end
@@ -14,6 +18,12 @@ rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), 
   frame <- tkframe(panel$window)
   .rp.layout(frame, pos, "default_left_align")
   label <- tklabel(frame, text = title)
+  if (showvalue) {
+# create the displayed number and associated tclVar
+    dtclvar <- tclVar(as.character(inittclvalue))
+    dlabel <- tklabel(frame, text = tclvalue(dtclvar), width=showvaluewidth)
+    tkconfigure(dlabel, textvariable = dtclvar)
+  }    
 
 # the button callback function
   changefun <- function(panelname, varname, op, action) {
@@ -22,11 +32,12 @@ rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), 
       if (!is.na(range[1])) newvalue <- max(newvalue, range[1])
       if (!is.na(range[2])) newvalue <- min(newvalue, range[2])
       .geval(panelname, "$", varname, " <- ", as.character(newvalue))
+      if (showvalue) tclvalue(dtclvar) <- as.character(newvalue)
 # call the action function
       panel <- action(.geval(panelname))
 # has the panel been passed back?
       if (!is.null(panel$intname)) {      
-# assign the returned value back to the .GlobalEnv - replaces rp.return
+# assign the returned value back to the .rpenv - replaces rp.return
         .gassign(panel,panelname)
       }
       else {
@@ -42,8 +53,9 @@ rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), 
 # create the two buttons  
   incbutton <- tkbutton(frame, text = "+", command = incfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval)
   decbutton <- tkbutton(frame, text = "-", command = decfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval)
-# add the buttons and label to the frame  
-  tkgrid(decbutton,incbutton,label)
+# add the buttons and label to the frame
+  if (showvalue) { tkgrid(decbutton, dlabel, incbutton, label) }
+  else { tkgrid(decbutton, incbutton, label) }
 
   if (ischar) invisible(panelname) else assign(panelreturn, .geval(panelname), envir=parent.frame())
 }

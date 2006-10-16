@@ -1,5 +1,5 @@
 # RPANEL package which provides simple routines for using interactive widgets.
-# Version 1.0-3 (August 2006)
+# Version 1.0-4 (October 2006)
 # Authors of rpanel include Adrian Bowman, Gavin Alexander, Ewan Crawford and Richard Bowman with comment
 # from Brian Ripley and Simon Urbanek.
 
@@ -7,25 +7,27 @@
 # Private functions and initialisations
 # -------------------------------------------------------------------------------------------------------
 
+.rpenv <- new.env()
+
 .onAttach <- function(library, pkg) {
 # First function run on opening the package
-  cat("Package `rpanel', version 1.0-3\n")
+  cat("Package `rpanel', version 1.0-4\n")
   cat("type help(rpanel) for summary information\n")
   invisible()
 }
 
 .geval <- function(...) {
-# evaluate the parameters within the global environment.
+# evaluate the parameters within the panel's environment environment.
   expression = paste(..., sep="")
 # not that this will return the result of the evaluation as well as carry it out  
-  invisible(eval(parse(text = expression), envir = .GlobalEnv))
+  invisible(eval(parse(text = expression), envir = .rpenv))
 }
 
 .gassign <- function(value, ...) {
-# do an assignment within the global environment.
+# do an assignment within the panel's environment environment.
   expression = paste(..., sep = "")
 # note that this will return the created variable as well as create it
-  invisible(assign(expression, value, envir = .GlobalEnv))
+  invisible(assign(expression, value, envir = .rpenv))
 }
 
 .passign <- function(value, panelname, elementname){
@@ -45,7 +47,7 @@
       if (is.character(initval)) { .geval(panelname, "$", varname, " <- '", initval, "'") }
       else { .geval(panelname, "$", varname, " <- ", initval) }
     }
-    else { .geval(panelname, "$", varname, " <- ", default) }
+    else { if (!is.null(default)) .geval(panelname, "$", varname, " <- ", default) }
   }
 # return the created varname
   invisible(.geval(panelname, "$", varname))
@@ -77,14 +79,14 @@ rp.pos <- function() {
 
 rp.panelname <- function(new = TRUE) {
 # return the name of the next panel. Used for "disposable" panels.
-# disposable panels are those created in functions but not returned to the global
+# disposable panels are those created in functions but not returned to the panel's environment
 # level. They are often menus.
 # return an unused panel name of the form .rpanel0.### where ### is a number.  If new is false, 
 # return the name of the last panel created.
   if (new){
     testname <- paste('.rpanel', substr(as.character(runif(1)), 4, 11), sep="")     
 # generate test name .rpanel########
-    while (exists(testname, envir = .GlobalEnv)) {
+    while (exists(testname, envir = .rpenv)) {
       testname <- paste('.rpanel', substr(as.character(runif(1)), 4, 11), sep="")
 # the above tries random names until it finds one that's not in use
     }
@@ -93,7 +95,7 @@ rp.panelname <- function(new = TRUE) {
   }
   else {
     warning("retrieving the name of the last panel created does not always work!")
-    if (exists('.rp.last.panel.name', env = .GlobalEnv)) .geval('.rp.last.panel.name')
+    if (exists('.rp.last.panel.name', env = .rpenv)) .geval('.rp.last.panel.name')
     else stop("there is no record of the last panel created.  Perhaps no panels have been created yet?")
   }
   
@@ -119,7 +121,7 @@ rp.do <- function(panel, action = I) {
   panel <- action(panel)
 # has the panel been passed back?
   if (!is.null(panel$intname)) {      
-# assign the returned value back to the .GlobalEnv - replaces rp.return
+# assign the returned value back to the .rpenv - replaces rp.return
     .gassign(panel,panelname)
   }
   else {

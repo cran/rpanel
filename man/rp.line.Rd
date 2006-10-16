@@ -32,13 +32,13 @@ rp.line(panel, image, x1, y1, x2, y2, ..., color = "black", width = 2, id = 'rpl
 
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and global 
+  panel object is used the altered panel is assigned to both the calling level and panel's environment 
   level.
 }
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 \seealso{\code{\link{rp.tkrplot}},\code{\link{rp.image}}}
 
 \examples{

@@ -16,7 +16,7 @@ rp.control(title = "", size = NULL, panelname, realname, aschar = TRUE, ...)
 \arguments{
   \item{title}{the title of the panel displayed in the banner.}
   \item{size}{a two-element numeric vector specifying width and height of the panel in pixels. If this argument is omitted the size of the panel will adapt to the subsequent addition of widgets.}
-  \item{panelname}{the name of the panel at .GlobalEnv. If this is not assigned, then realname is taken.}
+  \item{panelname}{the name of the panel at .rpenv. If this is not assigned, then realname is taken.}
   \item{realname}{retained for backward compatibility. If this is not assigned, the realname is assigned automatically using rp.panelname.}
   \item{aschar}{if TRUE (default) the panel's name as a string is returned. If FALSE the panel list itself is returned.}
   \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.}
@@ -29,7 +29,7 @@ rp.control(title = "", size = NULL, panelname, realname, aschar = TRUE, ...)
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \seealso{\code{\link{rp.button}},\code{\link{rp.slider}},\code{\link{rp.doublebutton}},\code{\link{rp.textentry}},\code{\link{rp.checkbox}},\code{\link{rp.radiogroup}}}
 

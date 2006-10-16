@@ -15,7 +15,7 @@ The data are used in the rp.regression2 example script.
 
 \references{rpanel: Simple interactive controls for R functions using
 the tcltk library
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \examples{
   data(CofE)

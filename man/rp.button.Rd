@@ -9,7 +9,7 @@
 }
 
 \usage{
-rp.button(panel, action, title = deparse(substitute(action)), id = "", parent = window, repeatdelay = 0, repeatinterval = 0, pos = NULL)
+rp.button(panel, action, title = deparse(substitute(action)), id = "", parent = window, repeatdelay = 0, repeatinterval = 0, quitbutton = FALSE, pos = NULL)
 }
 
 \arguments{
@@ -21,6 +21,7 @@ rp.button(panel, action, title = deparse(substitute(action)), id = "", parent = 
   \item{parent}{this specifies the widget inside which the button should appear. In the current version of rpanel, it should not normally be used.}
   \item{repeatinterval}{the interval between auto-repeats (milliseconds) when the button is held down.}
   \item{repeatdelay}{the time after which the button starts to auto-repeat (milliseconds).}
+  \item{quitbutton}{this defaults to FALSE. Set to TRUE this creates a button which will close the window and escape from a rp.block call. Before the window is destroyed the action function will be called.}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
 }
 
@@ -30,7 +31,7 @@ rp.button(panel, action, title = deparse(substitute(action)), id = "", parent = 
 
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and global 
+  panel object is used the altered panel is assigned to both the calling level and panel's environment 
   level.
 }
 
@@ -42,7 +43,7 @@ rp.button(panel, action, title = deparse(substitute(action)), id = "", parent = 
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \seealso{\code{\link{rp.doublebutton}},\code{\link{rp.control}}}
 

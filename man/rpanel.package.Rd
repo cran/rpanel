@@ -30,6 +30,7 @@ rp.textentry: adds a box allows text to be entered\cr
 rp.button: adds a button to the panel with a nominated function called on pressing\cr
 rp.checkbox: adds a checkbox to the panel, to control a logical variable\cr
 rp.radiogroup: adds a set of radiobuttons to the panel\cr
+rp.listbox: adds a listbox to the panel\cr
 rp.doublebutton: adds a widget with '+' and '-' buttons, to increment and decrement a variable\cr
 rp.image: adds an image to the panel, the action function is called with coordinates on clicking\cr
 rp.line: draws a line connecting the pixel locations x1, y1 to x2, y2 on the specified rp.image\cr
@@ -59,7 +60,7 @@ Maintainer: Ewan Crawford <ewan@stats.gla.ac.uk>
 }
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 \keyword{ package }
 \seealso{\code{\link{rp.control}},\code{\link{rp.button}},\code{\link{rp.slider}},\code{\link{rp.doublebutton}},\code{\link{rp.textentry}},\code{\link{rp.checkbox}},\code{\link{rp.radiogroup}}}
 \examples{

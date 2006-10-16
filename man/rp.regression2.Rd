@@ -43,7 +43,7 @@ rp.regression2(y, x1, x2, ylab  = NA, x1lab = NA, x2lab = NA,
 
 \references{rpanel: Simple interactive controls for R functions using
 the tcltk library
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \seealso{\code{\link{rp.plot3d}}}
 

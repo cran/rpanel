@@ -5,7 +5,6 @@ rp.block <- function(panel) {
   ischar <- is.character(panel)
   if (ischar) { panelname <- panel; panel <- .geval(panel) }
   else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) }  
-
   open <- .geval("exists('",panelname, "')")
   while(open){
     Sys.sleep(0.01)

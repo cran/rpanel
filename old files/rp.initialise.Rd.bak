@@ -1,6 +1,6 @@
-\name{rp.do}
+\name{rp.initialise}
 
-\alias{rp.do}
+\alias{rp.initialise}
 
 \title{Runs a user written callback function}
 
@@ -11,7 +11,7 @@ when the system starts.
 }
 
 \usage{
-rp.do(panel, action = I)
+rp.initialise(panel, action = I)
 }
 
 \arguments{
@@ -22,13 +22,13 @@ rp.do(panel, action = I)
 
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and panel's environment 
+  panel object is used the altered panel is assigned to both the calling level and global 
   level.
 }
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
 
 \seealso{ \code{\link{rp.radiogroup}} }
 
@@ -47,7 +47,7 @@ panel <- rp.control(x = rnorm(50))
 rp.radiogroup(panel, plot.type, 
        c("histogram", "boxplot", "density estimate"), 
        action = data.plotfn, title = "Plot type")     
-rp.do(panel, data.plotfn)
+rp.initialise(panel, data.plotfn)
 }
 
 \keyword{iplot}

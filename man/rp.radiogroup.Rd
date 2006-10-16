@@ -9,7 +9,7 @@
 }
 
 \usage{
-rp.radiogroup(panel, var, values, labels=values, initval=NULL, parent=window, 
+rp.radiogroup(panel, var, values, labels=values, initval = values[1], parent=window, 
 pos=NULL, title=deparse(substitute(var)), action=I, ...)
 }
 
@@ -33,7 +33,7 @@ pos=NULL, title=deparse(substitute(var)), action=I, ...)
 
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and global 
+  panel object is used the altered panel is assigned to both the calling level and panel's environment 
   level.
 }
 
@@ -45,7 +45,7 @@ pos=NULL, title=deparse(substitute(var)), action=I, ...)
 
 \references{rpanel: Simple interactive controls for R functions using 
 the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/research-reports/rpanel.ps)}
+(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
 
 \seealso{\code{\link{rp.checkbox}},\code{\link{rp.control}}}
 

@@ -22,7 +22,7 @@ rp.tkrplot <- function(panel, name, plotfun, action = I, parent = window, pos = 
     panel <- action(.geval(panelname), x, y)
 # has the panel been passed back?
     if (!is.null(panel$intname)) {      
-# assign the returned value back to the .GlobalEnv - replaces rp.return
+# assign the returned value back to the .rpenv - replaces rp.return
       .gassign(panel,panelname)
     }
     else {
