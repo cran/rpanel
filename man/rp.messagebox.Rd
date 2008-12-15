@@ -25,18 +25,18 @@ rp.messagebox(..., title="rpanel Message")
   None.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{ \code{\link{rp.control}} }
 
 \examples{
-\dontrun{
-# This is not run as RCMD CHECK will be suspended until OK is clicked ...
-rp.messagebox("Click OK to continue.", title = "Test message")
-}
-}
+if (interactive()) {
+   # This is not run as RCMD CHECK will be suspended until OK is clicked ...
+   rp.messagebox("Click OK to continue.", title = "Test message")
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

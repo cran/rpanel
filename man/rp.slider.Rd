@@ -9,7 +9,8 @@
 
 \usage{
 rp.slider(panel, var, from, to, action = I, title = deparse(substitute(var)), 
-  log = FALSE, showvalue = FALSE, resolution = 0, initval = NULL, parent = window, pos = NULL)
+          log = FALSE, showvalue = FALSE, resolution = 0, initval = NULL, 
+          parent = window, pos = NULL, horizontal = TRUE, ...)
 }
 
 \arguments{
@@ -26,10 +27,15 @@ rp.slider(panel, var, from, to, action = I, title = deparse(substitute(var)),
   \item{initval}{the initial value of var (optional). The initial value can also be specified in the call to \code{rp.control}.}
   \item{parent}{this specifies the widget inside which the slider should appear. In the current version of rpanel, it should not normally be used.}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
+  \item{horizontal}{a logical variable determining whether the slider is displayed horizontally (or
+                vertically).}
+  \item{\dots}{information for \code{pos} can be passed individually as additional arguments.}
 }
 
 \details{
   The function \code{action} should take one argument, which should be the panel to which the slider is attached. 
+  
+    See \code{\link{rp.grid}} for details of the grid layout system.
 }
 
 \value{
@@ -48,20 +54,22 @@ Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value s
   under development which would be used in these circumstances.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.radiogroup}},\code{\link{rp.control}}}
 
 \examples{
-density.draw <- function(panel) {
-  plot(density(panel$x, bw = panel$h))
-  panel
-}
-panel <- rp.control(x = rnorm(50))
-rp.slider(panel, h, 0.5, 5, log = TRUE, action = density.draw)
-}
+if (interactive()) {
+   density.draw <- function(panel) {
+     plot(density(panel$x, bw = panel$h))
+     panel
+     }
+   panel <- rp.control(x = rnorm(50))
+   rp.slider(panel, h, 0.5, 5, log = TRUE, action = density.draw)
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

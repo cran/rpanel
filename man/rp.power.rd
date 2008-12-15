@@ -20,21 +20,23 @@ rp.power()
 
 \details{
   The population parameters and sample size are controlled by
-  doublebuttons.  The sample size refer to the common sample size
-  of each of the two groups.  A checkbox allows plots of the
-  population distributions also to be diplayed. }
+  doublebuttons.  The sample size refer to the total sample size,
+  assuming two groups of equal size.  A checkbox allows plots of the
+  population distributions also to be diplayed.}
 
 \value{
   the panel object.
 }
 
-\references{rpanel: Simple interactive controls for R functions using
-the tcltk library
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \examples{
+if (interactive()) {
   rp.power()
-}
+  }}
 
 \keyword{iplot}
 \keyword{dynamic}

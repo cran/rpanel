@@ -12,7 +12,9 @@ functions to allow R graphics to be displayed in a panel.
 }
 
 \usage{
-rp.tkrplot(panel, name, plotfun, action = I, parent = window, pos = NULL)
+rp.tkrplot(panel, name, plotfun, action = NA,  mousedrag = NA,
+           mouseup = NA, hscale = 1, vscale = 1, parent = window, pos = NULL,
+           foreground = NULL, margins = c(0, 0, 0, 0), ...)
 rp.tkrreplot(panel, name)
 }
 
@@ -22,12 +24,22 @@ rp.tkrreplot(panel, name)
   \item{name}{the name of the plot. This is subsequently used in tkrreplot to specify the plot to be redrawn.}
   \item{plotfun}{the function used to create the plot.}
   \item{action}{the function called when the plot is clicked.}
+  \item{mousedrag}{the function called when the mouse is dragged.}
+  \item{mouseup}{the function called when the mouse is released.}
   \item{parent}{this specifies the widget inside which the plot should appear. In the current version of rpanel, it should not normally be used.}
+  \item{hscale}{horizontal scaling factor to control the width of the plot.}
+  \item{vscale}{vertical scaling factor to control the height of the plot.}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
+  \item{foreground}{the filename of a transparent gif file.  This will be overlaid on the tkrplot image.}
+  \item{margins}{an integer vector of length 4 giving the margin sizes, in pixels and in the 
+                 usual order, for the placing of the foreground image.}
+  \item{\dots}{information for \code{pos} can be passed individually as additional arguments.}
 }
 
 \details{
   The function \code{action} should take one argument, which should be the panel to which the tkrplot is attached. 
+  
+    See \code{\link{rp.grid}} for details of the grid layout system.
 }
 
 \value{
@@ -42,22 +54,29 @@ rp.tkrreplot(panel, name)
   the \code{action} function will be lost.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.image}}}
 
 \examples{
-rpplot <- rp.control(title = "Demonstration of rp.tkrplot", h = 1)
+if (interactive()) {
+   draw <- function(panel) {
+      plot(1:20, (1:20)^panel$h)
+      panel
+      }
+   
+   redraw <- function(panel) {
+      rp.tkrreplot(panel, tkrp)
+      panel
+      }
 
-redraw <- function(panel) {
-  rp.tkrreplot(panel, tkrp)
-}
-
-rp.tkrplot(rpplot, tkrp, function(panel) plot(1:20, (1:20)^panel$h))
-rp.slider(rpplot, h, action = redraw, from = 0.05, to = 2.00, resolution = 0.05)
-}
+   rpplot <- rp.control(title = "Demonstration of rp.tkrplot", h = 1)
+   rp.tkrplot(rpplot, tkrp, draw)
+   rp.slider(rpplot, h, action = redraw, from = 0.05, to = 2.00, resolution = 0.05)
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

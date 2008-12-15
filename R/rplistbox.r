@@ -8,21 +8,54 @@ rp.listbox <- function(panel, var, vals, labels = vals, rows = length(vals), ini
   if (ischar) { panelname <- panel; panel <- .geval(panel) }
   else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) }
 
+# this is slightly awkward as ... is already used as parameters for the callback function
+
+  pos = .newpos(pos, ...)
+
 # create the property varname within the panel
   inittclvalue <- .rp.initialise(panelname, varname, initval = initval)
 
+  if (.checklayout(pos))
+# check the pos for unpaired variables etc  
+  {
+
 # create the prompt and listBox
 # create a frame to contain the radiogroup
-  newlistbox <- tkwidget(panel$window, "labelframe", text = title)
-  .rp.layout(newlistbox, pos)
+  if (is.null(pos$grid)) {
+    gd = panel$window
+  }
+  else {
+    gd = .geval(panelname,"$",pos$grid)
+  }
+
+  newlistbox <- tkwidget(gd, "labelframe", text = title)
+  
+  if ((is.null(pos$row)) && (is.null(pos$column))) {
+    .rp.layout(newlistbox, pos)
+  }
+  else {
+    if (is.null(pos$sticky)) { pos$sticky <- "w" }
+    if (is.null(pos$rowspan)) { pos$rowspan = 1 }
+    if (is.null(pos$columnspan)) { pos$columnspan = 1; }  
+    tkgrid(newlistbox, row=pos$row, column=pos$column, sticky=pos$sticky, "in"=gd, rowspan=pos$rowspan, columnspan=pos$columnspan)    
+  }
+  
   if (rows != length(vals))
   {
     scr <- tkscrollbar(newlistbox, repeatinterval=5, command=function(...) tkyview(listBox,...))
-    listBox <- tklistbox(newlistbox, height=rows, selectmode="single", yscrollcommand=function(...) tkset(scr,...), background="white")
+    if ((is.null(pos$width)) && (is.null(pos$height))) {
+      listBox <- tklistbox(newlistbox, height=rows, selectmode="single", yscrollcommand=function(...) tkset(scr,...), background="white")
+    } else {
+      listBox <- tklistbox(newlistbox, height=rows, selectmode="single", yscrollcommand=function(...) tkset(scr,...), background="white", width=pos$width, height=pos$height)
+    }  
   }
   else
   {
-    listBox <- tklistbox(newlistbox, height=rows, selectmode="single", background="white")
+    if ((is.null(pos$width)) && (is.null(pos$height))) {
+      listBox <- tklistbox(newlistbox, height=rows, selectmode="single", background="white")
+    } else {
+      listBox <- tklistbox(newlistbox, height=rows, selectmode="single", background="white", width=pos$width, height=pos$height)
+    }
   }
   if (rows != length(vals))
   {
@@ -59,6 +92,7 @@ rp.listbox <- function(panel, var, vals, labels = vals, rows = length(vals), ini
         stop("The panel was not passed back from the action function.")
       }
     })
+  }
   
   if (ischar) invisible(panelname) else assign(panelreturn, .geval(panelname), envir=parent.frame())
 }

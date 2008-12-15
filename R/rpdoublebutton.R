@@ -1,22 +1,50 @@
 # Moved to rpdoublebutton.r and code tidied 18/07/2006 by EC.
+# Grid support added 02/2008
 
-rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), action = I, initval = NULL, 
-  range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, repeatinterval = 100, repeatdelay = 100, 
-  parent = window, pos = NULL) {
+rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), action = I, initval = NULL, range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, repeatinterval = 100, repeatdelay = 100, parent = window, pos = NULL, ...) {
 # some preparations 
   varname <- deparse(substitute(var))
   ischar <- is.character(panel)
   if (ischar) { panelname <- panel; panel <- .geval(panel) }
   else { panelname <- panel$intname; panelreturn <- deparse(substitute(panel)); .gassign(panel, panelname) } 
-  
+
+  pos = .newpos(pos, ...)
+
 # Over-ride! This stops the incorrect 'unlogged' value being shown.
   if (showvalue && log) showvalue <- FALSE   
   
 # create the property varname within the panel
   inittclvalue <- .rp.initialise(panelname,varname,initval)  # formerly had ,1 at end
+
+# Start to lay out
+
+  if (.checklayout(pos))
+# check the pos for unpaired variables etc  
+  {
+
+# get the grid - if appropriate and set gd to the parent
+  if ((!is.list(pos)) || (is.null(pos$grid))) {
+    gd = panel$window
+  }
+  else {
+    gd = .geval(panelname,"$",pos$grid)
+  }
+
 # create the frame to contain the buttons and labels
-  frame <- tkframe(panel$window)
-  .rp.layout(frame, pos, "default_left_align")
+  frame <- tkframe(gd)
+
+# how to place the frame?
+  if ((!is.list(pos)) || ((is.null(pos$row)) && (is.null(pos$column)))) {
+    .rp.layout(frame, pos, "default_left_align")
+  }
+  else {
+    if (is.null(pos$sticky)) { pos$sticky <- "w" }
+    if (is.null(pos$rowspan)) { pos$rowspan = 1 }
+    if (is.null(pos$columnspan)) { pos$columnspan = 1; }  
+    tkgrid(frame, row = pos$row, column = pos$column, "in"=gd, rowspan = pos$rowspan, columnspan = pos$columnspan, sticky = pos$sticky)
+  }
+
+# put things into the frame
   label <- tklabel(frame, text = title)
   if (showvalue) {
 # create the displayed number and associated tclVar
@@ -50,12 +78,23 @@ rp.doublebutton <- function(panel, var, step, title = deparse(substitute(var)), 
 # create the two buttons' functions
   incfun <- changefun(panelname, varname, if (log) "*" else "+", action)
   decfun <- changefun(panelname, varname, if (log) "/" else "-", action)
-# create the two buttons  
-  incbutton <- tkbutton(frame, text = "+", command = incfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval)
-  decbutton <- tkbutton(frame, text = "-", command = decfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval)
+
+# create the two buttons
+  if ((!is.list(pos)) || ((is.null(pos$width)) && (is.null(pos$height))))
+  {
+    incbutton <- tkbutton(frame, text = "+", command = incfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval)
+    decbutton <- tkbutton(frame, text = "-", command = decfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval)
+  }
+  else
+  {
+    incbutton <- tkbutton(frame, text = "+", command = incfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval, width=pos$width, height=pos$height)
+    decbutton <- tkbutton(frame, text = "-", command = decfun, repeatdelay = repeatdelay, repeatinterval = repeatinterval, width=pos$width, height=pos$height)
+  }
 # add the buttons and label to the frame
   if (showvalue) { tkgrid(decbutton, dlabel, incbutton, label) }
   else { tkgrid(decbutton, incbutton, label) }
+  
+  } # end of check pos
 
   if (ischar) invisible(panelname) else assign(panelreturn, .geval(panelname), envir=parent.frame())
 }

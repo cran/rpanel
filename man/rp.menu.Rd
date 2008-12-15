@@ -50,23 +50,26 @@ rp.menu(panel, var, labels, initval = NULL, parent = window, action = I, ...)
   The action function must be defined before the rp.menu statement as it relies on the function already existing.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.checkbox}},\code{\link{rp.control}}}
 
 \examples{
-a <- rp.control()
-# The action function has to come first so that it already exists for rp.menu - as it creates the callback
-# functions on the fly it requires action to already be defined.
-domenu <- function(panel)
-{
- rp.messagebox(panel$menuchoice, title = "You chose")
- panel
-}
-rp.menu(a, menuchoice, labels=list(list("File","Quit"),list("Edit","Copy","Cut","Paste")), action=domenu)
-}
+if (interactive()) {
+   a <- rp.control()
+   # The action function has to come first so that it already exists for rp.menu, 
+   # as it creates the callback functions on the fly it requires action to already 
+   # be defined.
+   domenu <- function(panel) {
+      rp.messagebox(panel$menuchoice, title = "You chose")
+      panel
+      }
+   rp.menu(a, menuchoice, labels=list(list("File","Quit"),
+              list("Edit","Copy","Cut","Paste")), action=domenu)
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

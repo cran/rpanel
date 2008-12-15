@@ -10,8 +10,8 @@
 
 \usage{
 rp.doublebutton(panel, var, step, title = deparse(substitute(var)), action = I, 
-initval = NULL, range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, repeatinterval = 100, 
-repeatdelay = 100, parent = window, pos = NULL)
+      initval = NULL, range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, 
+      repeatinterval = 100, repeatdelay = 100, parent = window, pos = NULL, ...)
 }
 
 \arguments{
@@ -29,10 +29,13 @@ repeatdelay = 100, parent = window, pos = NULL)
   \item{repeatinterval}{the interval between auto-repeats (milliseconds) when the button is held down.}
   \item{repeatdelay}{the time after which the button starts to auto-repeat (milliseconds).}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
+  \item{\dots}{information for \code{pos} can be passed individually as additional arguments.}
 }
 
 \details{
   \code{action} should be a function of one argument, which should be the panel.  The panel can then be manipulated, and data stored in the panel may be used/modified, then the (optionally modified) panel must be returned.
+  
+    See \code{\link{rp.grid}} for details of the grid layout system.
 }
 
 \value{
@@ -51,22 +54,24 @@ Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value s
   under development which would be used in these circumstances.  
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.radiogroup}},\code{\link{rp.control}}}
 
 \examples{
-density.draw <- function(panel) {
-  plot(density(panel$x, bw = panel$h))
-  panel
-}
-panel <- rp.control(x = rnorm(50))
-rp.doublebutton(panel, var = h, step = 0.05, 
-  title = "Density estimate", action = density.draw,
-  range = c(0.1, 5), initval=1)
-}
+if (interactive()) {
+   density.draw <- function(panel) {
+     plot(density(panel$x, bw = panel$h))
+     panel
+     }
+   panel <- rp.control(x = rnorm(50))
+   rp.doublebutton(panel, var = h, step = 0.05, 
+     title = "Density estimate", action = density.draw,
+     range = c(0.1, 5), initval=1)
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

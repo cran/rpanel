@@ -1,5 +1,5 @@
 # RPANEL package which provides simple routines for using interactive widgets.
-# Version 1.0-4 (October 2006)
+# Version 1.0-6 (October 2006)
 # Authors of rpanel include Adrian Bowman, Gavin Alexander, Ewan Crawford and Richard Bowman with comment
 # from Brian Ripley and Simon Urbanek.
 
@@ -11,7 +11,7 @@
 
 .onAttach <- function(library, pkg) {
 # First function run on opening the package
-  cat("Package `rpanel', version 1.0-4\n")
+  cat("Package `rpanel', version 1.0-5\n")
   cat("type help(rpanel) for summary information\n")
   invisible()
 }
@@ -19,7 +19,7 @@
 .geval <- function(...) {
 # evaluate the parameters within the panel's environment environment.
   expression = paste(..., sep="")
-# not that this will return the result of the evaluation as well as carry it out  
+# note that this will return the result of the evaluation as well as carry it out  
   invisible(eval(parse(text = expression), envir = .rpenv))
 }
 
@@ -53,29 +53,74 @@
   invisible(.geval(panelname, "$", varname))
 }
 
+.checklayout <- function(pos) {
+  if (!is.null(pos))
+  {
+    if (is.list(pos)) {
+
+      if (!is.null(pos$grid)) {
+        if ((is.null(pos$row)) || (is.null(pos$column))) 
+          stop("Grid specified but row and column both need specified.")
+      }
+      if ((!is.null(pos$row)) || (!is.null(pos$column))) {
+        if ((is.null(pos$row)) || (is.null(pos$column))) 
+          stop("Row and column both need specified.")
+      } 
+      if ((!is.null(pos$width)) || (!is.null(pos$height))) {
+        if ((is.null(pos$width)) || (is.null(pos$height))) 
+          stop("Width and height both need specified.")
+      }
+    }
+  } 
+  TRUE; # passed back
+}
+
 .rp.layout <- function(widget, pos, default=NULL) {
 # place the widget in the position given
   if (is.null(pos) && !is.null(default)) pos <- default
 
   if (is.null(pos))
-    tkpack(widget, expand = "true", fill = "both") 
+    tkpack(widget, expand = "false", fill = "both", padx=2, pady=2) # expand was true
   else if (pos[1] == "default_left_align")
-    tkpack(widget, expand = "true", anchor = "w") 
+    tkpack(widget, expand = "false", anchor = "w", padx=2, pady=2) # expand was true
   else if (pos[1] %in% c("left", "right", "top", "bottom") && length(pos) == 1)
-    tkpack(widget, side = pos) 
+    tkpack(widget, expand = "false", side = pos, padx=2, pady=2) 
   else
     tkplace(widget, x = pos[1], y = pos[2], w = pos[3], h = pos[4])
   invisible()
 }
 
+.newpos <- function(pos, ...)
+{
+  newpos <- list(...)
+  if (is.list(pos)) 
+  {
+    for(i in 1:length(pos))
+    {
+      if (is.numeric(pos[i])) 
+      {
+        exec <- paste("newpos$", names(pos)[i], " <- ", pos[i], sep="")
+      }
+      else
+      {
+        exec <- paste("newpos$", names(pos)[i], " <- '", pos[i], "'", sep="")
+      }
+      eval(parse(text=exec))
+    }
+    if (length(newpos)>0)
+    {
+      pos <- newpos
+    }
+  }
+  if (is.null(pos) & length(newpos) > 0)
+     pos <- newpos
+     
+  invisible(pos)
+}
+
 # -------------------------------------------------------------------------------------------------------
 # Public functions
 # -------------------------------------------------------------------------------------------------------
-
-rp.pos <- function() {
-# This simply runs the rp.pos demonstration.
-  demo(rp.pos)
-}  
 
 rp.panelname <- function(new = TRUE) {
 # return the name of the next panel. Used for "disposable" panels.

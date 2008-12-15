@@ -12,18 +12,20 @@
 }
 
 \usage{
-  rp.ancova(x, y, group, panel = TRUE, model = "None",
-       xlab = deparse(substitute(x)), ylab = deparse(substitute(y)))
+  rp.ancova(x, y, group, panel = TRUE, panel.plot = TRUE, model = "None",
+       xlab = deparse(substitute(x)), ylab = deparse(substitute(y)), hscale = NA, vscale = hscale)
 }
 
 \arguments{
-  \item{x}{a vector of covariate values.}
-  \item{y}{a vector of response values.}
-  \item{group}{a vector of group indicators.}
-  \item{panel}{a logical variable which determines whether a panel is created to allow interactive control of the fitted models.}
-  \item{model}{a character variable defining the model to be fitted, if panel is set to FALSE.  The valid values are "None", "Single mean", "Single line", "Parallel lines", and "Different lines".}
-  \item{xlab}{a character variable used for the covariate axis label.}
-  \item{ylab}{a character variable used for the response axis label.}
+\item{x}{a vector of covariate values.}
+\item{y}{a vector of response values.}
+\item{group}{a vector of group indicators.}
+\item{panel}{a logical variable which determines whether a panel is created to allow interactive control of the fitted models.}
+\item{panel.plot}{a logical parameter which determines whether the plot is placed inside the panel (TRUE) or the standard graphics window (FALSE).  If the plot is to be placed inside the panel then the \code{tkrplot} library is required.}
+\item{model}{a character variable defining the model to be fitted, if panel is set to FALSE.  The valid values are "None", "Single mean", "Single line", "Parallel lines", and "Different lines".}
+\item{xlab}{a character variable used for the covariate axis label.}
+\item{ylab}{a character variable used for the response axis label.}
+\item{hscale, vscale}{scaling parameters for the size of the plot when \code{panel.plot} is set to \code{TRUE}.  The default values are 1 on Unix platforms and 1.4 on Windows platforms.}
 }
 
 \details{
@@ -36,16 +38,17 @@
   If panel is FALSE, nothing is returned.
 }
 
-\references{rpanel: Simple interactive controls for R functions using
-the tcltk package
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \examples{
-  x <- runif(50)
-  y <- x + rnorm(50, sd = 0.2)
-  g <- rbinom(50, 1, 0.5)
-  rp.ancova(x, y, g)
-}
+if (interactive()) {
+   data(gullweight)
+   attach(gullweight)
+   rp.ancova(hab, weight, month)
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

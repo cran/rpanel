@@ -11,7 +11,7 @@
 }
 
 \usage{
-  rp.tables(panel.plot = FALSE)
+  rp.tables(panel.plot = TRUE, hscale = NA, vscale = hscale)
 }
 
 \arguments{
@@ -20,6 +20,10 @@
                 standard graphics window (FALSE).  If the plot is
                 to be placed inside the panel then the tkrplot
                 library is required.}
+  \item{hscale, vscale}{horizontal and vertical scaling factors for the size of the plot
+                when \code{panel.plot} is set to \code{TRUE}.
+                It can be useful to adjust these for projection on a screen, for example.
+                The default values are 1 on Unix platforms and 1.4 on Windows platforms.}
 }
 
 \details{
@@ -35,13 +39,15 @@
   the name of the panel object.
 }
 
-\references{rpanel: Simple interactive controls for R functions using
-the tcltk library
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \examples{
+if (interactive()) {
   rp.tables()
-}
+  }}
 
 \keyword{iplot}
 \keyword{dynamic}

@@ -9,8 +9,8 @@
 }
 
 \usage{
-rp.listbox(panel, var, vals, labels=vals, rows = length(vals), initval = vals[1], parent=window, 
-pos=NULL, title=deparse(substitute(var)), action=I, ...)
+rp.listbox(panel, var, vals, labels = vals, rows = length(vals), initval = vals[1], 
+           parent = window, pos = NULL, title = deparse(substitute(var)), action = I, ...)
 }
 
 \arguments{
@@ -25,11 +25,13 @@ pos=NULL, title=deparse(substitute(var)), action=I, ...)
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
   \item{title}{the label for the listbox.}
   \item{action}{the function which is called when an item is chosen.}
-  \item{\dots}{any further parameters.}
+  \item{\dots}{information for \code{pos} can be passed individually as additional arguments.}
 }
 
 \details{
   The function \code{action} should take one argument, which should be the panel to which the listbox is attached. 
+  
+    See \code{\link{rp.grid}} for details of the grid layout system.
 }
 
 \value{
@@ -44,28 +46,30 @@ pos=NULL, title=deparse(substitute(var)), action=I, ...)
   the \code{action} function will be lost.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk library 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.checkbox}},\code{\link{rp.control}}}
 
 \examples{
-data.plotfn <- function(panel) {
-  if (panel$plot.type == "histogram")
-    hist(panel$x)
-  else
-    if (panel$plot.type == "boxplot")
-      boxplot(panel$x)
-    else
-      plot(density(panel$x))
-  panel
-}
-panel <- rp.control(x = rnorm(50))
-rp.listbox(panel, plot.type,
+if (interactive()) {
+   data.plotfn <- function(panel) {
+     if (panel$plot.type == "histogram")
+       hist(panel$x)
+     else
+       if (panel$plot.type == "boxplot")
+         boxplot(panel$x)
+       else
+         plot(density(panel$x))
+     panel
+   }
+   panel <- rp.control(x = rnorm(50))
+   rp.listbox(panel, plot.type,
        c("histogram", "boxplot", "density estimate"),
        action = data.plotfn, title = "Plot type") 
-}
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

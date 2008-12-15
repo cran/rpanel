@@ -1,7 +1,5 @@
-rp.gulls <- function(df.name = "gulls", plot.panel = TRUE) {
-# I'm going to define some action functions here, these will be used later
-# in this function.  They need to be inside to get round namespace issues.
-############################################################################
+rp.gulls <- function(df.name = "gulls", panel.plot = TRUE, sleep = 0.5) {
+
 click.capture <- function(panel, x, y) {
   x <- as.numeric(x)
   y <- as.numeric(y)
@@ -95,22 +93,14 @@ collect.data <- function(panel) {
         rp.messagebox(paste(vname, "has been added to the dataset."))
         gulls <- panel$gulls
         assign(panel$df.name, gulls, env = .GlobalEnv)
-        # save(gulls, file = "gulls.rda")
-        if (panel$plot.panel) {
+        if (panel$panel.plot) {
           nvar <- ncol(panel$gulls)
-          ypos <- 390 + nvar * 30
-          if (vname == "Bill.Depth")           xpos <- 130
-          if (vname == "Head.and.Bill.Length") xpos <- 165
-          if (vname == "Wing.Length")          xpos <- 140
           if (nvar == 1)
-            rp.checkbox(panel, var1, 
-                        pos = c(xpos, ypos, 150, 25), title = vname)
+            rp.checkbox(panel, var1, title = vname, grid = "middle", row = 0, column = 0)
           if (nvar == 2)
-            rp.checkbox(panel, var2, 
-                        pos = c(xpos, ypos, 150, 25), title = vname)
+            rp.checkbox(panel, var2, title = vname, grid = "middle", row = 1, column = 0)
           if (nvar == 3)
-            rp.checkbox(panel, var3, 
-                        pos = c(xpos, ypos, 150, 25), title = vname)
+            rp.checkbox(panel, var3, title = vname, grid = "middle", row = 2, column = 0)
           if (!("collected.lmks" %in% names(panel))) {
             panel$collected.lmks <- matrix(lmks, ncol = 2)
             rownames(panel$collected.lmks) <- vname
@@ -138,28 +128,23 @@ rp.gulls.plot <- function(panel) {
       text(gulls[,var.vec], txt, col = clr)
     }
     if (nvars == 3) {
-#  adj <- 
-    if (require(rgl)) {
-
-      rp.plot3d(
-        gulls[,var.vec[2]], gulls[,var.vec[1]], gulls[,var.vec[3]], 
-        xlab  = names(gulls)[var.vec[2]],
-        ylab = names(gulls)[var.vec[1]],
-        zlab = names(gulls)[var.vec[3]],
-        col = clr)
-    } else { rp.messagebox("You can only plot three variables if package RGL is installed."); warning("Package RGL is not installed.") }        
-#panel = FALSE, points = FALSE
-#  rgl.points((gulls[,var.vec[1]] - adj$x1) / adj$x2, 
-#             (gulls[,var.vec[2]] - adj$y1) / adj$y2, 
-#             (gulls[,var.vec[3]] - adj$z1) / adj$z2, 
-#             size = 3, col = clr)
-     }
+       if (require(rgl)) {
+          rp.plot3d(
+          gulls[,var.vec[2]], gulls[,var.vec[1]], gulls[,var.vec[3]], 
+          xlab  = names(gulls)[var.vec[2]], ylab = names(gulls)[var.vec[1]],
+          zlab = names(gulls)[var.vec[3]], col = clr)
+          } 
+       else {
+       	  rp.messagebox("You can only plot three variables if package RGL is installed.")
+       	  warning("Package RGL is not installed.")
+       	  }        
+       }
    })
  panel
 }
 #############################################################################            
-            rp.button(panel, pos = c(350, 420, 100, 30),
-            title = "Plot data", action = rp.gulls.plot)
+            rp.button(panel, title = "Plot data", action = rp.gulls.plot,
+                      grid = "right", row = 0, column = 2)
           }
           else {
             panel$collected.lmks <- rbind(panel$collected.lmks, lmks)
@@ -189,10 +174,8 @@ rp.gulls.plot <- function(panel) {
   panel$lmk2 <- NA
   panel
 }
-###################################################################################
-# Here endeth the definition of the action functions
   
-  data("gulls", package = "rpanel")
+  # data("gulls", package = "rpanel")
   image.file <- file.path(system.file(package = "rpanel"), "images", "gulllmks.gif")
   gulls.panel <- rp.control("STEPS:  The Birds and the Bees",
                    gulls.all = gulls.all,
@@ -204,12 +187,16 @@ rp.gulls.plot <- function(panel) {
                    lmks.y = c(277, 298, 251,  96, 86, 61,  42,  68),
                    lmk1 = NA, lmk2 = NA, df.name = df.name,
                    var1 = FALSE, var2 = FALSE, var3 = FALSE,
-                   plot.panel = plot.panel, size = c(480, 550))
-  rp.image(gulls.panel, image.file, pos = c(0, 0, 500, 416),
-                   id = "gulls.image", action = click.capture)
-  if (plot.panel) xpos <- 25 else xpos <- 200
-  rp.button(gulls.panel, pos = c(xpos, 420, 100, 30),
-            title = "Collect data", action = collect.data)
+                   panel.plot = panel.plot, size = c(480, 550))
+  Sys.sleep(sleep)
+  rp.grid(gulls.panel, "image",  row = 0, column = 0, columnspan = 3)
+  rp.grid(gulls.panel, "left",   row = 1, column = 0)
+  rp.grid(gulls.panel, "middle", row = 1, column = 1)
+  rp.grid(gulls.panel, "right",  row = 1, column = 2)
+  rp.image(gulls.panel, image.file, id = "gulls.image", action = click.capture,
+            grid = "image", row = 0, column = 0)
+  rp.button(gulls.panel, title = "Collect data", action = collect.data,
+            grid = "left", row = 0, column = 0)
   rp.panel(gulls.panel)
 }
 

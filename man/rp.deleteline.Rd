@@ -19,27 +19,26 @@ rp.deleteline(panel, image, id)
   \item{id}{the identifier of the line to be deleted.}
 }
 
-\details{
-}
-
 \value{
   If the parameter panel is the panelname string the same string is returned. If the 
   panel object is used the altered panel is assigned to both the calling level and panel's environment 
   level.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
-\seealso{\code{\link{rp.clearlines}},\code{\link{rp.line}},\code{\link{rp.image}}}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \examples{
-panel <- rp.control()
-image.file <- file.path(system.file(package = "rpanel"), "images", "gulllmks.gif")
-rp.image(panel, image.file, id = "gulls.image")
-rp.line(panel, gulls.image, 10, 10, 100, 100, color = "green", id="first")
-rp.line(panel, gulls.image, 100, 100, 100, 10, color = "blue", id="second")
-rp.deleteline(panel, gulls.image,"first") # deletes only the first line leaving the vertial blue one.
-}
+if (interactive()) {
+   panel <- rp.control()
+   image.file <- file.path(system.file(package = "rpanel"), "images", "gulllmks.gif")
+   rp.image(panel, image.file, id = "gulls.image")
+   rp.line(panel, gulls.image, 10, 10, 100, 100, color = "green", id="first")
+   rp.line(panel, gulls.image, 100, 100, 100, 10, color = "blue", id="second")
+   rp.deleteline(panel, gulls.image,"first") # deletes only the first line leaving the vertial blue one.
+   }}
+
 \keyword{iplot}
 \keyword{dynamic}

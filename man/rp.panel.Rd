@@ -23,18 +23,24 @@ rp.panel(panelname = rp.panelname(new = FALSE))}
 Note: returning of the most recent panel may fail when running R on a Windows machine in DOS. A warning is contained within the function.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{ \code{\link{rp.control}} }
 
 \examples{
-rp.control(realname = "newpanel") # create a panel - will be created in .rpenv as "newpanel"
-rp.control() # creates the panel, but does not return a handle to it - created as ".rpanel2"
-panel2 <- rp.panel("newpanel") # pick up the first panel
-\dontrun{panel <- rp.panel() # gets a handle to the latest panel created}
-}
+if (interactive()) {
+   # create a panel - will be created in .rpenv as "newpanel"
+   rp.control(realname = "newpanel")
+   # creates the panel, but does not return a handle to it - created as ".rpanel2"
+   rp.control()
+   # pick up the first panel
+   panel2 <- rp.panel("newpanel")
+   # gets a handle to the latest panel created
+   panel <- rp.panel()
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

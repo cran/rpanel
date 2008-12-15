@@ -1,12 +1,20 @@
 #   ANCOVA
 
-rp.ancova <- function(x, y, group, panel = TRUE, model = "None",
-                  xlab = deparse(substitute(x)), ylab = deparse(substitute(y))) {
+rp.ancova <- function(x, y, group, panel = TRUE, panel.plot = TRUE, model = "None",
+                  xlab = deparse(substitute(x)), ylab = deparse(substitute(y)),
+                  hscale = NA, vscale = hscale) {
                     
-#check arguments here just in case the function below causes any accidental wierdness
-  if(missing(x) || missing(y) || missing(group)){
-    stop("rp.ancova requires you to specify x, y, and group.  See help(rp.ancova) or, to see an example, run example(rp.ancova).")
-  }
+   #check arguments here just in case the function below causes any accidental wierdness
+   if(missing(x) || missing(y) || missing(group)){
+      stop("rp.ancova requires you to specify x, y, and group.  See help(rp.ancova) or, to see an example, run example(rp.ancova).")
+      }
+
+   if (is.na(hscale)) {
+      if (.Platform$OS.type == "unix") hscale <- 1
+      else                             hscale <- 1.4
+      }
+   if (is.na(vscale)) 
+      vscale <- hscale
 
 #define the action function here.  It finishes at the other line of #####
 #############################################################################
@@ -47,31 +55,43 @@ rp.ancova.draw <- function(ancova) {
             xgp  <- x[ind]
             fgp  <- fitted(lm.model)[ind]
             ind1 <- order(xgp)
-            lines(xgp[ind1[range(ind1)]], fgp[ind1[range(ind1)]], col = i, lty = i)
+            lines(xgp[ind1[range(ind1)]], fgp[ind1[range(ind1)]], col = i, lty = i, lwd = 2)
          }
       }
-      title(title.text)
+      title(title.text, cex.main = 1)
    }) #end of with statement; the '})' is correct.
    ancova
 }
 
-########################################################################################
+rp.ancova.redraw <- function(panel) {
+   rp.tkrreplot(panel, plot)
+   panel
+   }
 
-   
+   if (panel.plot & !require(tkrplot)) {
+      warning("the tkrplot package is not available so panel.plot has been set to FALSE.")
+      panel.plot <- FALSE
+      }
 
    if (panel) {
       ancova.panel <- rp.control("One-way ancova", y = y, x = x, group = group, xlab = xlab, ylab = ylab)
+      if (panel.plot) {
+         rp.tkrplot(ancova.panel, plot, rp.ancova.draw, pos = "right", hscale = hscale, vscale = vscale)
+         action.fn <- rp.ancova.redraw
+         }
+      else
+         action.fn <- rp.ancova.draw
       rp.radiogroup(ancova.panel, model,
                       c("None", "Single mean", "Single line",
                         "Parallel lines", "Different lines"),
-                      action = rp.ancova.draw)
-      rp.ancova.draw(rp.panel(ancova.panel))
-      invisible()
-   }
+                      action = action.fn)
+      rp.do(ancova.panel, action.fn)
+      }
    else {
       panel <- list(x = x, y = y, group = group, 
                          xlab = xlab, ylab = ylab, model = model)   
       rp.ancova.draw(panel)
       invisible()
-   }
+      }
+   invisible()
 }

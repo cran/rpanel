@@ -24,20 +24,22 @@ rp.clearlines(panel, image)
   level.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.image}},\code{\link{rp.line}}}
 
 \examples{
-panel <- rp.control()
-image.file <- file.path(system.file(package = "rpanel"), "images", "gulllmks.gif")
-rp.image(panel, image.file, id = "gulls.image")
-rp.line(panel, gulls.image, 10, 10, 100, 100, color = "green")
-rp.line(panel, gulls.image, 100, 100, 100, 10, color = "blue")
-rp.clearlines(panel, gulls.image)
-}
+if (interactive()) {
+   panel <- rp.control()
+   image.file <- file.path(system.file(package = "rpanel"), "images", "gulllmks.gif")
+   rp.image(panel, image.file, id = "gulls.image")
+   rp.line(panel, gulls.image, 10, 10, 100, 100, color = "green")
+   rp.line(panel, gulls.image, 100, 100, 100, 10, color = "blue")
+   rp.clearlines(panel, gulls.image)
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

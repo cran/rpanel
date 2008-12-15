@@ -10,7 +10,7 @@
 }
 
 \usage{
-rp.control(title = "", size = NULL, panelname, realname, aschar = TRUE, ...)
+rp.control(title = "", size = c(100, 100), panelname, realname, aschar = TRUE, ...)
 }
 
 \arguments{
@@ -19,7 +19,12 @@ rp.control(title = "", size = NULL, panelname, realname, aschar = TRUE, ...)
   \item{panelname}{the name of the panel at .rpenv. If this is not assigned, then realname is taken.}
   \item{realname}{retained for backward compatibility. If this is not assigned, the realname is assigned automatically using rp.panelname.}
   \item{aschar}{if TRUE (default) the panel's name as a string is returned. If FALSE the panel list itself is returned.}
-  \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.}
+  \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.  Note that the names of these additional arguments should not conflict with those
+        of the main arguments of \code{rp.control}.}
+}
+
+\details{
+On some machines the \R and Tcl/Tk code can become out of step if a large number of objects, or objects of large size, are passed in \code{\dots}.  This can lead to the panel failing to size itself appropriately.  A solution is to insert a \code{Sys.sleep(0.5)} instruction immediately after the call to \code{rp.control}, to ensure that sufficient time is allowed for the initialisation to complete.  Clearly, the duration of the sleep time may need to be adjusted on different machines.
 }
 
 \value{
@@ -27,27 +32,29 @@ rp.control(title = "", size = NULL, panelname, realname, aschar = TRUE, ...)
   FALSE this is the list object which defines the panel.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{\code{\link{rp.button}},\code{\link{rp.slider}},\code{\link{rp.doublebutton}},\code{\link{rp.textentry}},\code{\link{rp.checkbox}},\code{\link{rp.radiogroup}}}
 
 \examples{
-hist.or.boxp <- function(panel) {
-  if (panel$plot.type == "histogram")
-    hist(panel$x)
-  else
-    boxplot(panel$x)
-  panel
-}
-panel <- rp.control(x=rnorm(50))
-rp.radiogroup(panel, plot.type, c("histogram", "boxplot"), title="Plot type", action = hist.or.boxp)  
+if (interactive()) {
+   hist.or.boxp <- function(panel) {
+     if (panel$plot.type == "histogram")
+       hist(panel$x)
+     else
+       boxplot(panel$x)
+     panel
+   }
+   panel <- rp.control(x=rnorm(50))
+   rp.radiogroup(panel, plot.type, c("histogram", "boxplot"), title="Plot type", action = hist.or.boxp)  
 
-# Try also
-# panel <- rp.control(ischar = TRUE) # returns a string ".rpanel1" in panel
-# panel <- rp.control(ischar = FALSE) # returns the panel list object itself
-}
+   # Try also
+   # panel <- rp.control(ischar = TRUE) # returns a string ".rpanel1" in panel
+   # panel <- rp.control(ischar = FALSE) # returns the panel list object itself
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

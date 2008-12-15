@@ -1,0 +1,17 @@
+citHeader("To cite the rpanel package in publications use:")
+
+citEntry(entry="manual",
+         title = paste("{R} package \\texttt{rpanel}:",
+                  "simple control panels (version 1.0-5)",  
+                  sep=" "),
+         author = personList(as.person("A. W. Bowman"), as.person("E. Crawford")),
+         address  = "University of Glasgow, UK",
+         year     = "2008",
+         url      = "URL http://www.stats.gla.ac.uk/~adrian/rpanel",
+         textVersion =  paste(
+                   "Bowman, A. W. and Crawford, E. (2008). ",
+                   "R package 'rpanel': simple control panels",
+	               " (version 1.0-5)", 
+                   " URL http://www.stats.gla.ac.uk/~adrian/rpanel",
+                    sep="")
+)

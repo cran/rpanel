@@ -27,24 +27,26 @@ rp.panelname(new = TRUE)
 Note: returning of the most recent panel may fail when running R on a Windows machine in DOS. A warning is contained within the function.
 }
 
-\references{rpanel: Simple interactive controls for R functions using 
-the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+\references{
+   rpanel: Simple interactive controls for R functions using the tcltk package.
+      Journal of Statistical Software, 17, issue 9.
+   }
 
 \seealso{ \code{\link{rp.control}} }
 
 \examples{
-hist.draw <- function(panel) {
-  hist(rnorm(50))
-  panel
-}
-hist.sample <- function() {
-  panel.name <- rp.panelname()
-  rp.control(realname = panel.name)
-  rp.button(panel.name, title = "Sample", action = hist.draw)
-}
-hist.sample()    
-}
+if (interactive()) {
+   hist.draw <- function(panel) {
+     hist(rnorm(50))
+     panel
+     }
+   hist.sample <- function() {
+     panel.name <- rp.panelname()
+     rp.control(realname = panel.name)
+     rp.button(panel.name, title = "Sample", action = hist.draw)
+     }
+   hist.sample()    
+   }}
 
 \keyword{iplot}
 \keyword{dynamic}

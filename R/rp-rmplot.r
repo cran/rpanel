@@ -1,9 +1,22 @@
 #   An rpanel function for rmplot
 
-rp.rmplot <- function(y, id = NA, timept = NA, fac = NA, xlab = NA, ylab = NA) {
+rp.rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all",
+                          xlab = NA, ylab = NA, xlabels = NA, add = FALSE,
+                          lwd = 1, col = NA, lty = NA, panel = TRUE, 
+                          panel.plot = TRUE, hscale = NA, vscale = hscale, ...) {
+
+   if (is.na(hscale)) {
+      if (.Platform$OS.type == "unix") hscale <- 1
+      else                             hscale <- 1.4
+      }
+   if (is.na(vscale)) 
+      vscale <- hscale
+
 # define the rmplot function:
 ################################################################
-rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all", add = FALSE, ...)
+rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all", 
+                   add = FALSE, xlab = NA, ylab = NA, xlabels = NA, 
+                   lwd = 1, col = NA, lty = NA, ...)
 
 #   Plots of repeated measurements data
 
@@ -11,21 +24,21 @@ rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all", add = FALSE,
 
    if (!is.na(fac) && !is.factor(fac)) stop("fac must be a factor.")
 
-   if (is.matrix(y) | is.data.frame(y))
-      result <- rmplot.table(y, fac, type, timept, add = add, ...)
+   if (is.matrix(y) | is.data.frame(y)) 
+      result <- rmplot.table(y, fac, type, timept, add = add, xlab = xlab, ylab = ylab,
+                          lwd = lwd, col = col, lty = lty, xlabels = xlabels, ...)
    
    else {
 
       if (all(is.na(fac))) fac <- factor(rep(1, length(y)))
       if (!is.factor(id )) stop("id  must be a factor.")
+      if (all(is.na(timept))) stop("timept must be specified.")
 
       n     <- length(id)
       ids   <- unique(id)
       times <- sort(unique(timept))
-      facs  <- unique(fac)
       nid   <- length(ids)
       nt    <- length(times)
-      nfac  <- length(facs)
 
       ymat   <- matrix(NA, nrow = nid, ncol = nt)
       id.fac <- factor(rep(NA, nid), levels = levels(fac))
@@ -38,7 +51,8 @@ rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all", add = FALSE,
         id.fac[rowind] <- fac[i]
         }
 
-      result <- rmplot.table(ymat, times = times, fac = id.fac, type = type, ...)
+      result <- rmplot.table(ymat, times = times, fac = id.fac, type = type, 
+                      xlab = xlab, ylab = ylab, xlabels = xlabels, ...)
       # result <- list(id = ids, ymat = ymat, times = times, fac = id.fac)
       }
 
@@ -46,36 +60,47 @@ rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all", add = FALSE,
 
    }
 
-rmplot.table <- function(y, fac = NA,
-                  type = "all", times = (1:ncol(y)),
+rmplot.table <- function(y, fac = NA, type = "all", times = (1:ncol(y)),
           xlab = deparse(substitute(times)),
-          ylab = deparse(substitute(y)), add = FALSE, lwd = 1, ...)
+          ylab = deparse(substitute(y)), add = FALSE, 
+          lwd = 1, col = NA, lty = NA, xlabels = NA, ...)
    {
 
 #       RMPLOT: plots of repeated measurements data
 
-   if (all(is.na(fac))) fac <- factor(rep(1, nrow(y)))
    nt      <- ncol(y)
-   facs    <- unique(fac)
-   nfac    <- length(facs)
-   nlevels <- length(levels(fac))     
-    
+   nlevels <- length(levels(fac))   
+   nfac    <- nlevels
+   if (all(is.na(times))) times <- 1:ncol(y)
+   if (all(is.na(fac))) {
+      fac <- factor(rep(1, nrow(y)))
+      if (is.na(col)) col <- 1
+      if (is.na(lty)) lty <- 1
+      }
+   else {
+      if (!is.factor(fac)) fac <- factor(fac)
+      if (all(is.na(col))) col <- 1:nlevels
+      if (all(is.na(lty))) lty <- 1:nlevels
+      }
+   if (all(is.na(xlabels))) xlabels <- as.character(times)
+
 #--------------------------------------------------------------     
 #       Plot individual profiles
 #--------------------------------------------------------------     
 
    if(type == "all") {
       if (!add) plot(range(times), range(y, na.rm = TRUE),
-                     type = "n", xlab = xlab, ylab = ylab, ...)
+                     type = "n", xlab = xlab, ylab = ylab, axes = FALSE, ...)
       for(i in 1:nrow(y)) {
          if (!is.na(fac[i])) {
-            ifac <- (1:nlevels)[fac[i] == levels(fac)]
+            # ifac <- (1:nlevels)[fac[i] == levels(fac)]
+            ifac <- as.numeric(fac[i])
             if (!all(is.na(y[i,]))) {
-           lines(times, y[i,  ], col = ifac, lty = ifac, lwd = lwd)
+           lines(times, y[i,  ], col = col[ifac], lty = lty[ifac], lwd = lwd)
            #   Plot isolated points
            yi <- c(NA, y[i, ], NA)
            ind <- (diff(diff(is.na(yi))) == 2)
-           if (any(ind)) points(times[ind], y[i, ind], col = ifac)
+           if (any(ind)) points(times[ind], y[i, ind], col = col[ifac])
            }
             }}
       }
@@ -91,8 +116,8 @@ rmplot.table <- function(y, fac = NA,
          # yi      <- y[fac == facs[i], ]
          yi      <- y[fac == levels(fac)[i], ]
          fun     <- function(y) length(y[!is.na(y)])
-     ni      <- apply(yi, 2, fun)
-     ni      <- max(ni, 1)
+         ni      <- apply(yi, 2, fun)
+         ni      <- max(ni, 1)
          m[i,  ] <- apply(yi, 2, mean, na.rm = TRUE)
          se[i, ] <- apply(yi, 2,   sd, na.rm = TRUE) / sqrt(ni)
          }
@@ -107,12 +132,12 @@ rmplot.table <- function(y, fac = NA,
       if (!add) plot(range(times),
                      # range(m),
                      range(m, m - 2 * se, m + 2 * se, na.rm = TRUE),
-                     type = "n", xlab = xlab, ylab = ylab, ...)
+                     type = "n", xlab = xlab, ylab = ylab, axes = FALSE, ...)
       for(i in 1:nfac) {
          # ifac <- (1:nlevels)[facs[i] == levels(fac)]
          ifac <- i
-         lines(times + shift[i], m[i,  ], col = ifac, lty = ifac)
-         if (nfac > 1) text(times + shift[i], m[i,  ], ifac, col = ifac)
+         lines(times + shift[i], m[i,  ], col = col[ifac], lty = lty[ifac])
+         if (nfac > 1) text(times + shift[i], m[i,  ], ifac, col = col[ifac])
          }
       }
      
@@ -122,12 +147,14 @@ rmplot.table <- function(y, fac = NA,
    
    if(type == "band") {
       if (nlevels < 2)
-         stop("Band cannot be drawn with missing means or se's.")
-      if (any(is.na(m + se)))
          stop("Band cannot be drawn with only one group")
+      if (nlevels > 2)
+         stop("Band cannot be drawn with more than two groups")
+      if (any(is.na(m + se)))
+         stop("Band cannot be drawn with missing means or se's.")
       if (!add) plot(range(times),
                      range(m, m - 2 * se, m + 2 * se, na.rm = TRUE),
-                     type = "n", xlab = xlab, ylab = ylab, ...)
+                     type = "n", xlab = xlab, ylab = ylab, axes = FALSE, ...)
       hi <- rep(0, nt)
       lo <- rep(0, nt)
       for(j in 1:nt) {
@@ -144,17 +171,17 @@ rmplot.table <- function(y, fac = NA,
       if (type == "mean+bar" & !add)
          plot(range(times), 
               range(m, m - 2 * se, m + 2 * se, na.rm = TRUE), 
-              type = "n", xlab = xlab, ylab =  ylab, ...)
+              type = "n", xlab = xlab, ylab =  ylab, axes = FALSE, ...)
       for (i in 1:nfac) {
          # ifac <- (1:nlevels)[facs[i] == levels(fac)]
          ifac <- i
-         lines(times + shift[i], m[i,  ], col = ifac, lty = ifac)
+         lines(times + shift[i], m[i,  ], col = col[ifac], lty = lty[ifac])
          if (nfac > 1) text( times + shift[i], m[i,  ], i, 
-                            col = ifac)
+                            col = col[ifac])
          if (type == "mean+bar")
         segments(times + shift[i], m[i, ] - 2 * se[i, ],
                  times + shift[i], m[i, ] + 2 * se[i, ],
-                     col = ifac, lty = ifac)
+                     col = col[ifac], lty = lty[ifac])
          }
       }
 #--------------------------------------------------------------     
@@ -167,7 +194,7 @@ rmplot.table <- function(y, fac = NA,
       plot(range(times), range(y, na.rm = TRUE), type = "n",
                 xlab = xlab, ylab = ylab, ...)
       rmplot.table(y = y, fac = fac, type = "mean", times = times,
-                xlab = xlab, ylab = ylab, add = TRUE, ...)
+                xlab = xlab, ylab = ylab, add = TRUE, axes = FALSE, ...)
 
       plot.profile <- function(i, times, y, fac, erase = FALSE) {
          if (!is.na(fac[i])) {
@@ -197,6 +224,12 @@ rmplot.table <- function(y, fac = NA,
          }
       }
 
+   if (type %in% c("all", "band", "mean", "mean+bar", "band")) {
+      axis(2)
+      axis(1, at = times, labels = xlabels)
+      box()
+      }
+
    invisible(list(ymat = y, fac = fac, times = times))
 }
 
@@ -208,42 +241,79 @@ rmplot.draw <- function(panel) {
       if (fac.showing) fac1 <- fac else fac1 <- NA
       if (data.range)
          rmplot(y, timept = timept, fac = fac1, type = type,
-                    xlab = xlab, ylab = ylab, ylim = range(y, na.rm = TRUE))
+                    xlab = xlab, ylab = ylab, 
+                    lwd = 1, col = col, lty = lty,
+                    ylim = range(y, na.rm = TRUE), xlabels = xlabels)
       else
-         rmplot(y, timept = timept, fac = fac1, type = type, xlab = xlab, ylab = ylab)
+         rmplot(y, timept = timept, fac = fac1, type = type, 
+                lwd = 1, col = col, lty = lty,
+                xlab = xlab, ylab = ylab, xlabels = xlabels)
       if (case.showing) {
          rmplot(matrix(y[case,], nrow = 1), timept = timept, fac = fac1[case], type = "all",
-                    xlab = xlab, ylab = ylab, add = TRUE, lwd = 3)
+                    lwd = 3, col = col, lty = lty,
+                    xlab = xlab, ylab = ylab, xlabels = xlabels, add = TRUE)
          title(paste("case =", case))
       }
    })
    panel
 }
-##################################################################
 
-   if (is.na(xlab)) xlab <- "Time"
+   rmplot.redraw <- function(panel) {
+      rp.tkrreplot(panel, plot)
+      panel
+      }
+
+   if (!all(is.na(fac))) {
+      if (!is.factor(fac)) fac <- factor(fac)
+      fac.temp <- fac[!is.na(fac)]
+      if (length(levels(fac.temp)) != length(unique(fac.temp)))
+         stop("data must be available for all factor levels.")
+      }
+   if (is.na(xlab))  
+      xlab <- if (is.vector(y)) deparse(substitute(timept)) else "Time"
    if (is.na(ylab)) ylab <- deparse(substitute(y))
 
-   result <- rmplot(y, id, timept, fac, type = "none")
-   y      <- result$ymat
-   fac    <- result$fac
-   times  <- result$times
-
-   rmplot.panel <- rp.control("Repeated measurements", y = y, timept = times, fac = fac,
-                      xlab = xlab, ylab = ylab)
-   rp.radiogroup(rmplot.panel, type, c("all", "mean", "mean+bar", "band"),
-                      title = "Display", action = rmplot.draw)
-   if (!all(is.na(fac)))
-      rmplot.panel <- rp.checkbox(rmplot.panel, fac.showing, rmplot.draw,
+   if (panel) {
+      result <- rmplot(y, id, timept, fac, type = "none")
+      y      <- result$ymat
+      fac    <- result$fac
+      times  <- result$times
+      rmplot.panel <- rp.control("Repeated measurements", y = y, 
+                      timept = times, fac = fac, col = col, lty = lty, 
+                      xlab = xlab, ylab = ylab, xlabels = xlabels,
+                      fac.showing = FALSE, type = "all", case.showing = FALSE, 
+                      data.range = FALSE)
+      if (panel.plot) {
+         rp.tkrplot(rmplot.panel, plot, rmplot.draw, pos = "right", hscale = hscale, vscale = vscale)
+         action.fn <- rmplot.redraw
+         }
+      else
+         action.fn <- rmplot.draw
+      plot.options <- c("all", "mean", "mean+bar")
+      if (length(levels(fac)) == 2) plot.options <- c("all", "mean", "mean+bar", "band")
+      rp.radiogroup(rmplot.panel, type, plot.options, title = "Display", action = action.fn)
+      if (!all(is.na(fac)))
+         rmplot.panel <- rp.checkbox(rmplot.panel, fac.showing, action.fn,
                       title = "Show groups", initval = TRUE)
-   rp.checkbox(rmplot.panel, case.showing, rmplot.draw,
-                      title = "Show cases")
-   rp.doublebutton(rmplot.panel, case, 1, range = c(1, nrow(y)),
-                      title = "Case", initval=1, action = rmplot.draw)
-   rp.checkbox(rmplot.panel, data.range, rmplot.draw,
-                      title = "Use data range", initval = TRUE)
-   rp.do(rmplot.panel,rmplot.draw)
+      rp.checkbox(rmplot.panel, case.showing, action.fn, title = "Show cases")
+      rp.doublebutton(rmplot.panel, case, 1, range = c(1, nrow(y)),
+                      title = "Case", initval = 1, action = action.fn)
+      rp.checkbox(rmplot.panel, data.range, action.fn,
+                      title = "Use data range")
+      rp.do(rmplot.panel, action.fn)
+      }
+   else {
+      # fac.showing  <- (!all(is.na(fac)))
+      # data.range   <- (type == "all")
+      # rmplot.panel <- list(y = y, timept = times, fac = fac, lwd = lwd,
+      #               col = col, lty = lty, xlab = xlab, ylab = ylab,
+      #               fac.showing = fac.showing, data.range = data.range,
+      #               case.showing = FALSE, xlabels = xlabels)   
+      # rmplot.draw(rmplot.panel)
+      rmplot(y, id, timept, fac, type, add,
+                xlab, ylab, xlabels, lwd = 1, col = col, lty = lty, ...)
+      rmplot.panel <- ""
+      }
 
    invisible(rmplot.panel)
 }
-

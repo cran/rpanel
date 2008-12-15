@@ -1,14 +1,18 @@
 #   Statistical tables
 
-rp.tables <- function(panel.plot = FALSE) {
-
-# Action functions begin
-#####################################
+rp.tables <- function(panel.plot = TRUE, hscale = NA, vscale = hscale) {
+	
+   if (is.na(hscale)) {
+      if (.Platform$OS.type == "unix") hscale <- 1
+      else                             hscale <- 1.4
+      }
+   if (is.na(vscale)) 
+      vscale <- hscale
 
 tables.draw <- function(tables) {
   with(tables, {
-    xobs <- as.numeric(xobs)
-    prob <- as.numeric(prob)
+    xobs <- as.numeric(xobs.prob[1])
+    prob <- as.numeric(xobs.prob[2])
     ngrid <- 100
     if (distribution == "Normal") {
       xrange <- c(-4, 4)
@@ -34,7 +38,8 @@ tables.draw <- function(tables) {
       xrange <- c(0.01, degf1 + 3 * sqrt(2 * degf1))
       x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
       dens   <- dchisq(x, degf1)
-      ylim   <- c(0, 0.4)
+      if (degf1 <= 2) ylim   <- c(0, max(dens))
+        else          ylim   <- c(0, 1.1 * max(dens))
       pval   <- pchisq(xobs, degf1)
       pshade <- min(pval, 1 - pval)
       qts    <- qchisq(c(prob, 1 - prob, prob/2, 1 - prob/2, pshade, 1 - pshade), degf1)
@@ -43,7 +48,8 @@ tables.draw <- function(tables) {
       xrange <- c(0.01, 10)
       x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
       dens   <- df(x, degf1, degf2)
-      ylim   <- c(0, 1)
+      if (degf1 <= 2) ylim   <- c(0, max(dens))
+        else          ylim   <- c(0, 1.1 * max(dens))
       pval   <- pf(xobs, degf1, degf2)
       pshade <- min(pval, 1 - pval)
       qts    <- qf(c(prob, 1 - prob, prob/2, 1 - prob/2, pshade, 1 - pshade), degf1, degf2)
@@ -101,69 +107,44 @@ tables.draw <- function(tables) {
           density = -1, col = "red", border = "red")
       }
     }
-    title(title.text)
+    title(title.text, cex.main = 1)
   })
   tables
-}
+  }
 
 tables.redraw <- function(object) {
   rp.tkrreplot(object, plot)
   object
-}
+  }
 
-#####################################
-# Action functions end
-
-  panel.name <- rp.panelname()
-
+  tables.panel <- rp.control("Distributions",
+                  xobs.prob = c(1, 0.05), distribution = "Normal", degf1 = 5, degf2 = 30,
+                  observed.value.showing = FALSE, tail.area = "none", tail.direction = "lower")
   if (panel.plot && require(tkrplot)) {
-    tables.panel <- rp.control("Distributions", size = c(625, 700),
-                    realname = panel.name,
-                    xobs = 1, prob = 0.05, distribution = "Normal", degf1 = 5, degf2 = 30)
-    tables.panel <- rp.radiogroup(tables.panel, distribution, c("Normal", "t", "Chi-squared", "F"),
-                    title = "Distribution", action = tables.redraw, pos = c(25, 15, 100, 120))
-    tables.panel <- rp.doublebutton(tables.panel, degf1, 1, range = c(1, NA),
-                    title = "df1", action = tables.redraw, pos = c(140, 10, 100, 50))
-    tables.panel <- rp.doublebutton(tables.panel, degf2, 1, range = c(1, NA),
-                    title = "df2", action = tables.redraw, pos = c(240, 10, 100, 50))
-    tables.panel <- rp.checkbox(tables.panel, observed.value.showing,
-                    title = "Show observed value", action = tables.redraw, pos = c(140, 50, 160, 25))
-    tables.panel <- rp.textentry(tables.panel, xobs, tables.redraw, "Observed value",
-                    pos = c(140, 75, 160, 25))
-    tables.panel <- rp.textentry(tables.panel, prob, tables.redraw, "Fixed probability, p",
-                    pos = c(140, 105, 160, 25))
-    tables.panel <- rp.radiogroup(tables.panel, tail.area,
-                    c("none", "from observed value", "fixed probability"),
-                    title = "Tail probability", action = tables.redraw, pos = c(340, 15, 150, 120))
-    tables.panel <- rp.radiogroup(tables.panel, tail.direction,
-                    c("lower", "upper", "two-sided"),
-                    title = "Tail direction", action = tables.redraw, pos = c(500, 15, 100, 120))
     tables.panel <- rp.tkrplot(tables.panel, plot, plotfun = tables.draw,
-                    pos = c(0, 150, 625, 525))
+                    hscale = hscale, vscale = vscale, row = 1, column = 0, columnspan = 4,
+                    sticky = "ew")
+    action.fn <- tables.redraw
+    }
+  else
+    action.fn <- tables.draw
+  tables.panel <- rp.radiogroup(tables.panel, distribution, c("Normal", "t", "Chi-squared", "F"),
+                  title = "Distribution", action = action.fn, row = 0, column = 0, sticky = "ns")
+  rp.grid(tables.panel, "dfgrid", row = 0, column = 1, sticky = "ns")
+  tables.panel <- rp.doublebutton(tables.panel, degf1, 1, range = c(1, NA),
+                  title = "df1", action = action.fn, grid = "dfgrid", row = 0, column = 0)
+  tables.panel <- rp.doublebutton(tables.panel, degf2, 1, range = c(1, NA),
+                  title = "df2", action = action.fn, grid = "dfgrid", row = 0, column = 1)
+  tables.panel <- rp.checkbox(tables.panel, observed.value.showing,
+                  title = "Show observed value", action = action.fn,
+                  grid = "dfgrid", row = 1, column = 0, columnspan = 2)                    
+  tables.panel <- rp.textentry(tables.panel, xobs.prob, action.fn, 
+                  c("Observed value", "Fixed probability, p"), title = "",
+                  grid = "dfgrid", row = 2, column = 0, columnspan = 2, sticky = "ns")                    
+  tables.panel <- rp.radiogroup(tables.panel, tail.area,
+                  c("none", "from observed value", "fixed probability"),
+                  title = "Tail probability", action = action.fn, row = 0, column = 2, sticky = "ns")
+  tables.panel <- rp.radiogroup(tables.panel, tail.direction,
+                  c("lower", "upper", "two-sided"),
+                  title = "Tail direction", action = action.fn, row = 0, column = 3, sticky = "ns")
   }
-  else {
-    if (panel.plot) rp.messagebox("Package TkrPlot was not available, falling back to external plot window.") 
-    tables.panel <- rp.control("Distributions", size = c(625, 150),
-                    realname = panel.name,
-                    xobs = 1, prob = 0.05, distribution = "Normal", degf1 = 5, degf2 = 30)                    
-    tables.panel <- rp.radiogroup(tables.panel, distribution, c("Normal", "t", "Chi-squared", "F"),
-                    title = "Distribution", action = tables.draw, pos = c(25, 15, 100, 120))
-    tables.panel <- rp.doublebutton(tables.panel, degf1, 1, range = c(1, NA),
-                    title = "df1", action = tables.draw, pos = c(140, 10, 100, 50))
-    tables.panel <- rp.doublebutton(tables.panel, degf2, 1, range = c(1, NA),
-                    title = "df2", action = tables.draw, pos = c(240, 10, 100, 50))
-    tables.panel <- rp.checkbox(tables.panel, observed.value.showing,
-                    title = "Show observed value", action = tables.draw, pos = c(140, 50, 160, 25))
-    tables.panel <- rp.textentry(tables.panel, xobs, tables.draw, "Observed value",
-                    pos = c(140, 75, 160, 25))
-    tables.panel <- rp.textentry(tables.panel, prob, tables.draw, "Fixed probability, p",
-                    pos = c(140, 105, 160, 25))
-    tables.panel <- rp.radiogroup(tables.panel, tail.area,
-                    c("none", "from observed value", "fixed probability"),
-                    title = "Tail probability", action = tables.draw, pos = c(340, 15, 150, 120))
-    tables.panel <- rp.radiogroup(tables.panel, tail.direction,
-                    c("lower", "upper", "two-sided"),
-                    title = "Tail direction", action = tables.draw, pos = c(500, 15, 100, 120))
-    rp.do(tables.panel, tables.draw)
-  }
-}

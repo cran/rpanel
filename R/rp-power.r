@@ -42,20 +42,11 @@ powerplot.draw <- function(powerplot) {
                      ngrid = seq(10, 300), mu1 = 0, mu2 = 1,
                      sigma = 1, n = 20, xgrid = seq(- 4, 5, length = 100),
                      popdens.lim = 0.7)
-   rp.doublebutton(power.panel, n, 1,
-                     # pos = c(25,  25, 25, 25),
-                     title = "n", action = powerplot.draw)
-   rp.doublebutton(power.panel, mu1, 0.01,
-                     # pos = c(25,  75, 25, 25),
-                     title = "mu1", action = powerplot.pars)
-   rp.doublebutton(power.panel, mu2, 0.01,
-                     # pos = c(25, 125, 25, 25),
-                     title = "mu2", action = powerplot.pars)
-   rp.doublebutton(power.panel, sigma, 0.01,
-                     # pos = c(25, 175, 25, 25),
-                     title = "sigma", action = powerplot.pars)
-   rp.checkbox(power.panel, populations.showing,
-                     title = "Show populations", action = powerplot.draw)
+   rp.doublebutton(power.panel, n, 1, title = "n", action = powerplot.draw)
+   rp.doublebutton(power.panel, mu1, 0.01, title = "mu1", action = powerplot.pars)
+   rp.doublebutton(power.panel, mu2, 0.01, title = "mu2", action = powerplot.pars)
+   rp.doublebutton(power.panel, sigma, 0.01, title = "sigma", action = powerplot.pars)
+   rp.checkbox(power.panel, populations.showing, title = "Show populations", action = powerplot.draw)
    rp.do(power.panel,powerplot.pars)
 
 }
