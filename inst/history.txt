@@ -9,3 +9,5 @@ August 2006: version 1.0-3 is released on CRAN.
 September 2006: version 1.0-4 is released.
 
 December 2008: version 1.0-5 is released.
+
+October 2010: version 1.0-6 is released.

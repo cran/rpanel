@@ -199,7 +199,11 @@ mururoa.predict <- function(panel) {
      pred.grid <- expand.grid(0.25 + 0:199/2, 0.25 + 0:99/2)      # offset from samples
      KC  <- krige.control(obj.m = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
      shh <- output.control(messages = FALSE)
-     kc  <- krige.conv(fg, loc = pred.grid, krige = KC, output = shh)
+     kc  <- try(krige.conv(fg, loc = pred.grid, krige = KC, output = shh), silent = TRUE)
+     if (class(kc) == "try-error" & panel$trend.setting == "cte") {
+        rp.messagebox("There are numerical problems in producing predictions with this model.  Try fitting a linear or quadratic trend function.")
+        return(panel)
+     }
      kcm <- matrix(kc$predict, nrow = 200)
      pg2 <- expand.grid(0:200 / 2, 0:100 / 2)               # use 'real' grid to find RSS
      KC2 <- krige.control(obj.m = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
@@ -266,7 +270,7 @@ mururoa.samp <- function(panel) {
   panel$zlim <- range(panel$sz[ , 3], c(panel$true.surface))
 
   rp.tkrplot(panel, plot1a, mururoa.colour.chart, 
-        hscale = panel$hscale * 0.12, vscale = panel$hscale * 0.7, 
+        hscale = 0.2, vscale = panel$hscale * 0.7, 
         grid = "plot1a", row = 0 , column = 0)
   rp.checkbox(panel, display.options, labels = c("points", "predicted surface", "prediction s.e."),
         initval = c(TRUE, FALSE, FALSE),
@@ -274,7 +278,7 @@ mururoa.samp <- function(panel) {
         grid = "controls2", row = 0, column = 0)
   rp.radiogroup(panel, trend.setting, c("cte", "1st", "2nd"), 
         labels = c("constant", "linear", "quadratic"),
-        action = mururoa.predict, title = "Display", 
+        action = mururoa.predict, title = "Trend", 
         grid = "controls2", row = 1, column = 0, sticky = "ew")
   rp.checkbox(panel, mururoa.true, mururoa.samp.redraw, 
         title = "True surface", grid = "controls2", row = 2, column = 0)

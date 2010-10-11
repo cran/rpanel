@@ -11,7 +11,7 @@
 
 .onAttach <- function(library, pkg) {
 # First function run on opening the package
-  cat("Package `rpanel', version 1.0-5\n")
+  cat("Package `rpanel', version 1.0-6\n")
   cat("type help(rpanel) for summary information\n")
   invisible()
 }

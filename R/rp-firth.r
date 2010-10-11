@@ -110,12 +110,16 @@ firth.predict <- function(panel) {
             pg2  <- expand.grid(0:200, 0:60) # use 'real' grid to find RSS
             KC   <- krige.control(obj.m = vfit, trend.d = panel$trend.setting, 
                          trend.l = panel$trend.setting)
-            kc   <- krige.conv(fg, loc = pg2, krige = KC , output = shh)
-      	    }
+            kc   <- try(krige.conv(fg, loc = pg2, krige = KC , output = shh), silent = TRUE)
+            if (class(kc) == "try-error" & panel$trend.setting == "cte") {
+               rp.messagebox("There are numerical problems in producing predictions with this model.  Try fitting a linear or quadratic trend function, or a stratum effect.")
+               return(panel)
+            }
+      	 }
          panel$kpred[ , , ind] <- matrix(kc$predict, ncol = 61)
          panel$kse[ , , ind]   <- sqrt(matrix(kc$krige.var, ncol = 61))
          panel$prediction.computed[ind] <- TRUE
-         }
+      }
       panel$zlim  <- range(panel$sz[ , 3],
                            panel$kpred[,,1] * panel$mask, panel$kpred[,,2] * panel$mask,
                            panel$kpred[,,3] * panel$mask, panel$kpred[,,4] * panel$mask,
@@ -261,7 +265,7 @@ firth.samp <- function(panel) {
    panel$zlim <- range(panel$sz[ , 3], c(panel$true.surface))
    
    rp.tkrplot(panel, plot1a, firth.colour.chart, 
-         hscale = panel$hscale * 0.12, vscale = panel$hscale * 0.7, 
+         hscale = 0.2, vscale = panel$hscale * 0.7, 
          grid = "plot1a", row = 0 , column = 0)
    rp.checkbox(panel, display.options, labels = c("points", "predicted surface", "prediction s.e."),
          initval = c(TRUE, FALSE, FALSE),

@@ -10,4 +10,4 @@
             rp.checkbox extended to multiple boxes and initialisation enabled.
             rp.textentry extended to multiple boxes.
             rp.regression, rp.likelihood, rp.logistic, rp.normal, rp.ci added.
-            
+05/10/2010: Version 1.0-6 released.  Minor changes to rp.mururoa and rp.firth.

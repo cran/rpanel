@@ -14,8 +14,8 @@ up to more sophisticated mini-applications.}
 \tabular{ll}{
 Package: \tab rpanel\cr
 Type: \tab Package\cr
-Version: \tab 1.0-5\cr
-Date: \tab 2008-12-15\cr
+Version: \tab 1.0-6\cr
+Date: \tab 2010-10-05\cr
 License: \tab GNU\cr
 }
 This package contains a number of functions (with help and examples) and several 
