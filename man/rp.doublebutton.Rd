@@ -5,53 +5,55 @@
 \title{Double-button widget for rpanel}
 
 \description{
-  Adds a widget with '+' and '-' buttons, to increment and decrement a variable.
+  Adds a control with '+' and '-' buttons, to increment and decrement a variable.
 }
 
 \usage{
-rp.doublebutton(panel, var, step, title = deparse(substitute(var)), action = I, 
-      initval = NULL, range = c(NA, NA), log = FALSE, showvalue = FALSE, showvaluewidth = 4, 
-      repeatinterval = 100, repeatdelay = 100, parent = window, pos = NULL, ...)
+rp.doublebutton(panel, variable, step, title=deparse(substitute(variable)), action=I, initval=NULL, range=c(NA, NA), 
+  log=FALSE, showvalue=FALSE, showvaluewidth=4, repeatinterval=100, repeatdelay=100, pos=NULL, foreground=NULL, 
+  background=NULL, font=NULL, parentname=deparse(substitute(panel)), name=paste("doublebutton", .nc(), sep=""), ...) 
 }
 
 \arguments{
-  \item{panel}{the panel in which the doublebutton should appear. This may be passed as a panelname string or the panel object itself.}
-  \item{var}{the name of the variable within the panel that the doublebutton should control.}
-  \item{step}{the value by which the variable "var" is incremented or decremented on pressing a button. When log is TRUE this is a factor instead.}
-  \item{action}{the function which is called when a button is pressed.}
+  \item{panel}{the panel in which the doublebutton should appear.}
+  \item{variable}{the name of the variable within the panel that the doublebutton should control.}
+  \item{step}{the value by which the variable "variable" is incremented or decremented on pressing a button. When log is TRUE this is a factor instead.}
   \item{title}{the label for the doublebutton. This defaults to the name of var.}
-  \item{parent}{this specifies the widget inside which this widget should appear. In the current version, it should not normally be used.}
+  \item{action}{the function which is called when a button is pressed.}
   \item{initval}{the initial value for var (optional). The initial value can also be specified in the call to \code{rp.control}.}
   \item{range}{a 2-element numeric vector containing lower and upper limits for var. Use NA for no limit (upper and/or lower).}
   \item{log}{a logical variable which determines whether the increment (step) is multiplicative or additive.}
-  \item{showvalue}{a logical variable which determines whether the present value of "var" is shown between the + and - buttons. This is forced to FALSE when log is TRUE.}
+  \item{showvalue}{a logical variable which determines whether the present value of "variable" is shown between the + and - buttons. This is forced to FALSE when log is TRUE.}
   \item{showvaluewidth}{defines the width of the shown value in characters.}
   \item{repeatinterval}{the interval between auto-repeats (milliseconds) when the button is held down.}
   \item{repeatdelay}{the time after which the button starts to auto-repeat (milliseconds).}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
-  \item{\dots}{information for \code{pos} can be passed individually as additional arguments.}
+  \item{foreground}{colour of the text}
+  \item{background}{colour of the text background}
+  \item{font}{font to be used}
+  \item{parentname}{this specifies the widget inside which the doublebutton widget. }
+  \item{name}{name assigned to the doublebutton; used for disposal etc}
+  \item{...}{...}
+}
+
+\note{
+The former arguments \code{parent} and \code{...} have been discontinued in version 1.1.  Note also that the argument \code{var} has been renamed \code{variable} to avoid reserved word issues.
 }
 
 \details{
   \code{action} should be a function of one argument, which should be the panel.  The panel can then be manipulated, and data stored in the panel may be used/modified, then the (optionally modified) panel must be returned.
   
-    See \code{\link{rp.grid}} for details of the grid layout system.
+See \code{\link{rp.grid}} for details of the grid layout system.
 }
 
 \value{
-  If the parameter panel is the panelname string the same string is returned. If the 
-  panel object is used the altered panel is assigned to both the calling level and panel's environment 
-  level.
+  If the argument \code{panel} is the panelname string, the same string is returned.  If the panel object is used, the altered panel is assigned to both the calling level and panel's environment level.
 }
 
 \section{Warning}{
-  The \code{action} function should return the panel. 
-  Without this assignment any widgets added or alterations made to panel parameters within 
-  the \code{action} function will be lost.\cr
-\cr
-Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value shown would be incorrect 
-  (it wouldn't be the log value) and so showvalue is over-ridden and set to FALSE. A new widget rp.label is 
-  under development which would be used in these circumstances.  
+  The \code{action} function should return the panel.  Without this assignment any widgets added or alterations made to panel parameters within the \code{action} function will be lost.
+
+Note that setting \code{log=TRUE} and \code{showvalue=TRUE} is not allowed.
 }
 
 \references{
@@ -62,7 +64,7 @@ Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value s
 \seealso{\code{\link{rp.radiogroup}},\code{\link{rp.control}}}
 
 \examples{
-if (interactive()) {
+\dontrun{
    density.draw <- function(panel) {
      plot(density(panel$x, bw = panel$h))
      panel
@@ -71,7 +73,7 @@ if (interactive()) {
    rp.doublebutton(panel, var = h, step = 0.05, 
      title = "Density estimate", action = density.draw,
      range = c(0.1, 5), initval=1)
-   }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

@@ -12,7 +12,7 @@ dissolved oxygen fell below the threshold of 5 percent.
 The data are used in the \code{\link{rp.logistic}} example script. 
 
 The data were kindly provided by the Scottish Environment Protection Agency,
-with the assitance of Dr. Brian Miller.
+with the assistance of Dr. Brian Miller.
 }
 
 \references{
@@ -21,11 +21,9 @@ with the assitance of Dr. Brian Miller.
    }
 
 \examples{
-if (interactive()) {
-  data(river)
-  attach(river)
-  rp.logistic(Temperature, Low)
-  }}
+\dontrun{
+  rp.logistic(river$Temperature, river$Low)
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

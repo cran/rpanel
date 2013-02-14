@@ -5,8 +5,7 @@
 \title{Interactive display of a plot of three variables}
 
 \description{
-  This function produces a scatterplot of three variables, using the rgl package 
-  for three-dimensional display.
+This function produces a scatterplot of three variables, using the \pkg{rgl} package for three-dimensional display.
 }
 
 \usage{
@@ -37,16 +36,11 @@
 }
 
 \details{
-  The plot is produced by appropriate calls to the rgl package.  This allows
-  interactive control of the viewing position. Other objects may subsequently be added to the plot by using rgl functions and data which are centred and scaled by the returned values indicated below.
+The plot is produced by appropriate calls to the \pkg{rgl} package.  This allows interactive control of the viewing position.  Other objects may subsequently be added to the plot by using \pkg{rgl} functions and data which are centred and scaled by the returned values indicated below.
 }
 
 \value{
-     A scaling function is returned to allow further objects
-     to be added to the plot.  The function accepts x, y, z
-     vector arguments and returns a list with x, y, z components
-     defining the co-ordinates for plotting.  An illustration
-     is given in the example below. 
+A scaling function is returned to allow further objects to be added to the plot.  The function accepts \code{x, y, z} vector arguments and returns a list with \code{x, y, z} components defining the co-ordinates for plotting.  An illustration is given in the example below. 
 }
 
 \references{
@@ -57,7 +51,7 @@
 \seealso{\code{\link{rp.regression}}}
 
 \examples{
-if (interactive()) {
+\dontrun{
   x <- rnorm(50)
   y <- rnorm(50)
   z <- rnorm(50)
@@ -65,7 +59,7 @@ if (interactive()) {
   # In addition you may add a line to the plot with these two lines;
   #  a <- scaling(c(-3,3), c(0,0), c(0,0))
   #  lines3d(a$x, a$y, a$z, col = "green", size = 2) 
-  }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

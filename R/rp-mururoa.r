@@ -4,7 +4,7 @@
 # A yes/no dialogue box for the "Take sample" button would be good.
 
 rp.mururoa <- function(hscale = NA, col.palette = rev(heat.colors(40)), col.se = "blue",
-                 file = NA, parameters = NA, sleep = 0.5) {
+                 file = NA, parameters = NA) {
 
 mururoa.points <- function(panel) {
 	
@@ -99,7 +99,10 @@ mururoa.points <- function(panel) {
       panel$tyc   <- -10 + (ty - 1) / 2               # store y-intercepts for later
       }
       
-   if (panel$sampling.started) rp.tkrreplot(panel, plot1)
+   if (panel$sampling.started) {
+   	  rp.control.put(panel$panelname, panel)
+      rp.tkrreplot(panel, plot1)
+   }
    
    panel 
    }
@@ -197,25 +200,28 @@ mururoa.predict <- function(panel) {
      yy <- 100 + 625 * (xx / 20 - 0.5 * (xx / 30)^3)
      yy[32:61] <- 725
      pred.grid <- expand.grid(0.25 + 0:199/2, 0.25 + 0:99/2)      # offset from samples
-     KC  <- krige.control(obj.m = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
+     KC  <- krige.control(obj.model = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
      shh <- output.control(messages = FALSE)
-     kc  <- try(krige.conv(fg, loc = pred.grid, krige = KC, output = shh), silent = TRUE)
+     kc  <- try(krige.conv(fg, locations = pred.grid, krige = KC, output = shh), silent = TRUE)
      if (class(kc) == "try-error" & panel$trend.setting == "cte") {
         rp.messagebox("There are numerical problems in producing predictions with this model.  Try fitting a linear or quadratic trend function.")
         return(panel)
      }
      kcm <- matrix(kc$predict, nrow = 200)
      pg2 <- expand.grid(0:200 / 2, 0:100 / 2)               # use 'real' grid to find RSS
-     KC2 <- krige.control(obj.m = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
-     kc2 <- krige.conv(fg, loc = pg2, krige = KC2, output = shh)
+     KC2 <- krige.control(obj.model = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
+     kc2 <- krige.conv(fg, locations = pg2, krige = KC2, output = shh)
      panel$kpred[ , , ind] <- matrix(kc2$predict, ncol = 101) * panel$mur.mat
      panel$kse[ , , ind]   <- sqrt(matrix(kc2$krige.var, ncol = 101))
      panel$prediction.computed[ind] <- TRUE
      }
      
-  panel$zlim  <- range(panel$zlim,  panel$kpred[ , ,ind] * panel$mask, panel$true.surface, na.rm = TRUE)
-  # panel$zlim  <- range(panel$sz[ , 3],  panel$kpred[,,1] * panel$mask, panel$kpred[,,2] * panel$mask,
-  #                                     panel$kpred[,,3] * panel$mask, panel$true.surface, na.rm = TRUE)
+  panel$zlim  <- range(panel$zlim,  panel$kpred[ , ,ind] * panel$mask,
+                       panel$true.surface, na.rm = TRUE)
+  # panel$zlim  <- range(panel$sz[ , 3],  panel$kpred[,,1] * panel$mask,
+  #                      panel$kpred[,,2] * panel$mask,
+  #                      panel$kpred[,,3] * panel$mask, panel$true.surface, na.rm = TRUE)
+  rp.control.put(panel$panelname, panel)
   rp.do(panel, mururoa.colour.chart.redraw)
   rp.do(panel, mururoa.samp.redraw)
 
@@ -224,7 +230,9 @@ mururoa.predict <- function(panel) {
   
 mururoa.colour.reset <- function(panel) {
   ind <- which(panel$trend.setting == c("cte", "1st", "2nd"))
-  panel$zlim  <- range(panel$sz[ , 3],  panel$kpred[ , ,ind] * panel$mask, na.rm = TRUE)
+  panel$zlim  <- range(panel$sz[ , 3],  panel$kpred[ , ,ind] * panel$mask,
+                       panel$true.surface, na.rm = TRUE)
+  rp.control.put(panel$panelname, panel)
   rp.do(panel, mururoa.colour.chart.redraw)
   rp.do(panel, mururoa.samp.redraw)
   panel
@@ -268,20 +276,20 @@ mururoa.samp <- function(panel) {
   panel$mask <- mask
   panel$true.surface <- panel$trendmurmat + panel$fieldm
   panel$zlim <- range(panel$sz[ , 3], c(panel$true.surface))
+  rp.control.put(panel$panelname, panel)
 
   rp.tkrplot(panel, plot1a, mururoa.colour.chart, 
         hscale = 0.2, vscale = panel$hscale * 0.7, 
-        grid = "plot1a", row = 0 , column = 0)
+        grid = "plot1a", row = 0, column = 0, background = "white")
   rp.checkbox(panel, display.options, labels = c("points", "predicted surface", "prediction s.e."),
-        initval = c(TRUE, FALSE, FALSE),
         action = mururoa.predict, title = "Display", 
         grid = "controls2", row = 0, column = 0)
   rp.radiogroup(panel, trend.setting, c("cte", "1st", "2nd"), 
         labels = c("constant", "linear", "quadratic"),
-        action = mururoa.predict, title = "Trend", 
+        action = mururoa.predict, title = "Trend",
         grid = "controls2", row = 1, column = 0, sticky = "ew")
   rp.checkbox(panel, mururoa.true, mururoa.samp.redraw, 
-        title = "True surface", grid = "controls2", row = 2, column = 0)
+        labels = "true surface", grid = "controls2", row = 2, column = 0)
   rp.button(panel, mururoa.colour.reset, "Reset colour scale", 
         grid = "controls2", row = 3, column = 0, sticky = "ew")
   rp.do(panel, mururoa.samp.redraw)
@@ -301,11 +309,13 @@ mururoa.colour.chart <- function(panel) {
   }
   
 mururoa.samp.redraw <- function(panel) {
+   rp.control.put(panel$panelname, panel)
    rp.tkrreplot(panel, plot1)
    panel
    }
   
 mururoa.colour.chart.redraw <- function(panel) {
+   rp.control.put(panel$panelname, panel)
    rp.tkrreplot(panel, plot1a)
    panel
    }
@@ -325,12 +335,10 @@ mururoa.start <- function(panel) {
    panel
    }
   
-   if (!require(tkrplot))
-      stop("The tkrplot package is not available.")
-   if (!require(geoR))
-      stop("The geoR package is not available.")
-   if (!require(RandomFields))
-      stop("the RandomFields package is not available.")
+   if (!require(tkrplot))      stop("The tkrplot package is not available.")
+   if (!require(geoR))         stop("The geoR package is not available.")
+   if (!require(RandomFields)) stop("the RandomFields package is not available.")
+
    if (is.list(parameters)) {
    	  nms <- names(parameters)
       for (i in 1:length(nms))
@@ -345,11 +353,16 @@ mururoa.start <- function(panel) {
    ptsm        <- as.matrix(expand.grid(seq(0, 100, by = 0.5), seq(0, 50, by = 0.5)))
    trendmurmat <- apply(ptsm, 1, mururoa.list$trend.fn)
    trendmurmat <- matrix(trendmurmat, ncol = 101)
-   warn <- options()$warn
-   options(warn = -1)
-   field <- grf(nrow(ptsm), ptsm, cov.model = "matern", cov.pars = mururoa.list$cov.pars, 
-                  kappa = 4, nugget = 0, messages = FALSE)
-   options(warn = warn)
+#   warn <- options()$warn
+#   options(warn = -1)
+#   field <- grf(nrow(ptsm), ptsm, cov.model = "matern", cov.pars = mururoa.list$cov.pars, 
+#                  kappa = 4, nugget = 0, messages = FALSE)
+#   options(warn = warn)
+
+   ptsm  <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 1, length = 101)))
+   covp  <- mururoa.list$cov.pars
+   field <- GaussRF(ptsm, grid = FALSE, model = "matern", 
+                     param = c(NA, covp[1], 0, covp[2] / 100, 4))
    
    panel <- rp.control("Sampling at Mururoa",
      stype = "Random", npts = 25, gsp = 10, 
@@ -368,16 +381,19 @@ mururoa.start <- function(panel) {
      sampx = c(), sampy = c(), gx = 0, gy = 0, numt = 5, tsb = "Random", tsw = "Random",
      random.alignment = FALSE, random.alignment.old = FALSE, file = file,
      txc = c(), tyc = c(), diffm = 0, sampling.started = FALSE,
-     field = field$data, fieldm = matrix(field$data, nrow = 201))
+     # field = field$data, fieldm = matrix(field$data, nrow = 201),
+     field = field, fieldm = matrix(field, nrow = 201),
+     display.options = c("points" = TRUE, "predicted surface" = FALSE, "prediction s.e." = FALSE),
+     mururoa.true = FALSE, trend.setting = "constant")
      
-   Sys.sleep(sleep)
    rp.grid(panel, "controls1", row = 0, column = 0)
-   rp.grid(panel, "plot1",     row = 0, column = 1)
-   rp.grid(panel, "plot1a",    row = 0, column = 2)
+   rp.grid(panel, "plot1",     row = 0, column = 1, background = "white")
+   rp.grid(panel, "plot1a",    row = 0, column = 2, background = "white")
    rp.grid(panel, "controls2", row = 0, column = 3)
    
    rp.tkrplot(panel, plot1, mururoa.draw, 
-     hscale = hscale, vscale = hscale * 0.7, grid = "plot1", row = 0, column = 0)
+     hscale = hscale, vscale = hscale * 0.7,
+     grid = "plot1", row = 0, column = 0, background = "white")
    
    rp.radiogroup(panel, stype, c("Random", "Grid", "Transect"),
      title = "Sample type", action = mururoa.points, 
@@ -397,12 +413,12 @@ mururoa.start <- function(panel) {
    rp.slider(panel, npts, 10, 100, log = TRUE, action = mururoa.points,
      title = "Number of points", grid = "controls1", row = 6, column = 0, sticky = "ew")
    rp.button(panel, mururoa.points, "New sampling positions",
-     grid = "controls1", row = 7, column = 0, sticky = "ew")
-   Sys.sleep(sleep)
+     grid = "controls1", row = 7, column = 0)
    rp.do(panel, mururoa.blank)
    rp.do(panel, mururoa.points)
    rp.do(panel, mururoa.start)
    
-   rp.button(panel, mururoa.samp, "Take sample", grid = "controls2", row = 0, column = 0)
+   rp.text(panel, " \n \n \n \n \n ", grid = "controls2", row = 0, column = 0)
+   rp.button(panel, mururoa.samp, "Take sample", grid = "controls2", row = 2, column = 0)
    }
 

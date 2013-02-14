@@ -50,20 +50,21 @@ rp.normal <- function(y, ylab = deparse(substitute(y)),
       panel.plot <- FALSE
       }
    if (panel.plot) {
-      rp.tkrplot(normal.panel, plot, normal.draw, pos = "right", hscale = hscale, vscale = vscale)
+      rp.tkrplot(normal.panel, plot, normal.draw, pos = "right",
+                 hscale = hscale, vscale = vscale, background = "white")
       action <- normal.redraw
       }
    else
       action <- normal.draw
    rp.checkbox(normal.panel, curve.showing, 
-                        title = "Show normal density", action = action)
+                        labels = "Show normal density", action = action)
    rp.doublebutton(normal.panel, mean, diff(range(y)) / 50, 
                         title = "Mean", action = action)
    rp.doublebutton(normal.panel, stan, sd(y) / 50,
                         title = "sd", action = action)
    rp.do(normal.panel, action)
    rp.checkbox(normal.panel, fitted.showing, 
-                        title = "Show fitted density", action = action)
+                        labels = "Show fitted density", action = action)
 
    invisible()
    }

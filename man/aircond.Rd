@@ -12,9 +12,7 @@ aircraft.  The data from only one of the aircraft is used here.
 Cox and Snell (1981, Applied Statistics: principles and examples,
 Chapman and Hall, London) discuss the analysis of the data on all 10 aircraft.)
 
-The dataset consists of a single vector of data.
-
-The data are used in the rp.likelihood example script.
+The dataset consists of a single vector of data.  They are used in the \code{\link{rp.likelihood}} example script.
 
 }
 
@@ -24,11 +22,9 @@ The data are used in the rp.likelihood example script.
    }
 
 \examples{
-if (interactive()) {
-   data(aircond)
-   hist(aircond)
-   rp.likelihood("dexp(data, theta)", aircond, 0.005, 0.03)
-   rp.likelihood("dgamma(data, theta[1], theta[2])",
+\dontrun{
+   rp.likelihood("sum(log(dexp(data, theta)))", aircond, 0.005, 0.03)
+   rp.likelihood("sum(log(dgamma(data, theta[1], theta[2])))",
         aircond, c(0.3, 0.005), c(3, 0.06))
 }}
 

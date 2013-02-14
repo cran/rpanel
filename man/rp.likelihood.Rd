@@ -5,11 +5,7 @@
 \title{Interactive inspection of one- or two-parameter likelihood surfaces}
 
 \description{
-  This function plots a likelihood surface for a model with one or two parameters.  
-  It also creates a panel which allows the maximum likelihood estimate, a confidence
-  region and other objects of interest to be added to the plot.  For one parameter
-  models, the \code{tkrplot} package is required.  For two-parameter models the \code{rgl} package 
-  is required.
+This function plots a likelihood surface for a model with one or two parameters.  It also creates a panel which allows the maximum likelihood estimate, a confidence region and other objects of interest to be added to the plot.  For one-parameter models, the \code{tkrplot} package is required.  For two-parameter models the \code{rgl} package is required.
 }
 
 \usage{
@@ -50,7 +46,7 @@ rp.likelihood(loglik.fn, data, theta.low, theta.high, form = "log-likelihood",
 }
 
 \references{
-	rpanel: Statistical cartoons in \code{R}. 
+	rpanel: Statistical cartoons in \R. 
        (\url{http://www.mathstore.ac.uk/headocs/doc.php?doc=7403_bowman_a_statsr.pdf})
 
    rpanel: Simple interactive controls for R functions using the tcltk package.
@@ -58,12 +54,11 @@ rp.likelihood(loglik.fn, data, theta.low, theta.high, form = "log-likelihood",
    }
 
 \examples{
-if (interactive()) {
-   data(aircond)
+\dontrun{
    rp.likelihood("sum(log(dexp(data, theta)))", aircond, 0.005, 0.03)
    rp.likelihood("sum(log(dgamma(data, theta[1], theta[2])))",
         aircond, c(0.3, 0.005), c(3, 0.06))
-   }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

@@ -5,22 +5,23 @@
 \title{Returns a panel}
 
 \description{
-Returns the most recently created panel or a named (by passing the name as a string parameter) panel.
+Returns a named (by passing the name as a string parameter) panel.
 }
 
 \usage{
-rp.panel(panelname = rp.panelname(new = FALSE))}
+rp.panel(panelname)
+}
 
 \arguments{
   \item{panelname}{optional string parameter. If set the panel of that name is returned, if not set the most recently created panel is returned. } 
 }
 
 \value{
-  If panelname is set the panel of that name is returned, if not set the most recently created panel is returned.
+If \code{panelname} is set, the panel of that name is returned.  If it is not set, the most recently created panel is returned.
 }
 
 \section{Warning}{
-Note: returning of the most recent panel may fail when running R on a Windows machine in DOS. A warning is contained within the function.
+Note: returning of the most recent panel may fail when running \R on a Windows machine in DOS. A warning is contained within the function.
 }
 
 \references{
@@ -31,16 +32,14 @@ Note: returning of the most recent panel may fail when running R on a Windows ma
 \seealso{ \code{\link{rp.control}} }
 
 \examples{
-if (interactive()) {
+\dontrun{
    # create a panel - will be created in .rpenv as "newpanel"
-   rp.control(realname = "newpanel")
+   rp.control(panelname = "newpanel")
    # creates the panel, but does not return a handle to it - created as ".rpanel2"
    rp.control()
    # pick up the first panel
    panel2 <- rp.panel("newpanel")
-   # gets a handle to the latest panel created
-   panel <- rp.panel()
-   }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

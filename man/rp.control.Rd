@@ -1,6 +1,7 @@
 \name{rp.control}
 
 \alias{rp.control}
+\alias{rp.control.dispose}
 
 \title{Create an rpanel}
 
@@ -10,26 +11,30 @@
 }
 
 \usage{
-rp.control(title = "", size = c(100, 100), panelname, realname, aschar = TRUE, ...)
+rp.control(title = "", size = c(100, 100), panelname, background, ...)
+rp.control.dispose(panel, name)
 }
 
 \arguments{
   \item{title}{the title of the panel displayed in the banner.}
-  \item{size}{a two-element numeric vector specifying width and height of the panel in pixels. If this argument is omitted the size of the panel will adapt to the subsequent addition of widgets.}
-  \item{panelname}{the name of the panel at .rpenv. If this is not assigned, then realname is taken.}
-  \item{realname}{retained for backward compatibility. If this is not assigned, the realname is assigned automatically using rp.panelname.}
-  \item{aschar}{if TRUE (default) the panel's name as a string is returned. If FALSE the panel list itself is returned.}
-  \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.  Note that the names of these additional arguments should not conflict with those
-        of the main arguments of \code{rp.control}.}
+  \item{size}{a two-element numeric vector specifying width and height of the panel in pixels.  If this argument is omitted the size of the panel will adapt to the subsequent addition of widgets.}
+  \item{panelname}{the name of the panel. It is important to set this parameter for \code{\link{rp.block}} and \code{rp.control.dispose}.}
+  \item{background}{the background colour of the control e.g. "white". (New parameter with version 2.0.)}
+  \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.  Note that the names of these additional arguments should not conflict with those of the main arguments of \code{rp.control}.}
+  \item{panel}{the panel to be disposed of.  This represents the object and its parameters}
+  \item{name}{the name of the panel to be disposed of.  This represents the window.}
+}
+
+\note{
+Previous arguments \code{realname} and \code{aschar} have been discontinued in version 1.1.
 }
 
 \details{
-On some machines the \R and Tcl/Tk code can become out of step if a large number of objects, or objects of large size, are passed in \code{\dots}.  This can lead to the panel failing to size itself appropriately.  A solution is to insert a \code{Sys.sleep(0.5)} instruction immediately after the call to \code{rp.control}, to ensure that sufficient time is allowed for the initialisation to complete.  Clearly, the duration of the sleep time may need to be adjusted on different machines.
+Objects passed into \code{rp.control} are then available to be used by action functions.
 }
 
 \value{
-  Dependent on parameter ischar. If ischar is TRUE this is the string name of the panel if
-  FALSE this is the list object which defines the panel.
+  The list object which defines the panel.
 }
 
 \references{
@@ -37,10 +42,24 @@ On some machines the \R and Tcl/Tk code can become out of step if a large number
       Journal of Statistical Software, 17, issue 9.
    }
 
-\seealso{\code{\link{rp.button}},\code{\link{rp.slider}},\code{\link{rp.doublebutton}},\code{\link{rp.textentry}},\code{\link{rp.checkbox}},\code{\link{rp.radiogroup}}}
-
+\seealso{
+\code{\link{rp.button}},
+\code{\link{rp.checkbox}},
+\code{\link{rp.combo}},
+\code{\link{rp.doublebutton}},
+\code{\link{rp.grid}},
+\code{\link{rp.image}},
+\code{\link{rp.listbox}},
+\code{\link{rp.menu}},
+\code{\link{rp.radiogroup}},
+\code{\link{rp.slider}},
+\code{\link{rp.text}},
+\code{\link{rp.textentry}},
+\code{\link{rp.tkrplot}},
+\code{\link{rp.widget.dispose}}
+}
 \examples{
-if (interactive()) {
+\dontrun{
    hist.or.boxp <- function(panel) {
      if (panel$plot.type == "histogram")
        hist(panel$x)
@@ -48,13 +67,15 @@ if (interactive()) {
        boxplot(panel$x)
      panel
    }
-   panel <- rp.control(x=rnorm(50))
-   rp.radiogroup(panel, plot.type, c("histogram", "boxplot"), title="Plot type", action = hist.or.boxp)  
+   panel <- rp.control(x=rnorm(50), panelname="panel")
+   rp.radiogroup(panel, plot.type, c("histogram", "boxplot"),
+                 title="Plot type", action = hist.or.boxp)  
 
    # Try also
    # panel <- rp.control(ischar = TRUE) # returns a string ".rpanel1" in panel
    # panel <- rp.control(ischar = FALSE) # returns the panel list object itself
-   }}
+   # rp.control.dispose(panel, "panel")
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

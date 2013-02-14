@@ -1,7 +1,9 @@
 #   Logistic regression cartoon
 
-rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, line.showing = TRUE,
-                hscale = NA, vscale = hscale) {
+rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, panel = TRUE,
+                hscale = NA, vscale = hscale, alpha = 0, beta = 0, 
+                display = c("jitter" = FALSE, "regression line" = FALSE, 
+                            "fitted model" = FALSE)) {
 
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1
@@ -29,15 +31,22 @@ rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, line.show
       }
       
    plot.logistic <- function(panel) {
+   	
       if (!panel$panel.plot) {
          if (!panel$display["jitter"])
-            panel$y1 <- y
+            yp <- panel$y
          else if (!panel$jitter.old)
-            panel$y1 <- jitter(panel$y, amount = 0.02)
+            yp <- jitter(panel$y, amount = 0.02)
+         else
+            yp <- panel$y1
+         panel$y1 <- yp
          panel$jitter.old <- panel$display["jitter"]
-         }
+      }
+      else
+         yp <- panel$y1
+      
       with(panel, {
-         plot(x, y1 / n, xlim = range(xgrid), xlab = xlab, ylab = ylab)
+         plot(x, yp / n, xlim = range(xgrid), xlab = xlab, ylab = ylab)
          abline(h = 0, lty = 3)
          abline(h = 1, lty = 3)
          title("Logistic regression", col.main = "red", line = 3, cex.main = 1)
@@ -84,16 +93,17 @@ rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, line.show
                col.main = clr, line = 2, cex.main = 1)            
             # title(paste("log(p/(1-p)) =", signif(alpha1 - beta1 * mean(x), 5), "+", 
             #                            signif(beta1, 5), "x"), col = clr)
-            }
-         })
+         }
+      })
       panel
-      }
+   }
       
    replot.logistic <- function(panel) {
       if (!panel$display["jitter"])
-         panel$y1 <- y
+        panel$y1 <- y
       else if (!panel$jitter.old)
          panel$y1 <- jitter(panel$y, amount = 0.02)
+      rp.control.put(panel$panelname, panel)
       rp.tkrreplot(panel, plot)
       panel$jitter.old <- panel$display["jitter"]
       panel
@@ -114,20 +124,32 @@ rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, line.show
    model   <- glm(cbind(y, n - y) ~ x, family = binomial)
    par.est <- coef(model)
    par.se  <- coef(summary(model))[,2]
-   panel   <- rp.control(x = x, y = y, y1 = y, n = n, xgrid = xgrid, panel.plot = panel.plot,
-                  alpha = 0, beta = 0, par.est = par.est, par.se = par.se,
-                  xlab = xlab, ylab = ylab, jitter.old = FALSE, hscale = hscale, vscale = vscale,
-                  display = c("jitter" = FALSE, "regression line" = line.showing, "fitted model" = FALSE))
-   if (panel.plot & require(tkrplot)) {
-      rp.tkrplot(panel, plot, plot.logistic, pos = "right", hscale = hscale, vscale = vscale)
-      action <- replot.logistic
-      }
-   else
-      action <- plot.logistic
-   rp.doublebutton(panel, alpha, 0.05, action = action)
-   rp.doublebutton(panel, beta,  3.5 / (diff(range(x)) * 50), action = action)
-   rp.checkbox(panel, display, action, c("jitter", "regression line", "fitted model"))
-   rp.button(panel, launch.lik, "Inspect log-likelihood")
-   rp.do(panel, action)
+   
+   if (panel) {
+      panel   <- rp.control(x = x, y = y, y1 = y, n = n, xgrid = xgrid, panel.plot = panel.plot,
+                     alpha = alpha, beta = beta, par.est = par.est, par.se = par.se,
+                     xlab = xlab, ylab = ylab, jitter.old = FALSE,
+                     hscale = hscale, vscale = vscale, display = display)
+      if (panel.plot & require(tkrplot)) {
+         rp.tkrplot(panel, plot, plot.logistic, pos = "right", hscale = hscale, vscale = vscale,
+                    background = "white")
+         action <- replot.logistic
+         }
+      else
+         action <- plot.logistic
+      rp.doublebutton(panel, alpha, 0.05, action = action)
+      rp.doublebutton(panel, beta,  3.5 / (diff(range(x)) * 50), action = action)
+      rp.checkbox(panel, display, action, c("jitter", "regression line", "fitted model"))
+      rp.button(panel, launch.lik, "Inspect log-likelihood")
+      rp.do(panel, action)
+   }
+   else {
+      panel <- list(x = x, y = y, y1 = y, n = n, xgrid = xgrid, panel.plot = FALSE,
+                    alpha = alpha, beta = beta, par.est = par.est, par.se = par.se,
+                    xlab = xlab, ylab = ylab, jitter.old = FALSE,
+                    display = display)   
+      plot.logistic(panel)
+      invisible()
+   }
 
    }

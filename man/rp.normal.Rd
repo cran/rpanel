@@ -5,10 +5,8 @@
 \title{Interactive fitting of a normal distribution}
 
 \description{
-  This function plots a histogram of a sample of data and
-  creates a panel which controls the mean and standard deviation of
-  the normal distribution which is fitted to the data and displayed on the plot.
-  }
+This function plots a histogram of a sample of data and creates a panel which controls the mean and standard deviation of the normal distribution which is fitted to the data and displayed on the plot.
+}
 
 \usage{
   rp.normal(y, ylab = deparse(substitute(y)), panel.plot = TRUE, hscale = NA, vscale = hscale)
@@ -26,11 +24,8 @@
   }
 
 \details{
-  The interactive controls allow a normal density curve to be added to the
-  histogram, with doublebuttons used to control the values of the normal
-  mean and standard deviation.  The fitted normal density based on the 
-  sample mean and standard deviation can also be displayed.
-  }
+The interactive controls allow a normal density curve to be added to the histogram, with doublebuttons used to control the values of the normal mean and standard deviation.  The fitted normal density based on the sample mean and standard deviation can also be displayed.
+}
 
 \value{
   Nothing is returned.
@@ -42,7 +37,7 @@
    }
 
 \examples{
-if (interactive()) {
+\dontrun{
   y <- rnorm(50, mean = 10, sd = 0.5)
   rp.normal(y)
   }}

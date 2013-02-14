@@ -33,6 +33,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
 
          warn <- options()$warn
          options(warn = -1)
+         
          fnscale <- apply(matrix(mean(theta.range)), 1, eval(parse(text = fun.text)), data = data)
          mloglik <- optim(mean(theta.range), eval(parse(text = fun.text)), data = data, 
                          method = "BFGS", hessian = TRUE,
@@ -154,32 +155,36 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
          panel$axis.active <- axis.active
          panel$new.range <- x
 	     }
-       rp.tkrreplot(panel, plot1)
-       panel
-       }
+      rp.control.put(panel$panelname, panel)
+      rp.tkrreplot(panel, plot1)
+      panel
+   }
 
    drag <- function(panel, x, y) {
       if (!is.na(panel$axis.active))
          panel$new.range <- x
+      rp.control.put(panel$panelname, panel)
       rp.tkrreplot(panel, plot1)
       panel
-      }
+   }
    
    release <- function(panel, x, y) {
 	  if (!is.na(panel$axis.active))
          panel$theta.range[panel$axis.active] <- x
       panel$axis.active <- NA
+      rp.control.put(panel$panelname, panel)
       rp.tkrreplot(panel, plot1)
       panel
-      }
+   }
 
    loglik1.replot <- function(panel) {
       if (!is.na(panel$axis.active))   
          panel$theta.range[panel$axis.active] <- panel$new.range
       panel$axis.active <- NA
+      rp.control.put(panel$panelname, panel)
       rp.tkrreplot(panel, plot1)
       panel
-      }
+   }
 
    panel <- rp.control(data = data, ngrid = 50, loglik.text = loglik.text,
                        form = form, theta.range = theta.range, axis.active = NA,
@@ -187,7 +192,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
                        "threshold proportion" = FALSE, ci = FALSE, 
                        "quadratic approximation" = FALSE), prop = 0.9)
    rp.tkrplot(panel, plot1, loglik1.plot, find.pt, drag, release, 
-      hscale = hscale, vscale = vscale, pos = "right")
+      hscale = hscale, vscale = vscale, pos = "right", background = "white")
    rp.textentry(panel, loglik.text, loglik1.replot,
       title = "Log-likelihood")
    rp.radiogroup(panel, form, c("likelihood", "log-likelihood"), action = loglik1.replot,
@@ -197,7 +202,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
    rp.slider(panel, prop, 0.01, 1, loglik1.replot, "Threshold proportion", 
       resolution = 0.01, showvalue = TRUE)
    rp.do(panel, loglik1.replot)
-   }
+}
 
 #   Two-parameter likelihood plots
 
@@ -214,7 +219,6 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
 
       warn <- options()$warn
       options(warn = -1)
-         print(fun.text)
       panel$mloglik <- optim(c(mean(panel$theta1.range), mean(panel$theta2.range)), 
                              eval(parse(text = fun.text)), data = panel$data,
                              control = list(fnscale = -1), hessian = TRUE)
@@ -253,14 +257,14 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
       panel$n.add         <- 0
       panel               <- loglik2.plot.add(panel)
       panel
-      }
+   }
 
    loglik2.plot.add <- function(panel) {
 
       if (panel$n.add > 0) {
-         for (i in 1:panel$n.add) rgl.pop()
+         for (i in 1:panel$n.add) pop3d()
          panel$n.add <- 0
-         }
+      }
 
       with(panel, {
       	
@@ -271,7 +275,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
          ax <- scaling(theta1,  theta1,  theta1)$x
          ay <- scaling(loglik.mat, loglik.mat, loglik.mat)$y
          az <- scaling(theta2, theta2, theta2)$z
-         rgl.pop()
+         pop3d()
          rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr.surface)
          material3d(alpha = 1)
          
@@ -307,6 +311,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
             ints <- seq(min(quad.mat), max(quad.mat), length = 51)
             ind  <- findInterval(c(quad.mat), ints)
             clr  <- terrain.colors(50)[ind]
+            
       	    if (display["transparent"]) alpha.surface <- rep(0.5, ngrid^2)
                else                     alpha.surface <- rep(  1, ngrid^2)
             ind <- (quad.mat <= threshold)
@@ -332,14 +337,13 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
       panel
       }
 
-   rgl.open()
-   rgl.bg(col = c("white", "black"))
+   open3d()
+   bg3d(color = c("white", "black"))
       
    panel <- rp.control(data = data, ngrid = 50, loglik.text = loglik.text,
                        theta1.range = theta1.range, theta2.range = theta2.range,
                        theta1.low  = theta1.range[1], theta1.high = theta1.range[2],
-                       theta2.low  = theta2.range[1], theta2.high = theta2.range[2],
-                       display = c(FALSE, FALSE, FALSE, FALSE))
+                       theta2.low  = theta2.range[1], theta2.high = theta2.range[2])
    rp.textentry(panel, loglik.text, loglik2.plot, title = "Log-likelihood")
    rp.textentry(panel, ranges, loglik2.plot,
                  labels = c("theta1.low", "theta1.high", "theta2.low", "theta2.high"),

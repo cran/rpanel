@@ -12,8 +12,8 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
 
    ci.sim <- function(panel) {
       n     <- as.numeric(panel$ssize)
-      mu    <- as.numeric(panel$mu)
-      sigma <- as.numeric(panel$sigma)
+      mu    <- as.numeric(panel$pars[1])
+      sigma <- as.numeric(panel$pars[2])
       X     <- matrix(rnorm(n * 100, mu, sigma), ncol = n)
       Xmean <- apply(X, 1, mean)
       Xsd   <- apply(X, 1, sd)
@@ -24,6 +24,7 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
       panel$nsim     <- panel$nsim + 100
       panel$lower    <- lower
       panel$upper    <- upper
+      rp.control.put(panel$panelname, panel)
       if (!panel$first) {
          if (panel$panel.plot) rp.tkrreplot(panel, plot)
             else               rp.do(panel, ci.plot)
@@ -34,8 +35,8 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
       
    ci.plot <- function(panel) {
       n     <- as.numeric(panel$ssize)
-      mu    <- as.numeric(panel$mu)
-      sigma <- as.numeric(panel$sigma)
+      mu    <- as.numeric(panel$pars[1])
+      sigma <- as.numeric(panel$pars[2])
       plot(mu + c(-5, 5) * sigma / sqrt(30), c(1, 100), type = "n", xlab = "y", ylab = "")
       colour         <- rep("blue", 100)
       colour[!panel$cover] <- "red"
@@ -51,6 +52,7 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
    reset.coverage <- function(panel) {
       panel$coverage <- 0
       panel$nsim     <- 0
+      rp.control.put(panel$panelname, panel)
       rp.do(panel, ci.sim)
       panel
       }
@@ -61,13 +63,13 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
       }
       
    panel <- rp.control("Simulated confidence intervals", panel.plot = panel.plot,
-                    mu = mu, sigma = sigma, ssize = 30, coverage = 0, nsim = 0,
-                    first = TRUE)
+                    pars = c("mean" = mu, "s.d." = sigma), ssize = 30, 
+                    coverage = 0, nsim = 0, first = TRUE)
    rp.do(panel, ci.sim)
    if (panel.plot)
-      rp.tkrplot(panel, plot, ci.plot, pos = "right", hscale = hscale, vscale = vscale)
-   rp.textentry(panel, mu,    title = "mean", action = reset.coverage)
-   rp.textentry(panel, sigma, title = "s.d.", action = reset.coverage)
+      rp.tkrplot(panel, plot, ci.plot, pos = "right", hscale = hscale, vscale = vscale,
+                 background = "white")
+   rp.textentry(panel, pars, labels = c("mean", "s.d."), action = reset.coverage)
    rp.radiogroup(panel, ssize, sample.sizes, title = "Sample size", action = ci.sim)
    rp.button(panel, title = "Sample", action = ci.sim, repeatdelay = 500, repeatinterval = 200)
    rp.button(panel, title = "Reset coverage count", action = reset.coverage)

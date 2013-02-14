@@ -6,11 +6,7 @@
 \title{Interactive display of regression with one or two covariates}
 
 \description{
-  The function \code{rp.regression} plots a response variable against one or two covariates and 
-  creates a panel which controls the model which is fitted to the data and 
-  displayed on the plot.  In the case of two covariates, a three-dimensional 
-  display is created.  The function \code{rp.regression2} is retained simply for compatibility
-  with earlier releases of the package.
+The function \code{rp.regression} plots a response variable against one or two covariates and creates a panel which controls the model which is fitted to the data and displayed on the plot.  In the case of two covariates, a three-dimensional display is created.  The function \code{rp.regression2} is retained simply for compatibility with earlier releases of the package.
   }
 
 \usage{
@@ -48,20 +44,12 @@
 }
 
 \details{
-  In the case of one covariate, the control panel allows a line to be drawn on the 
-  plot and its intercept and slope altered interactively.  The residuals and the
-  least squares fitted line can be displayed.  When the fitted line is displayed,
-  the effects of moving individual points can be viewed by clicking and dragging.
+In the case of one covariate, the control panel allows a line to be drawn on the plot and its intercept and slope altered interactively.  The residuals and the least squares fitted line can be displayed.  When the fitted line is displayed, the effects of moving individual points can be viewed by clicking and dragging.
   
-  In the case of two covariates, the plot is constructed with the aid of the rgl package 
-  for three-dimensional display, through the \code{rpanel} function \code{\link{rp.plot3d}}.
-  This display can be rotated and linear models involving one, two or none of the 
-  covariates can be displayed.  Residuals can also be superimposed.
+In the case of two covariates, the plot is constructed with the aid of the rgl package for three-dimensional display, through the \code{rpanel} function \code{\link{rp.plot3d}}.  This display can be rotated and linear models involving one, two or none of the covariates can be displayed.  Residuals can also be superimposed.
 
-  In the case of two covariates, static plots, for printing or other purposes can be 
-  created by setting the panel argument to FALSE and specifying \code{model} and 
-  \code{residuals.showing} as required.
-  }
+In the case of two covariates, static plots, for printing or other purposes can be created by setting the panel argument to FALSE and specifying \code{model} and \code{residuals.showing} as required.
+}
 
 \value{
   Nothing is returned.
@@ -75,12 +63,12 @@
 \seealso{\code{\link{rp.plot3d}}}
 
 \examples{
-if (interactive()) {
-  data(CofE)
-  attach(CofE)
-  rp.regression(Employ, Giving)
-  rp.regression(cbind(Employ, Attend), Giving)
-  }}
+\dontrun{
+  with(CofE, {
+    rp.regression(Employ, Giving)
+    rp.regression(cbind(Employ, Attend), Giving)
+  })
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

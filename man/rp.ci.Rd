@@ -7,7 +7,7 @@
 \description{
   This function shows simulated confidence intervals for the mean of
   a normal distribution.  It also creates a panel which controls the 
-  mean and standard deviation of the population, the size of the 
+  mean and standard deviation of the population and the size of the 
   simulated sample.
   }
 
@@ -33,9 +33,9 @@
    }
 
 \examples{
-if (interactive()) {
+\dontrun{
   rp.ci()
-  }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

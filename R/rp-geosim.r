@@ -2,16 +2,18 @@
 #    - the variogram plot no longer disappears when the checkboxes are not checked.
 # Display the values of the anisotropy parameters in the plot title.
 
-rp.geosim <- function(max.Range = 0.2, max.pSill = 1, max.Nugget = 1, max.Kappa = 10, 
+rp.geosim <- function(max.Range = 0.5, max.pSill = 1, max.Nugget = 1, max.Kappa = 10,
+                      max.aniso.ratio = 5,
                       min.ngrid = 10, max.ngrid = 25, hscale = NA, vscale = hscale,
-                      col.palette = terrain.colors(40), sleep = 0.5) {
+                      col.palette = terrain.colors(40)) {
 
 field.new <- function(panel) {
 	
-      r <- panel$Range
+      r <- panel$Range / (2 * sqrt(panel$kappa))
       panel$family <- "matern"
-      cgrid <- ceiling((panel$smgrid - 1) / (panel$ngrid - 1))
-      panel$smgrid <- 1 + cgrid * (panel$ngrid - 1)
+      # Old code which matched the surface and data grids - no longer required.
+      # cgrid <- ceiling((panel$smgrid - 1) / (panel$ngrid - 1))
+      # panel$smgrid <- 1 + cgrid * (panel$ngrid - 1)
       pars.changed <- (panel$ngrid != panel$ngrid.old) | (panel$Range != panel$Range.old) |
                       (panel$pSill != panel$pSill.old) | (panel$kappa != panel$kappa.old)
       warn <- options()$warn
@@ -23,7 +25,8 @@ field.new <- function(panel) {
       panel$fieldnug <- grf(panel$ngrid^2, grid = "reg", cov.model = "pure.nugget",
          cov.pars = c(panel$Nugget, 0), messages = FALSE)
       options(warn = warn)
-      igrid <- seq(1, panel$smgrid, by = cgrid)
+      # igrid <- seq(1, panel$smgrid, by = cgrid)
+      igrid <- 1 + round(((1:panel$ngrid) - 1) * (panel$smgrid - 1) / (panel$ngrid - 1))
       igrid <- as.matrix(expand.grid(igrid, igrid))
       panel$fieldsm$data <- matrix(panel$fieldsm$data, ncol = panel$smgrid)
       panel$data <- panel$fieldsm$data[igrid] + panel$fieldnug$data
@@ -125,8 +128,13 @@ cont.update <- function(panel) {
          points(rep(g, ngrid), rep(g, each = ngrid), col = col.palette[clr], pch = 16)
          points(rep(g, ngrid), rep(g, each = ngrid))
    	     }
-      title(paste("Range =", Range, "  Partial sill =", pSill, "  Nugget=", Nugget), line = 2, cex = 1)
+      title(paste("Range =", Range, "  Partial sill =", pSill, "  Nugget=", Nugget), 
+                    line = 2, cex = 1)
       title(paste("Kappa =", kappa, "  Data grid =", ngrid, "x", ngrid),   line = 1, cex = 1)
+      if (aniso.ratio > 1)
+         title(paste("Anisotropy: ratio =", round(aniso.ratio, 2), 
+                                " angle =", round(aniso.angle, 2)), line = 0, cex = 1)
+
    	  par(mar = c(5, 2, 4, 2) + 0.1)
       rp.colour.chart(col.palette, z.range)
       layout(1)
@@ -136,8 +144,12 @@ cont.update <- function(panel) {
    }
 
 vario.update <- function(panel) {
+   if (panel$aniso.ratio > 1) {
+      plot(1:10, type = "n", axes = FALSE, xlab = "", ylab = "")
+      return(panel)
+   }
    with(panel, {
-      vg  <- pSill * (1 - matern(xa, Range, kappa))
+      vg  <- pSill * (1 - matern(xa, Range / (2 * sqrt(kappa)), kappa))
       fld <- data
       g   <- seq(0, 1, length = ngrid)
       vga <- variog(as.geodata(cbind(fieldnug$coords, fld)), messages=FALSE,
@@ -170,7 +182,7 @@ vario.update <- function(panel) {
       stop("the RandomFields package is not available.")
       
    if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
+      if (.Platform$OS.type == "unix") hscale <- 1.2
       else                             hscale <- 1.4
       }
    if (is.na(vscale)) 
@@ -185,8 +197,8 @@ vario.update <- function(panel) {
       max.ngrid <- min.ngrid
       }
    if (max.Range <= 0) {
-      cat("max.Range reset to 0.2\n")
-      max.Range <- 0.2
+      cat("max.Range reset to 0.5\n")
+      max.Range <- 0.5
       }
    if (max.pSill <= 0) {
       cat("max.pSill reset to 1\n")
@@ -211,22 +223,21 @@ vario.update <- function(panel) {
       
    panel <- rp.control("Spatial correlation",
       first = TRUE,
-      xa = seq(0, 0.7, by = 0.01), smgrid = 50, z.range = c(-5, 5),
-      ngrid = 15, Range = 0.05, pSill = 0.5, Nugget = 0, kappa = 4,
+      xa = seq(0, 0.7, by = 0.01), smgrid = 25, z.range = c(-5, 5),
+      ngrid = 15, Range = 0.1, pSill = 0.5, Nugget = 0, kappa = 4,
       ngrid.old = 15, Range.old = 0.05, pSill.old = 0.5, kappa.old = 4,
       aniso.angle = 0, aniso.ratio = 1,
       hscale = hscale, vscale = vscale, rgl.old = FALSE, vgm.present = FALSE,
       display.checks = display.checks.init,
       vgm.checks = c(true = FALSE, sample = FALSE),
       points.only = FALSE, points.id = NA, surface.id = NA, col.palette = col.palette)
-   Sys.sleep(sleep)
    rp.do(panel, field.new)
    rp.grid(panel, "controls",  row = 0, column = 0)
-   rp.grid(panel, "leftplot",  row = 0, column = 1)
-   rp.grid(panel, "rightplot", row = 0, column = 2)
+   rp.grid(panel, "leftplot",  row = 0, column = 1, background = "white")
+   rp.grid(panel, "rightplot", row = 0, column = 2, background = "white")
    rp.tkrplot(panel, plot1, cont.update, hscale = hscale, vscale = vscale, 
             grid = "leftplot", row = 0, column = 0, sticky = "ew")
-   rp.button(panel, field.new, "New sample",     
+   rp.button(panel, field.new, "New simulation",     
             grid = "controls", row = 1, column = 0, sticky = "ew")
    rp.slider(panel, Range, 0, max.Range,  field.new, "Range",     
             grid = "controls", row = 2, column = 0, sticky = "ew")
@@ -234,7 +245,6 @@ vario.update <- function(panel) {
             grid = "controls", row = 3, column = 0, sticky = "ew")
    rp.slider(panel, Nugget, 0, max.Nugget, field.new, "Nugget",    
             grid = "controls", row = 4, column = 0, sticky = "ew")
-   Sys.sleep(sleep)   
    rp.checkbox(panel, display.checks, graphics.update, checks.lbls, title = "Display", 
        grid = "controls", row = 5, column = 0, sticky = "ew")
    rp.checkbox(panel, vgm.checks, graphics.update, c("true", "sample"), title = "Variogram", 
@@ -247,14 +257,15 @@ vario.update <- function(panel) {
        grid = "controls", row = 9, column = 0, sticky = "ew")
    rp.slider(panel, aniso.angle, 0, pi, field.new, "Anisotropy angle",
        grid = "controls", row = 10, column = 0, sticky = "ew")
-   rp.slider(panel, aniso.ratio, 1, 5, field.new, "Anisotropy ratio",     
+   rp.slider(panel, aniso.ratio, 1, max.aniso.ratio, field.new, "Anisotropy ratio",     
        grid = "controls", row = 11, column = 0, sticky = "ew")
    rp.do(panel, graphics.update)
    }
 
 rp.colour.chart <- function(cols, zlim)  {
    ngrid <- length(cols)
-   plot(0:1, zlim, type = "n", xaxs = "i", yaxs = "i", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+   plot(0:1, zlim, type = "n", xaxs = "i", yaxs = "i", xaxt = "n", yaxt = "n",
+        xlab = "", ylab = "")
    axis(4)
    xvec <- rep(0, ngrid)
    yvec <- seq(zlim[1], zlim[2], length = ngrid + 1)

@@ -35,7 +35,8 @@ tables.draw <- function(tables) {
 #     pval <- if (two.sided) 2 * (1 - pt(abs(xobs), degf)) else 1 - pt(xobs, degf)
     }
     if (distribution == "Chi-squared") {
-      xrange <- c(0.01, degf1 + 3 * sqrt(2 * degf1))
+      xr1    <- max(degf1 + 3 * sqrt(2 * degf1), qchisq(1 - prob, degf1) + 1)
+      xrange <- c(0.01, xr1)
       x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
       dens   <- dchisq(x, degf1)
       if (degf1 <= 2) ylim   <- c(0, max(dens))
@@ -45,7 +46,7 @@ tables.draw <- function(tables) {
       qts    <- qchisq(c(prob, 1 - prob, prob/2, 1 - prob/2, pshade, 1 - pshade), degf1)
     }
     if (distribution == "F") {
-      xrange <- c(0.01, 10)
+      xrange <- c(0.01, max(10, qf(1 - prob, degf1, degf2) + 1))
       x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
       dens   <- df(x, degf1, degf2)
       if (degf1 <= 2) ylim   <- c(0, max(dens))
@@ -120,31 +121,38 @@ tables.redraw <- function(object) {
   tables.panel <- rp.control("Distributions",
                   xobs.prob = c(1, 0.05), distribution = "Normal", degf1 = 5, degf2 = 30,
                   observed.value.showing = FALSE, tail.area = "none", tail.direction = "lower")
+  rp.grid(tables.panel, "controls", row = 0, column = 0)
+  rp.grid(tables.panel, "plot",     row = 1, column = 0, background = "white")
   if (panel.plot && require(tkrplot)) {
-    tables.panel <- rp.tkrplot(tables.panel, plot, plotfun = tables.draw,
+    rp.tkrplot(tables.panel, plot, plotfun = tables.draw,
                     hscale = hscale, vscale = vscale, row = 1, column = 0, columnspan = 4,
-                    sticky = "ew")
+                    grid = "plot", sticky = "ew", background = "white")
     action.fn <- tables.redraw
     }
   else
     action.fn <- tables.draw
-  tables.panel <- rp.radiogroup(tables.panel, distribution, c("Normal", "t", "Chi-squared", "F"),
-                  title = "Distribution", action = action.fn, row = 0, column = 0, sticky = "ns")
-  rp.grid(tables.panel, "dfgrid", row = 0, column = 1, sticky = "ns")
-  tables.panel <- rp.doublebutton(tables.panel, degf1, 1, range = c(1, NA),
+  rp.radiogroup(tables.panel, distribution, c("Normal", "t", "Chi-squared", "F"),
+                  title = "Distribution", action = action.fn,
+                  grid = "controls", row = 0, column = 0, sticky = "ns")
+  rp.grid(tables.panel, "dfgrid", grid = "controls", row = 0, column = 1, sticky = "ns")
+  rp.doublebutton(tables.panel, degf1, 1, range = c(1, NA),
                   title = "df1", action = action.fn, grid = "dfgrid", row = 0, column = 0)
-  tables.panel <- rp.doublebutton(tables.panel, degf2, 1, range = c(1, NA),
+  rp.doublebutton(tables.panel, degf2, 1, range = c(1, NA),
                   title = "df2", action = action.fn, grid = "dfgrid", row = 0, column = 1)
-  tables.panel <- rp.checkbox(tables.panel, observed.value.showing,
-                  title = "Show observed value", action = action.fn,
+  rp.checkbox(tables.panel, observed.value.showing,
+                  labels = "Show observed value", action = action.fn,
                   grid = "dfgrid", row = 1, column = 0, columnspan = 2)                    
-  tables.panel <- rp.textentry(tables.panel, xobs.prob, action.fn, 
+  rp.textentry(tables.panel, xobs.prob, action.fn, 
                   c("Observed value", "Fixed probability, p"), title = "",
                   grid = "dfgrid", row = 2, column = 0, columnspan = 2, sticky = "ns")                    
-  tables.panel <- rp.radiogroup(tables.panel, tail.area,
+  rp.radiogroup(tables.panel, tail.area,
                   c("none", "from observed value", "fixed probability"),
-                  title = "Tail probability", action = action.fn, row = 0, column = 2, sticky = "ns")
-  tables.panel <- rp.radiogroup(tables.panel, tail.direction,
+                  title = "Tail probability", action = action.fn,
+                  grid = "controls", row = 0, column = 2, sticky = "ns")
+  rp.radiogroup(tables.panel, tail.direction,
                   c("lower", "upper", "two-sided"),
-                  title = "Tail direction", action = action.fn, row = 0, column = 3, sticky = "ns")
+                  title = "Tail direction", action = action.fn,
+                  grid = "controls", row = 0, column = 3, sticky = "ns")
+
+  invisible()
   }

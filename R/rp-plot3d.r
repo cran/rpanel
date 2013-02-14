@@ -3,12 +3,35 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
     xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...)
 {
     if (require(rgl)) {
-        if (is.na(xlab))
-            xlab <- deparse(substitute(x))
-        if (is.na(ylab))
-            ylab <- deparse(substitute(y))
-        if (is.na(zlab))
-            zlab <- deparse(substitute(z))
+    	
+        xname <- deparse(substitute(x))
+        if (!missing(y)) yname <- deparse(substitute(y))
+        if (!missing(z)) zname <- deparse(substitute(z))
+        if (is.data.frame(x)) x <- as.matrix(x)
+        
+        if (is.matrix(x)) {
+           if (!is.null(colnames(x))) xname <- colnames(x)
+           if (ncol(x) >= 3) {
+              y <- x[ , 2]
+              z <- x[ , 3]
+              x <- x[ , 1]
+           }
+           else
+              stop("x is a matrix with fewer than three columns.")
+           if (is.na(xlab))
+              xlab <- if (length(xname) > 1) xname[1] else paste(xname, "1", sep = "-")
+           if (is.na(ylab))
+              ylab <- if (length(xname) > 1) xname[2] else paste(xname, "2", sep = "-")
+           if (is.na(zlab))
+              zlab <- if (length(xname) > 1) xname[3] else paste(xname, "3", sep = "-")
+        }
+        else {
+           if (missing(y) | missing(z)) stop("too few arguments.")
+           if (is.na(xlab)) xlab <- xname
+           if (is.na(ylab)) ylab <- yname
+           if (is.na(zlab)) zlab <- zname
+        }
+        
         xrange <- xlim
         yrange <- ylim
         zrange <- zlim
@@ -55,8 +78,8 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
         rz <- c(-1, 1)
         if (plot) {
            if (new.window) {
-              rgl.open()
-              rgl.bg(col = c("white", "black"))
+              open3d()
+              bg3d(col = c("white", "black"))
               }
            else
               rgl.clear()

@@ -33,10 +33,9 @@ rp.messagebox(..., title="rpanel Message")
 \seealso{ \code{\link{rp.control}} }
 
 \examples{
-if (interactive()) {
-   # This is not run as RCMD CHECK will be suspended until OK is clicked ...
+\dontrun{
    rp.messagebox("Click OK to continue.", title = "Test message")
-   }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

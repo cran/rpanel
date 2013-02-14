@@ -2,7 +2,7 @@
 
 \alias{luthor}
 
-\title{Data for the rp.rmplot example script}
+\title{Repeated measurements on leutinizing hormone in cows}
 
 \description{
 These data, reported by Raz(1989, Biometrics 54, 851-71) refer to
@@ -25,8 +25,7 @@ The data are used in the \code{\link{rp.rmplot}} example script.
    }
 
 \examples{
-if (interactive()) {
-   data(luthor)
+\dontrun{
    LH <- luthor[,2:16]
    gp     <- factor(luthor[,1])
    times  <- c(1:5,(5+(1:10)/2))

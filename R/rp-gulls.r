@@ -1,4 +1,4 @@
-rp.gulls <- function(df.name = "gulls", panel.plot = TRUE, sleep = 0.5) {
+rp.gulls <- function(df.name = "", panel.plot = TRUE) {
 
 click.capture <- function(panel, x, y) {
   x <- as.numeric(x)
@@ -92,7 +92,8 @@ collect.data <- function(panel) {
       if (added) {
         rp.messagebox(paste(vname, "has been added to the dataset."))
         gulls <- panel$gulls
-        assign(panel$df.name, gulls, env = .GlobalEnv)
+        # assign(panel$df.name, gulls, envir = .GlobalEnv)
+        if (nchar(panel$df.name) > 0) save(gulls, file = panel$df.name)
         if (panel$panel.plot) {
           nvar <- ncol(panel$gulls)
           if (nvar == 1)
@@ -188,15 +189,14 @@ rp.gulls.plot <- function(panel) {
                    lmk1 = NA, lmk2 = NA, df.name = df.name,
                    var1 = FALSE, var2 = FALSE, var3 = FALSE,
                    panel.plot = panel.plot, size = c(480, 550))
-  Sys.sleep(sleep)
   rp.grid(gulls.panel, "image",  row = 0, column = 0, columnspan = 3)
   rp.grid(gulls.panel, "left",   row = 1, column = 0)
   rp.grid(gulls.panel, "middle", row = 1, column = 1)
   rp.grid(gulls.panel, "right",  row = 1, column = 2)
-  rp.image(gulls.panel, image.file, id = "gulls.image", action = click.capture,
+  rp.image(gulls.panel, image.file, gulls.image, action = click.capture,
             grid = "image", row = 0, column = 0)
   rp.button(gulls.panel, title = "Collect data", action = collect.data,
             grid = "left", row = 0, column = 0)
-  rp.panel(gulls.panel)
+  invisible()
 }
 

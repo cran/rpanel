@@ -5,9 +5,7 @@
 \title{Interactive statistical tables}
 
 \description{
-  This function launches a panel which allows standard normal, t,
-  chi-squared and F distributions to be plotted, with interactive
-  control of parameters, tail probability and p-value calculations.
+This function launches a panel which allows standard normal, t, chi-squared and F distributions to be plotted, with interactive control of parameters, tail probability and p-value calculations.
 }
 
 \usage{
@@ -27,16 +25,11 @@
 }
 
 \details{
-  The panel contains radiobuttons to select the standard normal, t,
-  chi-squared or F distributions.  Doublebutton are available to
-  control the degrees of freedom.  An observed value can be added
-  to the plot, with optional determination of the corresponding
-  p-value.  Alternatively, shaded areas corresponding to tail
-  probabilities of specified value can be displayed.
+The panel contains radiobuttons to select the standard normal, t, chi-squared or F distributions.  Doublebutton are available to control the degrees of freedom.  An observed value can be added to the plot, with optional determination of the corresponding p-value.  Alternatively, shaded areas corresponding to tail probabilities of specified value can be displayed.
 }
 
 \value{
-  the name of the panel object.
+  Nothing is returned.
 }
 
 \references{
@@ -45,9 +38,9 @@
    }
 
 \examples{
-if (interactive()) {
+\dontrun{
   rp.tables()
-  }}
+}}
 
 \keyword{iplot}
 \keyword{dynamic}

@@ -5,8 +5,8 @@
 \title{The mass and speed of quadrupedal rodents}
 
 \description{
-In an investigation of the relationship between mass and speed in
-animals,  Garland (1983) collected information from published articles
+In an investigation of the relationship between mass (kg) and speed (km/hr) 
+in mammals,  Garland (1983) collected information from published articles
 on these two variables for a large number of different species.  These
 measurements are given below for a variety of four-footed rodents.
 (The common names of the species are taken from Corbet & Hill (1986).)
@@ -34,11 +34,11 @@ rpanel: Simple interactive controls for R functions using the tcltk package.
 }
 
 \examples{
-if (interactive()) {
-   data(rodent)
-   attach(rodent)
-   rp.regression(log(Mass), log(Speed))
-   }}
+\dontrun{
+   with(rodent, {
+     rp.regression(log(Mass), log(Speed))
+   })
+}}
 
 \keyword{iplot}
 \keyword{dynamic}
