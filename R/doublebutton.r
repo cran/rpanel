@@ -1,17 +1,19 @@
-w.doublebutton <- function(parent, step, title, action = I, initval, range = c(NA, NA), 
+w.doublebutton <- function(parent, step, title, action = I, parentvarname, initval, range = c(NA, NA), 
                            log = FALSE, showvalue = FALSE, showvaluewidth = 4,
                            repeatinterval = 100, repeatdelay = 100, pos = "left", 
                            foreground = NULL, background = NULL, font = NULL) {
   widget <- list()
   widget$.type <- "doublebutton"
   widget$.showvalue <- showvalue
-  varname <- paste("dbvar", .nc(), sep = "")
+  # varname <- paste("dbvar", .nc(), sep = "")
+  varname <- parentvarname
   assign(varname, initval, .rpenv)
   
   fchange <- function(op) { # this returns the desired function
     function(...) {
       val <- assign(varname, 
-                eval(parse(text = paste(varname, op, as.character(step))), .rpenv), .rpenv)
+                eval(parse(text = paste(varname, op, 
+                           as.character(step))), .rpenv), .rpenv)
       if (!is.na(range[1])) val <- max(range[1], val)
       if (!is.na(range[2])) val <- min(range[2], val)
       assign(varname, val, .rpenv)
@@ -93,10 +95,10 @@ rp.doublebutton <- function(panel, variable, step, title = deparse(substitute(va
      parent <- rp.widget.get(panelname, parentname)
   else
      parent <- panel
-  if (is.list(pos) & !is.null(pos$grid)) 
+  if (is.list(pos) && !is.null(pos$grid)) 
      parent <- rp.widget.get(panelname, pos$grid)
   
-  widget <- w.doublebutton(parent, step, title, action = f, initval = variable, 
+  widget <- w.doublebutton(parent, step, title, action = f, paste(panelname, "$", varname, sep=""), initval = variable, 
                            range, log, showvalue, showvaluewidth, repeatinterval,
                            repeatdelay, pos, foreground, background, font) 
 

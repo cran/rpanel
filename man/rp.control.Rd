@@ -12,7 +12,7 @@
 
 \usage{
 rp.control(title = "", size = c(100, 100), panelname, background, ...)
-rp.control.dispose(panel, name)
+rp.control.dispose(panel)
 }
 
 \arguments{
@@ -22,7 +22,6 @@ rp.control.dispose(panel, name)
   \item{background}{the background colour of the control e.g. "white". (New parameter with version 2.0.)}
   \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.  Note that the names of these additional arguments should not conflict with those of the main arguments of \code{rp.control}.}
   \item{panel}{the panel to be disposed of.  This represents the object and its parameters}
-  \item{name}{the name of the panel to be disposed of.  This represents the window.}
 }
 
 \note{

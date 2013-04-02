@@ -75,7 +75,7 @@ rp.checkbox <- function(panel, variable, action = I, labels = NULL, names = NULL
   names(variable)     <- names
   rp.var.put(panelname, varname, variable)
   
-  if (is.null(pos) & length(list(...))) pos <- list(...)
+  if (is.null(pos) & length(list(...)) > 0) pos <- list(...)
   
   f <- function(val) {
     valexisting <- rp.var.get(panelname, varname) 
@@ -90,7 +90,7 @@ rp.checkbox <- function(panel, variable, action = I, labels = NULL, names = NULL
      parent <- rp.widget.get(panelname, parentname)
   else
      parent <- panel
-  if (is.list(pos) & !is.null(pos$grid))
+  if (is.list(pos) && !is.null(pos$grid))
      parent <- rp.widget.get(panelname, pos$grid)
   
   widget <- w.checkbox(parent, action = f, labels = labels, names = names, title = title,

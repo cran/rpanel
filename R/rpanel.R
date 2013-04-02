@@ -42,7 +42,7 @@ handshake(.Tcl, 'package require BWidget')
 
 .onAttach <- function(library, pkg) {
 # First function run on opening the package
-  packageStartupMessage("Package `rpanel', version 1.1-1: type help(rpanel) for summary information")
+  packageStartupMessage("Package `rpanel', version 1.1-2: type help(rpanel) for summary information")
   assign("counter", 0 , envir=.rpenv)
   assign("getpanel", TRUE, envir=.rpenv)  # get the panel from the environment at the start of a function
   assign("setparent", TRUE, envir=.rpenv) # set the panel.panelname to the deparse-substitute of the panel
@@ -337,6 +337,7 @@ rp.var.put <- function(panelname, name, val, labels=NULL)
     }
   }
   }
+
 }
 
 rp.matrix.put <- function(panelname, name, val, ncol, nrow)

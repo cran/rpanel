@@ -1,19 +1,30 @@
-12/06/2006: Release of version 1.0-1 as a preliminary version at the useR conference in Vienna.
+12/06/2006: Release of version 1.0-1 as a preliminary version at the useR 
+               conference in Vienna.
 15/08/2006: Version 1.0-3 submitted to CRAN for public release.
-07/11/2006: Version 1.0-4 submitted to CRAN with extra widgets including rp.listbox and rp.menu 
-            as well as other changes.
-15/12/2008: Version 1.0-5 released.  
-            Functions rp.geosim, rp.mururoa and rp.firth added. 
-            rp.grid added and extended settings for pos parameter allowed. 
-            Parameters hscale, vscale added to rp.tkrplot.
-            Arguments mouseupfun and mousedragfun added to rp.image.
-            rp.checkbox extended to multiple boxes and initialisation enabled.
-            rp.textentry extended to multiple boxes.
-            rp.regression, rp.likelihood, rp.logistic, rp.normal, rp.ci added.
+07/11/2006: Version 1.0-4 submitted to CRAN with extra widgets including 
+               rp.listbox and rp.menu as well as other changes.
+15/12/2008: Version 1.0-5 released.
+               Functions rp.geosim, rp.mururoa and rp.firth added. 
+            
+               rp.grid added and extended settings for pos parameter allowed. 
+           
+               Parameters hscale, vscale added to rp.tkrplot.
+            
+               Arguments mouseupfun and mousedragfun added to rp.image.
+            
+               rp.checkbox extended to multiple boxes and initialisation 
+                   enabled.
+               rp.textentry extended to multiple boxes.
+               rp.regression, rp.likelihood, rp.logistic, rp.normal, rp.ci
+                   added.
 14/02/2013: Version 1.1-1 released.
-            A major redesign of internal code.
-            New functions rp.plot4d, rp.spacetime, rp.anova, rp.bubbleplot.
-            Additional controls such as rp.timer.
+               A major redesign of internal code.
+               New functions rp.plot4d, rp.spacetime, rp.anova, rp.bubbleplot.
+            
+               Additional controls such as rp.timer.
             
             
             
+02/04/2013: Version 1.1-2 released.
+               Minor corrections.
+               

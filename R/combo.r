@@ -51,7 +51,8 @@ w.combo <- function(parent, prompt=NULL, values, pos=NULL, action=I, foreground=
     ), background)
     
   combo$.type <- "combo"
-  combo$.widget <- handshake(tkwidget, parent$.handle, "ComboBox", editable=FALSE, values=values, modifycmd=f, width=maxlen2(values))
+  combo$.widget <- handshake(tkwidget, parent$.handle, "ComboBox", editable=FALSE, values=values, modifycmd=f, width=maxlen2(values),
+     textvariable = tclVar(values[1]))
   w.appearancewidget(combo, font, foreground, background)
   widget$.label <- list(label)
   widget$.combo <- list(combo)
@@ -81,7 +82,7 @@ rp.combo <- function(panel, variable, prompt=NULL, vals, initval=vals[1], pos=NU
   if (!rp.isnull(panelname, varname)) { variable = rp.var.get(panelname, varname) } 
   else { variable = initval; rp.var.put(panelname, varname, variable); } 
 
-  if (is.null(pos)) { if (length(list(...))) { pos <- list(...) } }
+  if (is.null(pos)) { if (length(list(...)) > 0) { pos <- list(...) } }
 
   f <- function(val)
   {

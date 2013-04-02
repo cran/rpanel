@@ -9,10 +9,10 @@
 }
 
 \usage{
-rp.textentry(panel, variable, action=I, labels=NULL, names = labels, 
-  title=NULL, initval=NA, pos=NULL, 
-  foreground = NULL, background = NULL, font = NULL, width=20, keydown=FALSE, 
-  parentname=deparse(substitute(panel)), name = paste("textentry", .nc(), sep=""), ...) 
+rp.textentry(panel, variable, action = I, labels = NULL, names = labels, 
+  title = NULL, initval = rep(NA, length(labels)), pos = NULL, 
+  foreground = NULL, background = NULL, font = NULL, width = 20, keydown = FALSE, 
+  parentname = deparse(substitute(panel)), name = paste("textentry", .nc(), sep=""), ...) 
 }
 
 \arguments{

@@ -88,7 +88,12 @@ rp.block <- function(panel)
   open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
   while(open){
     Sys.sleep(0.01)
-    open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
+    open <- exists(panelname)
+    if (open) {
+      open <- exists(panelname, envir= .rpenv)
+      if (open)
+        open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
+    }
   }
 
   invisible()

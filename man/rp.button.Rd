@@ -20,7 +20,7 @@ rp.button(panel, action, title=deparse(substitute(action)), repeatdelay=0, repea
   \item{title}{the text displayed on the button.}
   \item{repeatinterval}{the interval between auto-repeats (milliseconds) when the button is held down.}
   \item{repeatdelay}{the time after which the button starts to auto-repeat (milliseconds).}
-  \item{quitbutton}{this defaults to FALSE. Set to TRUE this creates a button which will close the window and escape from a rp.block call. Before the window is destroyed the action function will be called.}
+  \item{quitbutton}{this defaults to FALSE. Set to TRUE this creates a button which will close the window and escape from an rp.block call. Before the window is destroyed the action function will be called.}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
   \item{foreground}{this sets the colour of text e.g. "navy"}
   \item{background}{this sets the background colour of text e.g. "white"}

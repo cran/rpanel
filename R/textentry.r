@@ -51,8 +51,9 @@ w.textentry <- function(parent, label, text, action=I, pos=NULL, foreground=NULL
   invisible(widget)
 }
   
-rp.textentry <- function(panel, variable, action = I, labels = NULL, names = labels, title = NULL, 
-                         initval = NA, pos = NULL, foreground = NULL, background = NULL, 
+rp.textentry <- function(panel, variable, action = I, labels = NULL, names = labels,
+                         title = NULL, initval = rep(NA, length(labels)),
+                         pos = NULL, foreground = NULL, background = NULL, 
                          font = NULL, width = 20, keydown = FALSE, 
                          parentname = deparse(substitute(panel)), 
                          name = paste("textentry", .nc(), sep=""), ...) {
@@ -96,7 +97,7 @@ rp.textentry <- function(panel, variable, action = I, labels = NULL, names = lab
      parent <- rp.widget.get(panelname, parentname)
   else 
      parent <- panel
-  if (is.list(pos) & !is.null(pos$grid))
+  if (is.list(pos) && !is.null(pos$grid))
      parent <- rp.widget.get(panelname, pos$grid)
   
   widget <- w.textentry(parent, labels, text = variable, action = f, pos, 

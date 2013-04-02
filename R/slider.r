@@ -183,7 +183,7 @@ rp.slider <- function(panel, variable, from, to, action = I,
   if (is.null(pos) & length(list(...)) > 0) pos <- list(...)
   
   f <- function(val) {
-    valexisting <- rp.var.get(panelname, varname) 
+    valexisting <- rp.var.get(panelname, varname)
     names(val)  <- names(valexisting)
     rp.var.put(panelname, varname, val)
     panel <- rp.control.get(panelname) 
@@ -192,10 +192,11 @@ rp.slider <- function(panel, variable, from, to, action = I,
   }
    
   if (rp.widget.exists(panelname, parentname))
-    parent <- rp.widget.get(panelname, parentname)
+     parent <- rp.widget.get(panelname, parentname)
   else 
-    parent <- panel
-  if (is.list(pos) & !is.null(pos$grid)) parent <- rp.widget.get(panelname, pos$grid)
+     parent <- panel
+  if (is.list(pos) && !is.null(pos$grid))
+     parent <- rp.widget.get(panelname, pos$grid)
   
   widget <- w.slider(parent, initval = variable, from, to, action = f, 
                      labels, names, title, log,

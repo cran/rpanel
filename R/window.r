@@ -34,7 +34,7 @@ w.window.settitle <- function(panel, title)
 
 w.window.dispose <- function(panel)
 {
-  try(handshake(tkdestroy, panel$.handle), silent = TRUE)
+  try(tkdestroy(panel$.handle))
 }
 
 w.window.focus <- function(panel)
@@ -50,31 +50,34 @@ rp.control <- function(title = "", size=c(100, 100),
   handshake(tkbind, panel$.handle, "<Destroy>", 
     function() 
     {  
-# destroy the window
-# this probably should be through 'handshake' but I feel there is a risk it may not work properly every time
-      if (exists(paste(panelname,"$.handle", sep = ""), envir = .rpenv)) 
-         eval(parse(text=paste("try(tkdestroy(", panelname, "$.handle))", sep="")), envir=.rpenv)
+       rp.control.dispose(panel)
 
-# find other examples and set them to NULL
-      listing <- ls(.rpenv)
-      for(i in 1:length(listing)) {
-        objname <- listing[i]
-        if (nchar(objname) < 50) {
-          obj <- eval(parse(text=objname), envir=.rpenv)
-          if (is.list(obj)) {
-            if (!is.null(obj$.type)) {
-              if (obj$.type == "window") {
-                if (as.character(obj$.handle$ID) == as.character(panel$.handle$ID)) {
-                  eval(parse(text = paste("remove(", objname, ")", sep = "")), envir = .rpenv)
-                }
-              }
-            }
-          }
-        }
-      }
+# # destroy the window
+# # this probably should be through 'handshake' but I feel there is a risk it may not work properly every time
+      # if (exists(paste(panelname,"$.handle", sep = ""), envir = .rpenv)) 
+         # eval(parse(text=paste("try(tkdestroy(", panelname, "$.handle))", sep="")), envir=.rpenv)
 
-      if (exists(panelname, envir = .rpenv)) 
-         eval(parse(text=paste(panelname, " <- NULL", sep="")), envir=.rpenv)
+# # find other examples and set them to NULL
+      # listing <- ls(.rpenv)
+      # for(i in 1:length(listing)) {
+        # objname <- listing[i]
+        # if (nchar(objname) < 50) {
+          # obj <- eval(parse(text=objname), envir=.rpenv)
+          # if (is.list(obj)) {
+            # if (!is.null(obj$.type)) {
+              # if (obj$.type == "window") {
+                # if (as.character(obj$.handle$ID) == as.character(panel$.handle$ID)) {
+                  # eval(parse(text = paste("remove(", objname, ")", sep = "")), envir = .rpenv)
+                # }
+              # }
+            # }
+          # }
+        # }
+      # }
+      
+      # if (exists(panelname, envir = .rpenv)) 
+         # eval(parse(text=paste(panelname, " <- NULL", sep="")), envir=.rpenv)
+         
     }
   )    
   
@@ -83,10 +86,9 @@ rp.control <- function(title = "", size=c(100, 100),
   invisible(panel)
 }
 
-# I'm not sure this function is ever used.  It doesn't look right anyway.  name is never used.
-rp.control.dispose <- function(panel, name)
+rp.control.dispose <- function(panel)
 {
-  panelname <- deparse(substitute(panel))
+  panelname <- panel$panelname
   pwidget   <- eval(parse(text = panelname), envir=.rpenv)
   w.window.dispose(pwidget)
 }

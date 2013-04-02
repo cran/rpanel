@@ -63,6 +63,7 @@ word issues.
 \dontrun{
    callback <- function(panel) {
       print(panel$option)
+      panel
    }
    panel <- rp.control()
    rp.combo(panel, option, "Pick an option:", 

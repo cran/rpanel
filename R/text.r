@@ -33,7 +33,7 @@ rp.text <- function(panel, text, pos=NULL, action=I, foreground=NULL, background
 # 13/03/2012 these lines are not commented out in previous version
 #    panel <- rp.control.get(panelname, panel) # now get the panel
 
-  if (is.null(pos) & length(list(...))) pos <- list(...)
+  if (is.null(pos) & length(list(...)) > 0) pos <- list(...)
 
   f <- function() {
 # 13/03/2012 this next line was not commented out in the previous version
@@ -46,7 +46,7 @@ rp.text <- function(panel, text, pos=NULL, action=I, foreground=NULL, background
   	 parent <- rp.widget.get(panelname, parentname)
   else
      parent <- panel
-  if (is.list(pos) & !is.null(pos$grid)) parent <- rp.widget.get(panelname, pos$grid)
+  if (is.list(pos) && !is.null(pos$grid)) parent <- rp.widget.get(panelname, pos$grid)
   
   widget <- w.text(parent, text, action=f, pos, foreground, background, font, width)
   rp.widget.put(panelname, name, widget)

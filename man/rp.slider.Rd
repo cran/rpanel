@@ -82,21 +82,47 @@ Note that setting log=TRUE and showvalue=TRUE is not allowed. The slider value s
 
 \examples{
 \dontrun{
-   density.draw <- function(panel) {
-     plot(density(panel$x, bw = panel$h))
-     panel
-     }
-   panel <- rp.control(x = rnorm(50))
-   rp.slider(panel, h, 0.5, 5, log = TRUE, action = density.draw)
+density.draw <- function(panel) {
+   plot(density(panel$x, bw = panel$h))
+   panel
+   }
+panel <- rp.control(x = rnorm(50))
+rp.slider(panel, h, 0.5, 5, log = TRUE, action = density.draw)
    
-  printer <- function(panel) {
-    print(panel$h)
-    panel
-  }
-  panel <- rp.control(x = rnorm(50), h=c(1,2,3))
-  rp.slider(panel, h, c(0.5,0.5,0.5), c(5,5,5),
-    log = c(TRUE,TRUE,TRUE), action = printer,
-    title=c('h','h1','h2'), initval=c(1,2,3))
+printer <- function(panel) {
+  print(panel$h)
+  panel
+}
+panel <- rp.control(x = rnorm(50), h=c(1,2,3))
+rp.slider(panel, h, c(0.5,0.5,0.5), c(5,5,5),
+  log = c(TRUE,TRUE,TRUE), action = printer,
+  title=c('h','h1','h2'), initval=c(1,2,3))
+    
+# An example which changes the slider position through another widget
+    
+draw <- function(panel) {
+  hist(panel$x)
+  abline(v=panel$v, col="red", lty=2)
+  panel
+}
+
+redraw <- function(panel) {
+  rp.tkrreplot(panel, plot)
+  panel
+}
+
+redraw1 <- function(panel) {
+  rp.tkrreplot(panel, plot)
+  rp.slider.change(panel, "slider", panel$v)
+  panel
+}
+
+x <- rnorm(25)
+panel <- rp.control(v = 0, x = x)
+rp.tkrplot(panel, plot, draw, pos="right")
+rp.slider(panel, v, min(x), max(x), redraw, name = "slider")
+rp.doublebutton(panel, v, diff(range(x))/100, action=redraw1)
+
 }}  
 
 \keyword{iplot}

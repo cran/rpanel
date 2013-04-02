@@ -1,5 +1,6 @@
 \name{worldbank}
 
+\alias{worldbank}
 \alias{co2.emissions}
 \alias{gdp}
 \alias{life.expectancy}

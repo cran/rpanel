@@ -29,13 +29,19 @@ rp.button <- function(panel, action, title=deparse(substitute(action)),
 #    panel <- rp.control.get(panelname, panel) # now get the panel
   }
   
-  if (is.null(pos)) { if (length(list(...))) { pos <- list(...) } }
+  if (is.null(pos)) { if (length(list(...)) > 0) { pos <- list(...) } }
 
   f <- function()
   {
     panel <- rp.control.get(panelname)
     panel <- action(panel)
     rp.control.put(panelname, panel)
+    if (quitbutton) {
+      rp.control.dispose(panel)
+      # if (exists(paste(panelname,"$.handle", sep = ""), envir = .rpenv)) 
+      #    eval(parse(text=paste("try(tkdestroy(", panelname, "$.handle))",
+      #    sep="")), envir=.rpenv)
+    }
   }
 
   if (rp.widget.exists(panelname, parentname)) 

@@ -15,8 +15,8 @@ up to more sophisticated mini-applications.  In addition to functions which crea
 \tabular{ll}{
 Package: \tab rpanel\cr
 Type: \tab Package\cr
-Version: \tab 1.1-0\cr
-Date: \tab 2013-02-14\cr
+Version: \tab 1.1-2\cr
+Date: \tab 2013-04-02\cr
 License: \tab GNU\cr
 }
 
