@@ -1,7 +1,7 @@
 #   Simulations of confidence intervals
 
-rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
-                     panel.plot = TRUE, hscale = NA, vscale = hscale) {
+rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500), confidence = 0.95,
+                  panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale) {
 
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1
@@ -17,14 +17,18 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
       X     <- matrix(rnorm(n * 100, mu, sigma), ncol = n)
       Xmean <- apply(X, 1, mean)
       Xsd   <- apply(X, 1, sd)
-      lower <- Xmean - qt(0.975, n - 1) * Xsd / sqrt(n)
-      upper <- Xmean + qt(0.975, n - 1) * Xsd / sqrt(n)
+      limit <- qt(1 - (1 - as.numeric(panel$confidence)) / 2, n - 1) * Xsd / sqrt(n)
+      lower <- Xmean - limit
+      upper <- Xmean + limit
       panel$cover    <- ((lower < mu) & (mu < upper))
       panel$coverage <- panel$coverage + length(which(panel$cover))
       panel$nsim     <- panel$nsim + 100
       panel$lower    <- lower
       panel$upper    <- upper
-      rp.control.put(panel$panelname, panel)
+      if (panel$nopanel) 
+         ci.plot(panel)
+      else      
+         rp.control.put(panel$panelname, panel) 
       if (!panel$first) {
          if (panel$panel.plot) rp.tkrreplot(panel, plot)
             else               rp.do(panel, ci.plot)
@@ -62,19 +66,28 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
       panel.plot <- FALSE
       }
       
-   panel <- rp.control("Simulated confidence intervals", panel.plot = panel.plot,
-                    pars = c("mean" = mu, "s.d." = sigma), ssize = 30, 
-                    coverage = 0, nsim = 0, first = TRUE)
-   rp.do(panel, ci.sim)
-   if (panel.plot)
-      rp.tkrplot(panel, plot, ci.plot, pos = "right", hscale = hscale, vscale = vscale,
-                 background = "white")
-   rp.textentry(panel, pars, labels = c("mean", "s.d."), action = reset.coverage)
-   rp.radiogroup(panel, ssize, sample.sizes, title = "Sample size", action = ci.sim)
-   rp.button(panel, title = "Sample", action = ci.sim, repeatdelay = 500, repeatinterval = 200)
-   rp.button(panel, title = "Reset coverage count", action = reset.coverage)
-   if (!panel.plot)
-      rp.do(panel, reset.coverage)
-
+   if (panel) {
+      panel <- rp.control("Simulated confidence intervals", panel.plot = panel.plot,
+                    pars = c("mean" = mu, "s.d." = sigma), ssize = 30, confidence = confidence,
+                    coverage = 0, nsim = 0, first = TRUE, nopanel = !panel)
+      rp.do(panel, ci.sim)
+      if (panel.plot)
+         rp.tkrplot(panel, plot, ci.plot, pos = "right", hscale = hscale, vscale = vscale,
+                    background = "white")
+      rp.textentry(panel, pars, labels = c("mean", "s.d."), action = reset.coverage)
+      rp.radiogroup(panel, ssize, sample.sizes, title = "Sample size", action = reset.coverage)
+      rp.radiogroup(panel, confidence, c(0.90, 0.95, 0.99), title = "Confidence",
+                    action = reset.coverage)
+      rp.button(panel, title = "Sample", action = ci.sim, repeatdelay = 500, repeatinterval = 200)
+      rp.button(panel, title = "Reset coverage count", action = reset.coverage)
+      if (!panel.plot)
+         rp.do(panel, reset.coverage)
+   }
+   else {
+   	  panel <- list(pars = c("mean" = mu, "s.d." = sigma), ssize = 30, confidence = confidence,
+                    coverage = 0, nsim = 0, first = TRUE, nopanel = !panel)
+      ci.sim(panel)
+   }
+   
    invisible()
    }

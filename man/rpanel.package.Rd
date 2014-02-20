@@ -15,8 +15,8 @@ up to more sophisticated mini-applications.  In addition to functions which crea
 \tabular{ll}{
 Package: \tab rpanel\cr
 Type: \tab Package\cr
-Version: \tab 1.1-2\cr
-Date: \tab 2013-04-02\cr
+Version: \tab 1.1-3\cr
+Date: \tab 2014-02-20\cr
 License: \tab GNU\cr
 }
 
@@ -68,6 +68,8 @@ Functions to create individual controls\cr
 \code{\link{rp.timer}}: executes an action function repeatedly until a condition is satisfied\cr
 \code{\link{rp.block}}: blocks use of the R console until a panel is closed\cr
 \code{\link{rp.panel}}: returns a named panel or the most recently created panel\cr
+\code{\link{rp.var.put}}: place an object into the rpanel environment, usually within a panel\cr
+\code{\link{rp.var.get}}: retrieve an object from the rpanel environment, usually from a panel\cr
 \code{\link{rp.pos}}: a demonstration function for layout control\cr
 \code{\link{rp.grid}}: a grid system for layout control\cr
 \code{\link{rp.do}}: executes a nominated user defined callback function\cr

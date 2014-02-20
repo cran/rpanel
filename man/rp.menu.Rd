@@ -9,7 +9,9 @@ This function adds a menu to the top of the panel window.  When a menu item is s
 }
 
 \usage{
-rp.menu(panel, variable, labels, initval=NULL, action=I, foreground=NULL, background=NULL, font=NULL, name=paste("menu", .nc(), sep="")) 
+rp.menu(panel, variable, labels, initval=NULL, action=I,
+        foreground=NULL, background=NULL, font=NULL,
+        name=paste("menu", .nc(), sep="")) 
 }
 
 \arguments{

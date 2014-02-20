@@ -214,8 +214,6 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       panel.plot <- FALSE
       }
 
-   if (panel) {
-   	
       model.options <- c("overall mean")
       if (type == "One-way") {
          model.options <- c(model.options, xterm)
@@ -232,6 +230,8 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       names(init.model) <- model.options
       bgdcol <- "grey85"
 
+   if (panel) {
+   	
       panel <- rp.control(paste(type, "anova"), 
                     x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab,
                     xterm = xterm, zterm = zterm, term.names = term.names, jitter.x = jitter.x, 
@@ -286,8 +286,13 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       rp.do(panel, action.fn)
    }
    else {
-      panel <- list(x = x, y = y, z = z, graphics = graphics,
-                         xlab = xlab, ylab = ylab, model = model)   
+      panel <- list(x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab,
+                    xterm = xterm, zterm = zterm, term.names = term.names, jitter.x = jitter.x, 
+                    graphics = "strip plot",
+                    model11 = init.model[1],  model12 = init.model[2],  model13 = init.model[3], 
+                    model14 = init.model[4],  model01 = init.model0[1], model02 = init.model0[2],
+                    model03 = init.model0[3], model04 = init.model0[4],
+                    model.check = TRUE, model0.check = TRUE, bgdcol = bgdcol)
       rp.anova.draw(panel)
    }
       

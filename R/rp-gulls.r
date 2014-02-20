@@ -97,11 +97,11 @@ collect.data <- function(panel) {
         if (panel$panel.plot) {
           nvar <- ncol(panel$gulls)
           if (nvar == 1)
-            rp.checkbox(panel, var1, title = vname, grid = "middle", row = 0, column = 0)
+            rp.checkbox(panel, var1, labels = vname, grid = "middle", row = 0, column = 0)
           if (nvar == 2)
-            rp.checkbox(panel, var2, title = vname, grid = "middle", row = 1, column = 0)
+            rp.checkbox(panel, var2, labels = vname, grid = "middle", row = 1, column = 0)
           if (nvar == 3)
-            rp.checkbox(panel, var3, title = vname, grid = "middle", row = 2, column = 0)
+            rp.checkbox(panel, var3, labels = vname, grid = "middle", row = 2, column = 0)
           if (!("collected.lmks" %in% names(panel))) {
             panel$collected.lmks <- matrix(lmks, ncol = 2)
             rownames(panel$collected.lmks) <- vname

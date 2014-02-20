@@ -11,7 +11,8 @@ This function plots two covariates coloured by a response variable and animates 
 
 \usage{
    rp.plot4d(x, z, y, model, col.palette, col.breaks, col.labels,
-                  hscale = 1, vscale = hscale, panel = TRUE, x1lab, x2lab, zlab, ylab,
+                  hscale = 1, vscale = hscale, panel = TRUE,
+                  x1lab, x2lab, zlab, ylab,
                   background.plot = NULL, foreground.plot = NULL, 
                   z.window = "normal", z.window.pars = c(min(z), sd(z)/5),
                   coords = rep(NA, 2), radius = 0.05, location.plot = TRUE,
@@ -20,7 +21,8 @@ This function plots two covariates coloured by a response variable and animates 
                   
    rp.spacetime(space, time, y, model, col.palette, col.breaks, col.labels,
                   hscale = 1, vscale = hscale, panel = TRUE,
-                  x1lab, x2lab, zlab, ylab, background.plot = NULL, foreground.plot = NULL,
+                  x1lab, x2lab, zlab, ylab,
+                  background.plot = NULL, foreground.plot = NULL,
                   time.window = "normal",
                   time.window.pars = c(min(time), sd(time)/5),
                   coords = rep(NA, 2), radius = 0.05, location.plot = TRUE,

@@ -199,4 +199,3 @@ rp.bubbleplot <- function(x, y, year, size, col, col.palette = topo.colors(20),
 
    invisible()
 }
-                    

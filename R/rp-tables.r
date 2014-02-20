@@ -1,6 +1,9 @@
 #   Statistical tables
 
-rp.tables <- function(panel.plot = TRUE, hscale = NA, vscale = hscale) {
+rp.tables <- function(panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
+                      distribution = "normal", degf1 = 5, degf2 = 30,
+                      observed.value = " ", observed.value.showing = !is.na(observed.value),
+                      probability = 0.05, tail.probability, tail.direction) {
 	
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1
@@ -8,15 +11,24 @@ rp.tables <- function(panel.plot = TRUE, hscale = NA, vscale = hscale) {
       }
    if (is.na(vscale)) 
       vscale <- hscale
+      
+   xobs.prob <- c(observed.value, probability)
+   if (missing(tail.probability) | is.na(as.numeric(observed.value))) tail.probability <- "none"
+   tail.area <- tail.probability   
+   if (missing(tail.direction))
+   	 tail.direction <- if (distribution %in% c("normal", "t")) "two-sided" else "upper"
 
 tables.draw <- function(tables) {
   with(tables, {
-    xobs <- as.numeric(xobs.prob[1])
+    xobs <- xobs.prob[1]
+    xobs <- if (!is.na(xobs)) as.numeric(xobs) else NA
+    extend <- if (is.na(xobs)) 0 else xobs * 1.1
     prob <- as.numeric(xobs.prob[2])
     ngrid <- 100
-    if (distribution == "Normal") {
+    if (distribution == "normal") {
       xrange <- c(-4, 4)
-      x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
+      extend <- if (is.na(xobs)) 0 else xobs * 1.1
+      x      <- seq(min(xrange[1], extend), max(xrange[2], extend), length = ngrid)
       dens   <- dnorm(x)
       ylim   <- c(0, 0.4)
       pval   <- pnorm(xobs)
@@ -25,7 +37,7 @@ tables.draw <- function(tables) {
     }
     if (distribution == "t") {
       xrange <- c(-4, 4)
-      x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
+      x      <- seq(min(xrange[1], extend), max(xrange[2], extend), length = ngrid)
       dens   <- dt(x, degf1)
       ylim   <- c(0, 0.4)
       pval   <- pt(xobs, degf1)
@@ -34,10 +46,10 @@ tables.draw <- function(tables) {
 #     xp   <- if (two.sided) qt(c(1 - prob/2, prob/2), degf)     else qt(1 - prob, degf)
 #     pval <- if (two.sided) 2 * (1 - pt(abs(xobs), degf)) else 1 - pt(xobs, degf)
     }
-    if (distribution == "Chi-squared") {
+    if (distribution == "chi-squared") {
       xr1    <- max(degf1 + 3 * sqrt(2 * degf1), qchisq(1 - prob, degf1) + 1)
       xrange <- c(0.01, xr1)
-      x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
+      x      <- seq(xrange[1], max(xrange[2], extend), length = ngrid)
       dens   <- dchisq(x, degf1)
       if (degf1 <= 2) ylim   <- c(0, max(dens))
         else          ylim   <- c(0, 1.1 * max(dens))
@@ -47,7 +59,7 @@ tables.draw <- function(tables) {
     }
     if (distribution == "F") {
       xrange <- c(0.01, max(10, qf(1 - prob, degf1, degf2) + 1))
-      x      <- seq(min(xrange[1], xobs * 1.1), max(xrange[2], xobs * 1.1), length = ngrid)
+      x      <- seq(xrange[1], max(xrange[2], extend), length = ngrid)
       dens   <- df(x, degf1, degf2)
       if (degf1 <= 2) ylim   <- c(0, max(dens))
         else          ylim   <- c(0, 1.1 * max(dens))
@@ -57,9 +69,9 @@ tables.draw <- function(tables) {
     }
     plot(x, dens, type = "l", ylim = ylim, ylab = paste(distribution, "density"))
     abline(h = 0, lty = 3)
-    if (distribution == "Normal")       title.text <- "Normal distribution"
+    if (distribution == "normal")       title.text <- "Normal distribution"
     if (distribution == "t")            title.text <- paste("t(", degf1,") distribution", sep = "")
-    if (distribution == "Chi-squared")  title.text <- paste("Chi-squared(", degf1,
+    if (distribution == "chi-squared")  title.text <- paste("Chi-squared(", degf1,
                                                             ") distribution", sep = "")
     if (distribution == "F")            title.text <- paste("F(", degf1,",", degf2,
                                                             ") distribution", sep = "")
@@ -118,9 +130,11 @@ tables.redraw <- function(object) {
   object
   }
 
+  if (panel) {
   tables.panel <- rp.control("Distributions",
-                  xobs.prob = c(1, 0.05), distribution = "Normal", degf1 = 5, degf2 = 30,
-                  observed.value.showing = FALSE, tail.area = "none", tail.direction = "lower")
+                  xobs.prob = xobs.prob, distribution = distribution, degf1 = degf1, degf2 = degf2,
+                  observed.value.showing = observed.value.showing,
+                  tail.area = tail.area, tail.direction = tail.direction)
   rp.grid(tables.panel, "controls", row = 0, column = 0)
   rp.grid(tables.panel, "plot",     row = 1, column = 0, background = "white")
   if (panel.plot && require(tkrplot)) {
@@ -131,7 +145,7 @@ tables.redraw <- function(object) {
     }
   else
     action.fn <- tables.draw
-  rp.radiogroup(tables.panel, distribution, c("Normal", "t", "Chi-squared", "F"),
+  rp.radiogroup(tables.panel, distribution, c("normal", "t", "chi-squared", "F"),
                   title = "Distribution", action = action.fn,
                   grid = "controls", row = 0, column = 0, sticky = "ns")
   rp.grid(tables.panel, "dfgrid", grid = "controls", row = 0, column = 1, sticky = "ns")
@@ -153,6 +167,15 @@ tables.redraw <- function(object) {
                   c("lower", "upper", "two-sided"),
                   title = "Tail direction", action = action.fn,
                   grid = "controls", row = 0, column = 3, sticky = "ns")
-
+  rp.do(tables.panel, action.fn)
+  }
+  else {
+    panel <- list(xobs.prob = xobs.prob, distribution = distribution,
+                  degf1 = degf1, degf2 = degf2,
+                  observed.value.showing = observed.value.showing,
+                  tail.area = tail.area, tail.direction = tail.direction)
+    tables.draw(panel)
+  }
+  
   invisible()
   }

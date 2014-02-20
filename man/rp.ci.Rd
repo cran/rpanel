@@ -12,13 +12,15 @@
   }
 
 \usage{
-   rp.ci(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500),
-                     panel.plot = TRUE, hscale = NA, vscale = hscale)
+   rp.ci(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500), confidence = 0.95,
+         panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale)
   }
 
 \arguments{
 \item{mu, sigma}{the population mean and standard deviation.}
-\item{sample.sizes}{the available sample sizes for simulated data.}
+\item{sample.sizes}{the available sample sizes (\code{30}, \code{50}, \code{100}, \code{200}, \code{500}) for simulated data.}
+\item{confidence}{the available confidence levels (\code{0.90}, \code{0.95}, \code{0.99}).}
+\item{panel}{a logical parameter which determines whether interactive controls are provided or a simple static plot is produced.}
 \item{panel.plot}{a logical parameter which determines whether the plot is placed inside the panel (TRUE) or the standard graphics window (FALSE).  If the plot is to be placed inside the panel then the \code{tkrplot} library is required.}
 \item{hscale, vscale}{scaling parameters for the size of the plot when \code{panel.plot} is set to \code{TRUE}.  The default values are 1 on Unix platforms and 1.4 on Windows platforms.}
 }

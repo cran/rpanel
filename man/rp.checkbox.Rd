@@ -10,8 +10,9 @@
 
 \usage{
 rp.checkbox(panel, variable, action=I, labels=NULL, names=NULL, title=NULL, 
-  initval=rep(FALSE, length(labels)), pos=NULL, doaction=FALSE, foreground=NULL, background=NULL, 
-  font=NULL, parentname=deparse(substitute(panel)), name=paste("checkbox", .nc(), sep=""), ...) 
+  initval=rep(FALSE, length(labels)), pos=NULL, doaction=FALSE, foreground=NULL,
+  background=NULL, font=NULL, parentname=deparse(substitute(panel)),
+  name=paste("checkbox", .nc(), sep=""), ...) 
 }
 
 \arguments{

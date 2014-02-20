@@ -9,8 +9,9 @@
 }
 
 \usage{
-rp.combo(panel, variable, prompt=NULL, vals, initval=vals[1], pos=NULL, action=I, foreground=NULL, 
-  background=NULL, font=NULL, editable=FALSE, parentname=deparse(substitute(panel)), name=paste("combo", .nc(), sep=""), ...) 
+rp.combo(panel, variable, prompt=NULL, vals, initval=vals[1], pos=NULL, action=I,
+  foreground=NULL, background=NULL, font=NULL, editable=FALSE,
+  parentname=deparse(substitute(panel)), name=paste("combo", .nc(), sep=""), ...) 
 }
 
 \arguments{

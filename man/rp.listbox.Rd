@@ -9,9 +9,11 @@ This function adds a listbox to the panel. When an item is pressed, a variable i
 }
 
 \usage{
-rp.listbox(panel, variable, vals, labels = vals, rows=length(labels), initval=vals[1], pos=NULL, 
-  title=deparse(substitute(variable)), action=I, foreground=NULL, background=NULL, font=NULL,
-  parentname=deparse(substitute(panel)), sleep = 0.01, name=paste("listbox", .nc(), sep=""), ...)
+rp.listbox(panel, variable, vals, labels = vals,
+           rows=length(labels), initval=vals[1], pos=NULL, 
+           title=deparse(substitute(variable)), action=I, foreground=NULL,
+           background=NULL, font=NULL, parentname=deparse(substitute(panel)),
+           sleep = 0.01, name=paste("listbox", .nc(), sep=""), ...)
 }
 
 \arguments{

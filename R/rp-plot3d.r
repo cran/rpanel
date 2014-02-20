@@ -1,7 +1,7 @@
 rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA, 
     axes = TRUE, new.window = TRUE, type = "p", size = 3, col = "red", 
-    xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...)
-{
+    xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...) {
+    	
     if (require(rgl)) {
     	
         xname <- deparse(substitute(x))

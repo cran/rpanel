@@ -14,7 +14,8 @@
 \usage{
    rp.logistic(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, panel = TRUE,
                hscale = NA, vscale = hscale, alpha = 0, beta = 0, 
-               display = c("jitter" = FALSE, "regression line" = FALSE, "fitted model" = FALSE))
+               display = c("jitter" = FALSE, "regression line" = FALSE,
+               "fitted model" = FALSE))
 }
 
 \arguments{

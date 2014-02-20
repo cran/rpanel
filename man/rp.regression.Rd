@@ -12,9 +12,11 @@ The function \code{rp.regression} plots a response variable against one or two c
 \usage{
   rp.regression(x, y, ylab = NA, x1lab = NA, x2lab = NA, xlab = NA, 
                  panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
-                 model = "None", line.showing = TRUE, residuals.showing = FALSE, size = 3, col = "red")
+                 model = "None", line.showing = TRUE, residuals.showing = FALSE,
+                 size = 3, col = "red")
   rp.regression2(y, x1, x2, ylab  = NA, x1lab = NA, x2lab = NA, 
-                 panel = TRUE, model = "None", residuals.showing = FALSE, size = 3, col = "red")
+                 panel = TRUE, model = "None", residuals.showing = FALSE,
+                 size = 3, col = "red")
   }
 
 \arguments{

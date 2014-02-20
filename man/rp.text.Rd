@@ -10,8 +10,9 @@
 }
 
 \usage{
-rp.text(panel, text, pos=NULL, action=I, foreground=NULL, background=NULL, font=NULL, width=NULL, 
-  parentname=deparse(substitute(panel)), name = paste("text", .nc(), sep=""), ...)   
+rp.text(panel, text, pos=NULL, action=I, foreground=NULL, background=NULL,
+        font=NULL, width=NULL, parentname=deparse(substitute(panel)),
+        name = paste("text", .nc(), sep=""), ...)   
 rp.text.change(panel, name, text)
 }
 
@@ -58,8 +59,11 @@ callback <- function(panel)
   panel
 }
 rp.text(panel, "This is a test", name="t1")
-rp.text(panel ,"And so is this", font="Arial", foreground="white", background="navy", action=callback, name="t2")
-rp.text(panel,"Here is some more text, this time across several lines.\nHere is some more text, this time across several lines.\nHere is some more text, this time across several lines.", name="t3")
+rp.text(panel ,"And so is this", font="Arial", foreground="white",
+        background="navy", action=callback, name="t2")
+rp.text(panel,"Here is some more text, this time across several lines.\n
+               Here is some more text, this time across several lines.\n
+               Here is some more text, this time across several lines.", name="t3")
 }}
 
 \keyword{iplot}

@@ -9,7 +9,8 @@ This function plots a histogram of a sample of data and creates a panel which co
 }
 
 \usage{
-  rp.normal(y, ylab = deparse(substitute(y)), panel.plot = TRUE, hscale = NA, vscale = hscale)
+  rp.normal(y, ylab = deparse(substitute(y)),
+            panel.plot = TRUE, hscale = NA, vscale = hscale)
   }
 
 \arguments{

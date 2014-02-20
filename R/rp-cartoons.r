@@ -8,13 +8,12 @@ panel.launch <- function(menu.panel) {
       }
       qq.draw <- function(panel) {
          z <- bc.fn(panel$y, panel$lambda)
-         if (length(dev.list()) == 0) x11()
          qqnorm(z, main = paste("lambda =", round(panel$lambda, 2)))
          panel
       }
-      x11()
       panel <- rp.control(y = exp(rnorm(50)), lambda = 1)
       rp.slider(panel, lambda, -2, 2, qq.draw)
+      rp.do(panel, qq.draw)
    }
    else if (menu.panel$demo == "bubbleplot")
       rp.bubbleplot(log(gdp), log(co2.emissions), 1960:2007, size = population, 
@@ -24,7 +23,6 @@ panel.launch <- function(menu.panel) {
          with(panel, {
             n <- as.numeric(n)
             probs <- dbinom(0:n, n, prob)
-            if (length(dev.list()) == 0) x11()
             plot(c(0,n), c(0,1), type = "n", xlab = "x", ylab = "Probability")
             segments(0:n, rep(0, n+1), 0:n, probs)
             title(paste("Binomial:  n =", n, "  p =", round(prob, 3)))
@@ -32,11 +30,11 @@ panel.launch <- function(menu.panel) {
          panel
       }
       rp.binomial <- function() {
-         x11()
          pname <- rp.control("Binomial probabilities", n = 20, prob = 0.5)
          rp.slider(pname, prob, 0, 1, initval = 0.5, title = "Binomial proby, p:", 
                    action = plot.binomial)
          rp.textentry(pname, n, plot.binomial, "Sample size, n:")
+         rp.do(pname, plot.binomial)
       }
       rp.binomial()
    }
@@ -98,38 +96,36 @@ panel.launch <- function(menu.panel) {
       rp.power(hscale = hscale)
    }
    else if (menu.panel$demo == "Density estimation (1d)") {
-      provide.data(tephra, options = list(describe = FALSE))
-      sm.density(Al2O3, panel = TRUE)
-      detach(tephra)
+      sm.density(tephra$Al2O3, panel = TRUE)
    }
    else if (menu.panel$demo == "Density estimation (2d)") {
-      provide.data(airpc, options = list(describe = FALSE))
-      y <- cbind(Comp.1, Comp.2)[Period==3,]
-      sm.density(y, panel = TRUE)
-      detach(airpc)
+      with(airpc, {
+         y <- cbind(Comp.1, Comp.2)[Period==3,]
+         sm.density(y, panel = TRUE)
+      })
    }
    else if (menu.panel$demo == "Flexible regression (1d)") {
-      provide.data(trawl, options = list(describe = FALSE))
-      sm.regression(Longitude, Score1, panel = TRUE)
-      detach(trawl)
+      with(trawl, {
+         sm.regression(Longitude, Score1, panel = TRUE)
+      })
    }
    else if (menu.panel$demo == "Flexible regression (2d)") {
-      provide.data(trawl, options = list(describe = FALSE))
-      Position <- cbind(Longitude - 143, Latitude)
-      sm.regression(Position, Score1, panel = TRUE)
-      detach(trawl)
+      with(trawl, {
+         Position <- cbind(Longitude - 143, Latitude)
+         sm.regression(Position, Score1, panel = TRUE)
+      })
    }
    else if (menu.panel$demo == "Surface uncertainty") {
-      provide.data(trawl, options = list(describe = FALSE))
-      location  <- cbind(Longitude, Latitude)
-      model     <- sm.regression(location, Score1, ngrid = 15, display = "none")
-      longitude <- model$eval.points[ , 1]
-      latitude  <- model$eval.points[ , 2]
-      xgrid     <- as.matrix(expand.grid(longitude, latitude))
-      S         <- sm.weight2(location, xgrid, model$h)
-      covar     <- tcrossprod(S) * model$sigma^2
-      rp.surface(model$estimate, covar, longitude, latitude, location, Score1, hscale = hscale)
-      detach(trawl)
+      with(trawl, {
+         location  <- cbind(Longitude, Latitude)
+         model     <- sm.regression(location, Score1, ngrid = 15, display = "none")
+         longitude <- model$eval.points[ , 1]
+         latitude  <- model$eval.points[ , 2]
+         xgrid     <- as.matrix(expand.grid(longitude, latitude))
+         S         <- sm.weight2(location, xgrid, model$h)
+         covar     <- tcrossprod(S) * model$sigma^2
+         rp.surface(model$estimate, covar, longitude, latitude, location, Score1, hscale = hscale)
+      })
    }
    else if (menu.panel$demo == "Gulls") {
       rp.gulls()

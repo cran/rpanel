@@ -255,9 +255,10 @@ rp.plot4d <- function(x, z, y, model,
          panel$locind <- integer(0)
          panel$coords <- rep(NA, 2)
          rp.control.put(panel$panelname, panel)
+         rp.widget.dispose(panel, "location")
          rp.tkrreplot(panel, plot)
+         # rp.tkrreplot(panel, location)
          rp.tkrreplot(panel, band)
-         rp.widget.dispose(panel, location)
          # rp.widget.dispose(panel, textpane)
          panel$location.plot.showing <- FALSE
       }
@@ -337,7 +338,7 @@ rp.plot4d <- function(x, z, y, model,
    natural <- NA
    missing.col.labels <- missing(col.labels)
    if (missing.col.labels) col.labels <- NA
-   key  <- 0.25
+   key <- 0.25
    if (missing.y) {
       ind         <- rep(1, length(z))
       col.palette <- "blue"
@@ -357,9 +358,9 @@ rp.plot4d <- function(x, z, y, model,
       }
       else {
          rng  <- if (!is.list(model)) range(y) else range(y, model$y, na.rm = TRUE)
-         # del  <- 0.04 * diff(rng)
-         # brks <- seq(rng[1] - del, rng[2] + del, length = length(col.palette) + 1)
-         brks <- seq(rng[1], rng[2], length = length(col.palette) + 1)
+         del  <- 0.04 * diff(rng)
+         brks <- seq(rng[1] - del, rng[2] + del, length = length(col.palette) + 1)
+         # brks <- seq(rng[1], rng[2], length = length(col.palette) + 1)
       }
       natural <- missing.col.labels
       if (natural) col.labels <- brks

@@ -3,12 +3,10 @@
 \alias{rp.control}
 \alias{rp.control.dispose}
 
-\title{Create an rpanel}
+\title{Create or dispose of an rpanel}
 
 \description{
-  This function creates a panel window into which rpanel widgets can be placed.
-  It also returns, and can set up variables within, the rpanel object.
-}
+The function \code{rp.control} creates a panel window into which rpanel widgets can be placed.  It can also set up variables within the rpanel object.  The function \code{rp.control.dispose} disposes of an rpanel.}
 
 \usage{
 rp.control(title = "", size = c(100, 100), panelname, background, ...)

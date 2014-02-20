@@ -9,9 +9,12 @@
 }
 
 \usage{
-rp.doublebutton(panel, variable, step, title=deparse(substitute(variable)), action=I, initval=NULL, range=c(NA, NA), 
-  log=FALSE, showvalue=FALSE, showvaluewidth=4, repeatinterval=100, repeatdelay=100, pos=NULL, foreground=NULL, 
-  background=NULL, font=NULL, parentname=deparse(substitute(panel)), name=paste("doublebutton", .nc(), sep=""), ...) 
+rp.doublebutton(panel, variable, step, title=deparse(substitute(variable)),
+                action=I, initval=NULL, range=c(NA, NA), log=FALSE,
+                showvalue=FALSE, showvaluewidth=4, repeatinterval=100,
+                repeatdelay=100, pos=NULL, foreground=NULL, 
+                background=NULL, font=NULL, parentname=deparse(substitute(panel)),
+                name=paste("doublebutton", .nc(), sep=""), ...) 
 }
 
 \arguments{

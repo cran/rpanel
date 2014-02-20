@@ -52,7 +52,8 @@ If the argument panel is the panelname string, the same string is returned.  If 
       panel$y <- as.numeric(y) 
     } 
     else { 
-      rp.line(panel, imagename=gulls.image, panel$x, panel$y, as.numeric(x), as.numeric(y), width=3, id = "current")
+      rp.line(panel, imagename=gulls.image, panel$x, panel$y,
+              as.numeric(x), as.numeric(y), width=3, id = "current")
       panel$x <- as.numeric(x)
       panel$y <- as.numeric(y)
     }

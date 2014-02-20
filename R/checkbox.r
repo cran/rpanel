@@ -1,59 +1,13 @@
-w.checkbox <- function(parent, action = I, labels, names, title, 
-                       initval = rep(FALSE, length(labels)), 
-                       pos = NULL, foreground = NULL, background = "white", font = NULL) {
-                       	
-  widget       <- w.createwidget(parent, pos, background, title)
-  widget$.type <- "checkgroup" 
-  widget$.var  <- c()
-  widget$.cb   <- list()
-
-  f <- function(...) { 
-     variable <- c()
-     for (j in (1:length(labels)))
-        variable[j] <- !(handshake(tclvalue, widget$.var[[j]]) == '0')
-     names(variable) <- names
-     action(variable) # .rpenv, variable)
-  }
-
-  for (i in (1:length(labels))) {
-     if (initval[i] == TRUE)
-        widget$.var[i] <- list(handshake(tclVar, '1'))
-     else
-        widget$.var[i] <- list(handshake(tclVar, '0'))
-     cb <- w.createwidget(widget, pos = list(column = 0, row = i - 1, sticky = "news", 
-                 width = as.integer(handshake(.Tcl, 
-                   paste('font measure systemfont "', labels[[i]], '"', sep = "") )),
-# 06/08/2012 NOTE - why do we need to add this offset? Note that 1 does not work
-                 height = 2 + as.integer(handshake(.Tcl, 'font metrics systemfont -linespace'))
-                 ), background)
-    cb$.type   <- "checkbutton"
-    cb$.widget <- handshake(tkcheckbutton, widget$.handle, command = f, text = labels[[i]],
-                            variable = widget$.var[[i]])
-    w.appearancewidget(cb, font, foreground, background)    
-    widget$.cb[i] <- list(cb)
-  } 
-
-  invisible(widget)
-}
-
 rp.checkbox <- function(panel, variable, action = I, labels = NULL, names = NULL, 
                         title = NULL, initval = rep(FALSE, length(labels)), pos = NULL,
                         doaction = FALSE, foreground = NULL, background = NULL, 
                         font = NULL, parentname = deparse(substitute(panel)),
                         name = paste("checkbox", .nc(), sep=""), ...) {
                         	
-  if (!exists(panel$panelname, .rpenv, inherits = FALSE)) { # if the panelname is not set then
-     panelname <- deparse(substitute(panel)) # the panel name should be the panel deparse subst'ed
-# 13/03/2012 these lines are not commented out in previous version
-#    panel <- rp.control.get(panelname, panel) # now get the panel
-#    panel$panelname = panelname # now set the panelname properly
-#    assign(panelname, panel, envir=.rpenv) # now send back the panel
-  } 
-  else { 
+  if (!exists(panel$panelname, .rpenv, inherits = FALSE))
+     panelname <- deparse(substitute(panel))
+  else
      panelname <- panel$panelname 
-# 13/03/2012 these lines are not commented out in previous version
-#    panel <- rp.control.get(panelname, panel) # now get the panel
-  }
 
   varname <- deparse(substitute(variable))
   if (is.null(labels)) labels <- varname
@@ -97,12 +51,52 @@ rp.checkbox <- function(panel, variable, action = I, labels = NULL, names = NULL
                        initval = variable, pos = pos,
                        foreground = foreground, background = background, font = font)
   rp.widget.put(panelname, name, widget)  
-#  rp.widget.put(parentname, varname, widget)  
-#  rp.widget.put(parentname, name, widget)  
+  # rp.widget.put(parentname, varname, widget)  
+  # rp.widget.put(parentname, name, widget)  
   if (doaction) f(initval)
-  if (.rpenv$savepanel) rp.control.put(panelname, panel) # put the panel back into the environment
+  if (.rpenv$savepanel) rp.control.put(panelname, panel)
 
   invisible(panelname)
+}
+
+w.checkbox <- function(parent, action = I, labels, names, title, 
+                       initval = rep(FALSE, length(labels)), 
+                       pos = NULL, foreground = NULL, background = "white", font = NULL) {
+                       	
+  widget       <- w.createwidget(parent, pos, background, title)
+  widget$.type <- "checkgroup" 
+  widget$.var  <- c()
+  widget$.cb   <- list()
+
+  f <- function(...) { 
+     variable <- c()
+     for (j in (1:length(labels)))
+        variable[j] <- !(handshake(tclvalue, widget$.var[[j]]) == '0')
+     names(variable) <- names
+     action(variable) # .rpenv, variable)
+  }
+
+  for (i in (1:length(labels))) {
+    if (initval[i] == TRUE)
+       widget$.var[i] <- list(handshake(tclVar, '1'))
+    else
+       widget$.var[i] <- list(handshake(tclVar, '0'))
+    cb <- w.createwidget(widget, pos = list(column = 0, row = i - 1, sticky = "news",
+                  width = as.integer(handshake(.Tcl, 
+                     paste('font measure systemfont "', labels[[i]], '"', sep = "") )),
+                  # 06/08/2012 NOTE - why do we need to add this offset?
+                  # Note that 1 does not work
+                  height = 2 + as.integer(handshake(.Tcl,
+                             'font metrics systemfont -linespace'))
+                  ), background)
+    cb$.type   <- "checkbutton"
+    cb$.widget <- handshake(tkcheckbutton, widget$.handle, command = f, text = labels[[i]],
+                            variable = widget$.var[[i]])
+    w.appearancewidget(cb, font, foreground, background)    
+    widget$.cb[i] <- list(cb)
+  } 
+
+  invisible(widget)
 }
 
 # The checkbox change function would be useful but isn't working yet.
