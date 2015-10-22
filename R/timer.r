@@ -59,8 +59,12 @@ rp.block <- function(panel) {
     panelname <- deparse(substitute(panel))
   else 
     panelname <- panel$panelname
-
-  open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
+  if (exists(panelname, envir= .rpenv)) {
+    open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
+  }
+  else {
+    open <- false
+  }
   while(open) {
     Sys.sleep(0.01)
     # The commented code was added in 1.1-2 but seems to cause a problem
@@ -68,9 +72,16 @@ rp.block <- function(panel) {
     # if (open) {
       open <- exists(panelname, envir= .rpenv)
       if (open)
-        open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
+        tryCatch({
+          open <- eval(parse(text=paste("!is.null(",panelname, ")", sep="")), envir=.rpenv)
+        },
+        error = function(cond) { 
+          message("An error occurred")
+          open <- F
+        })
     # }
   }
 
   invisible()
 }
+
