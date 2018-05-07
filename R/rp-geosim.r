@@ -18,11 +18,21 @@ field.new <- function(panel) {
                       (panel$pSill != panel$pSill.old) | (panel$kappa != panel$kappa.old)
       warn <- options()$warn
       options(warn = -1)
-      if (!panel$points.only | pars.changed)
-         panel$fieldsm <- grf(panel$smgrid^2, grid = "reg", cov.model = panel$family,
-            cov.pars = c(panel$pSill, r), nugget = 0, messages = FALSE, kappa = panel$kappa,
-            aniso.pars = c(panel$aniso.angle, panel$aniso.ratio))
-      panel$fieldnug <- grf(panel$ngrid^2, grid = "reg", cov.model = "pure.nugget",
+      if (!panel$points.only | pars.changed) {
+      	 angle <- panel$aniso.angle
+      	 ratio <- panel$aniso.ratio
+      	 mdl <- RandomFields::RMmatern(nu = panel$kappa, scale = panel$Range /sqrt(2), var = panel$pSill,
+                          Aniso = diag(c(1, 1 / ratio)) %*%
+                              matrix(c(cos(angle), sin(angle), -sin(angle), cos(angle)), ncol = 2))
+         x.seq <- seq(0, 1, length = panel$smgrid) 
+         y.seq <- seq(0, 1, length = panel$smgrid)
+         panel$fieldsm <- list()
+         panel$fieldsm$data <- RandomFields::RFsimulate(mdl, x = x.seq, y = y.seq)$variable1
+         # panel$fieldsm <- grf(panel$smgrid^2, grid = "reg", cov.model = panel$family,
+            # cov.pars = c(panel$pSill, r), nugget = 0, messages = FALSE, kappa = panel$kappa,
+            # aniso.pars = c(panel$aniso.angle, panel$aniso.ratio))
+      }
+      panel$fieldnug <- geoR::grf(panel$ngrid^2, grid = "reg", cov.model = "pure.nugget",
          cov.pars = c(panel$Nugget, 0), messages = FALSE)
       options(warn = warn)
       # igrid <- seq(1, panel$smgrid, by = cgrid)
@@ -64,21 +74,21 @@ graphics.update <- function(panel) {
       x  <- panel$fieldnug$coords[, 1]
       y  <- panel$fieldnug$coords[, 2]
       if ("rgl.id" %in% names(panel))
-         try.out <- try(rgl.set(panel$rgl.id), silent = TRUE)
+         try.out <- try(rgl::rgl.set(panel$rgl.id), silent = TRUE)
       else
          try.out <- "try-error"
       if (is.null(try.out)) {
-      	 ind <- (rgl.ids()$type == "points")
-         if (any(ind))  pop3d(id = rgl.ids()$id[ind])
-      	 ind <- (rgl.ids()$type == "surface")
-         if (any(ind))  pop3d(id = rgl.ids()$id[ind])
+      	 ind <- (rgl::rgl.ids()$type == "points")
+         if (any(ind))  rgl::pop3d(id = rgl::rgl.ids()$id[ind])
+      	 ind <- (rgl::rgl.ids()$type == "surface")
+         if (any(ind))  rgl::pop3d(id = rgl::rgl.ids()$id[ind])
          }
       else
          panel$scaling <- rp.plot3d(y, w, x, col = "red",
              ylim = panel$z.range, ylab = "z", xlab = "x", zlab = "y", type = "n")
       if (panel$display.checks["points"]) {
          a <- panel$scaling(y, w, x)
-         panel$points.id <- points3d(a$z, a$y, a$x, col = "red", size = 3)
+         panel$points.id <- rgl::points3d(a$z, a$y, a$x, col = "red", size = 3)
          }
       if (panel$display.checks["surface"]) {
          z  <- panel$fieldsm$data
@@ -90,14 +100,14 @@ graphics.update <- function(panel) {
          x    <- seq(0, 1, length = panel$smgrid)
          y    <- seq(0, 1, length = panel$smgrid)
          a    <- panel$scaling(x, z, y)
-         panel$surface.id <- rgl.surface(a$x, a$z, a$y, col = cols)
+         panel$surface.id <- rgl::rgl.surface(a$x, a$z, a$y, col = cols)
          }
-      bg3d("white")
-      panel$rgl.id  <- rgl.cur()
+      rgl::bg3d("white")
+      panel$rgl.id  <- rgl::rgl.cur()
       }
    else if (panel$rgl.old) {
-      try.out <- try(rgl.set(panel$rgl.id), silent = TRUE)
-      if (is.null(try.out)) rgl.close()
+      try.out <- try(rgl::rgl.set(panel$rgl.id), silent = TRUE)
+      if (is.null(try.out)) rgl::rgl.close()
       }
    
    if (("rgl plot" %in% names(panel$display.checks)) && (panel$display.checks["rgl plot"]))
@@ -149,10 +159,10 @@ vario.update <- function(panel) {
       return(panel)
    }
    with(panel, {
-      vg  <- pSill * (1 - matern(xa, Range / (2 * sqrt(kappa)), kappa))
+      vg  <- pSill * (1 - geoR::matern(xa, Range / (2 * sqrt(kappa)), kappa))
       fld <- data
       g   <- seq(0, 1, length = ngrid)
-      vga <- variog(as.geodata(cbind(fieldnug$coords, fld)), messages=FALSE,
+      vga <- geoR::variog(as.geodata(cbind(fieldnug$coords, fld)), messages=FALSE,
                     max.dist = 0.7)
       plot(vga$v ~ vga$u, xlim = c(0, 0.7), ylim = c(0, 2), type = "n",
          xlab = "Distance", ylab = "Semivariogram")
@@ -174,11 +184,11 @@ vario.update <- function(panel) {
    panel
    }
    
-   if (!require(tkrplot))
+   if (!requireNamespace("tkrplot", quietly = TRUE))
       stop("the tkrplot package is not available.")
-   if (!require(geoR))
+   if (!requireNamespace("geoR", quietly = TRUE))
       stop("the geoR package is not available.")
-   if (!require(RandomFields))
+   if (!requireNamespace("RandomFields", quietly = TRUE))
       stop("the RandomFields package is not available.")
       
    if (is.na(hscale)) {
@@ -215,7 +225,7 @@ vario.update <- function(panel) {
       
    display.checks.init <- c(TRUE, FALSE)
    checks.lbls <- c("surface", "points")
-   if (require(rgl)) {
+   if (requireNamespace("rgl", quietly = TRUE)) {
       display.checks.init <- c(display.checks.init, FALSE)
       checks.lbls <- c(checks.lbls, "rgl plot")
       }
@@ -225,7 +235,7 @@ vario.update <- function(panel) {
       first = TRUE,
       xa = seq(0, 0.7, by = 0.01), smgrid = 25, z.range = c(-5, 5),
       ngrid = 15, Range = 0.1, pSill = 0.5, Nugget = 0, kappa = 4,
-      ngrid.old = 15, Range.old = 0.05, pSill.old = 0.5, kappa.old = 4,
+      ngrid.old = 15, Range.old = 0.05, pSill.old = 0.5, kappa.old = 0.5,
       aniso.angle = 0, aniso.ratio = 1,
       hscale = hscale, vscale = vscale, rgl.old = FALSE, vgm.present = FALSE,
       display.checks = display.checks.init,
@@ -239,7 +249,7 @@ vario.update <- function(panel) {
             grid = "leftplot", row = 0, column = 0, sticky = "ew")
    rp.button(panel, field.new, "New simulation",     
             grid = "controls", row = 1, column = 0, sticky = "ew")
-   rp.slider(panel, Range, 0, max.Range,  field.new, "Range",     
+   rp.slider(panel, Range, 0.01, max.Range,  field.new, "Range",     
             grid = "controls", row = 2, column = 0, sticky = "ew")
    rp.slider(panel, pSill, 0, max.pSill,  field.new, "Partial sill",     
             grid = "controls", row = 3, column = 0, sticky = "ew")

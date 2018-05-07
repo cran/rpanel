@@ -61,7 +61,7 @@ rp.ci <- function(mu = 0, sigma = 1, sample.sizes = c(30, 50, 100, 200, 500), co
       panel
       }
 
-   if (panel.plot & !require(tkrplot)) {
+   if (panel.plot & !requireNamespace("tkrplot", quietly = TRUE)) {
       warning("the tkrplot package is not available so panel.plot has been set to FALSE.")
       panel.plot <- FALSE
       }

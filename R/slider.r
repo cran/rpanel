@@ -27,10 +27,10 @@ rp.slider <- function(panel, variable, from, to, action = I,
     }
   }
   else {
-    if (is.null(names)) names   <- labels
+    if (is.null(names)) names <- labels
   	variable <- initval
   }
-  names(variable)     <- names
+  names(variable) <- names
   rp.var.put(panelname, varname, variable)
   
   if (is.null(pos) & length(list(...)) > 0) pos <- list(...)
@@ -149,11 +149,11 @@ w.slider <- function(parent, initval, from, to, action = I,
 
       sl <- w.createwidget(widget, pos=pos, background)
       sl$.type <- "slider"
-      if (length(from) == 1)
-         sl$.widget <- handshake(tkscale, widget$.handle, from = wfrom, to = wto,
-                                 showvalue = showvalue, orient = orient,
-                                 resolution = resolution, variable = widget$.var[[i]])
-      else
+      # if (length(from) == 1)
+         # sl$.widget <- handshake(tkscale, widget$.handle, from = wfrom, to = wto,
+                                 # showvalue = showvalue, orient = orient,
+                                 # resolution = resolution, variable = widget$.var[[i]])
+      # else
          sl$.widget <- handshake(tkscale, widget$.handle, from = wfrom, to = wto,
                                  showvalue = showvalue, orient = orient, label = labels[i],
                                  resolution = resolution, variable = widget$.var[[i]])
@@ -198,12 +198,12 @@ w.slider <- function(parent, initval, from, to, action = I,
       sl <- w.createwidget(widget, pos=pos, background)
       sl$.type <- "slider"
 
-     # 29/11/13 if added to allow for displaying name if needed
-     if (length(from) == 1)
-        sl$.widget <- handshake(tkscale, widget$.handle, from = wfrom, to = wto,
-                                showvalue = FALSE, orient = orient,
-                                resolution = resolution, variable = widget$.var[[i]])
-     else
+     # 29/11/13 if added to allow for displaying name if needed - not needed: awb 19.06.14
+     # if (length(from) == 1)
+        # sl$.widget <- handshake(tkscale, widget$.handle, from = wfrom, to = wto,
+                                # showvalue = FALSE, orient = orient, label = labels,
+                                # resolution = resolution, variable = widget$.var[[i]])
+     # else
         sl$.widget <- handshake(tkscale, widget$.handle, from = wfrom, to = wto,
                                 showvalue = FALSE, orient = orient, label = labels[i],
                                 resolution = resolution, variable = widget$.var[[i]])

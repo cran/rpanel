@@ -4,16 +4,10 @@ handshake <- function(fun, ...) {
 # this is a vital function for R and tcltk communication these days as R now 
 # gets out of sync with tcltk due to its speed, thus tcltk does not behave 
 # properly
-  tclvalue <- NULL
+  tclvalue  <- NULL
   starttime <- proc.time()
-  tclvalue <- fun(...)
-  while (is.null(tclvalue)) {
-  # while ( (is.null(tclvalue)) && (as.integer(proc.time()-starttime)[3] < 2) ){
-    Sys.sleep(0.05)
-  }
-  # if (as.integer(proc.time()-starttime)[3] >= 2) { 
-  #   stop("The connection to tcltk has failed.") 
-  # }
+  tclvalue  <- fun(...)
+  while (is.null(tclvalue)) Sys.sleep(0.05)
   invisible(tclvalue)
 }
 
@@ -22,39 +16,34 @@ handshakereverse <- function(fun, ...) {
 # gets out of sync with tcltk due to its speed, thus tcltk does not behave 
 # properly
 # this is used where no value is returned from the function - ie NULL
-  tclvalue <- 1
+  tclvalue  <- 1
   starttime <- proc.time()
-  tclvalue <- fun(...)
-  while (!is.null(tclvalue)) {
-  # while ( (!is.null(tclvalue)) && (as.integer(proc.time()-starttime)[3] < 2) ){
-    Sys.sleep(0.05)
-  }
-  # if (as.integer(proc.time()-starttime)[3] >= 2) { 
-  #   stop("The connection to tcltk has failed.") 
-  # }
+  tclvalue  <- fun(...)
+  while (!is.null(tclvalue)) Sys.sleep(0.05)
   invisible(tclvalue)
 }
 
 handshake(.Tcl, 'package require BWidget')
 .rpenv <- new.env()
 
-.onAttach <- function(library, pkg) {
-# First function run on opening the package
-  packageStartupMessage("Package `rpanel', version 1.1-3: type help(rpanel) for summary information")
+.onLoad <- function(libname, pkgname) {
   assign("counter", 0 , envir=.rpenv)
   assign("getpanel", TRUE, envir=.rpenv)  # get the panel from the environment at the start of a function
   assign("setparent", TRUE, envir=.rpenv) # set the panel.panelname to the deparse-substitute of the panel
 #  assign("setpanel", FALSE, envir=.rpenv)  # immediately save the panel back to the environment
   assign("savepanel", FALSE, envir=.rpenv) # save the panel back to the environment at the end of the function
-  invisible()
+}
+
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage("Package `rpanel', version 1.1-4: type help(rpanel) for summary information")
 }
 
 .nc <- function()
-  assign("counter", .rpenv$counter+1, envir=.rpenv)
+   assign("counter", .rpenv$counter+1, envir=.rpenv)
 
 rp.setup <- function(getpanel=.rpenv$getpanel, setparent=.rpenv$setparent) {
-      # rp.setup <- function(getpanel=.rpenv$getpanel, setparent=.rpenv$setparent,
-      # setpanel=.rpenv$setpanel, savepanel=.rpenv$savepanel)
+   # rp.setup <- function(getpanel=.rpenv$getpanel, setparent=.rpenv$setparent,
+   # setpanel=.rpenv$setpanel, savepanel=.rpenv$savepanel)
    assign("getpanel",  getpanel,  envir=.rpenv)
    assign("setparent", setparent, envir=.rpenv)
    # assign("setpanel", setpanel, envir=.rpenv)
@@ -62,10 +51,10 @@ rp.setup <- function(getpanel=.rpenv$getpanel, setparent=.rpenv$setparent) {
 }
 
 rp.settings <- function() {
-  print(paste("getpanel is ", .rpenv$getpanel))
-  print(paste("setparent is ", .rpenv$setparent))
-  # print(paste("setpanel is ", .rpenv$setpanel))
-  print(paste("savepanel is ", .rpenv$savepanel))
+   print(paste("getpanel is ", .rpenv$getpanel))
+   print(paste("setparent is ", .rpenv$setparent))
+   # print(paste("setpanel is ", .rpenv$setpanel))
+   print(paste("savepanel is ", .rpenv$savepanel))
 }
 
 rp.panelname <- function() {
@@ -238,11 +227,8 @@ w.appearancewidget <- function(widget, font, foreground, background, scr=NULL) {
 }
 
 rp.widget.dispose <- function(panel, name) {
-  if (!exists(panel$panelname, .rpenv, inherits = FALSE))
-    panelname <- deparse(substitute(panel))
-  else 
-    panelname <- panel$panelname
 
+  panelname <- panel$panelname
   widget <- eval(parse(text = paste(panelname, ".", name, sep = "")), envir = .rpenv)
   # widget <- rp.widget.get(panelname, name)
   
@@ -314,10 +300,18 @@ rp.widget.dispose <- function(panel, name) {
            # rm(list = ID, envir = env)
     # }
     
-    # tcl("destroy", widget$.widget)
-    # tcl("destroy", widget$.handle)
-    handshakereverse(tkdestroy, widget$.widget) 
+    handshake(tkbind, panel$.handle, "<Destroy>", function() {})
+    assign(panelname, panel, .rpenv)
+    handshakereverse(tkdestroy, widget$.widget)
     handshakereverse(tkdestroy, widget$.handle)
+    handshake(tkbind, panel$.handle, "<Destroy>", 
+       function() {
+          if (!exists(panelname, envir = .rpenv)) return(invisible())
+          rp.control.dispose(panel)               
+       }
+     )   
+
+   assign(panelname, panel, .rpenv)
   }
   rm(list = paste(panelname, ".", name, sep = ""), envir = .rpenv)
 
@@ -337,32 +331,22 @@ rp.var.put.new <- function(panel, name, val) {
 rp.var.put <- function(panelname, name, val, labels = NULL) {
    # note you must send the panelname, not the panel as deparse substitute
    # only works one layer in, not two!
-   pnm <- if (is.null(panelname)) "" else paste(panelname, "$", sep = "")
+   pnm <- paste(panelname, "$", sep = "")
    if ((is.character(val)) && (length(val) == 1))
-      eval(parse(text=paste(pnm, name, " <- '", val, "'", sep="")),
-                  envir=.rpenv)
+      eval(parse(text=paste(pnm, name, " <- '", val, "'", sep="")), envir=.rpenv)
+   else if ((!is.character(val)) && (length(val) == 1))
+      eval(parse(text=paste(pnm, name, " <- ", val, sep="")), envir=.rpenv)
+   else if ((is.null(names(val))) && (is.null(labels)))
+      eval(parse(text=paste(pnm, name, " <- ", list(val), sep="")), envir=.rpenv) 
    else {
-      if ((!is.character(val)) && (length(val) == 1))
-         eval(parse(text=paste(pnm, name, " <- ", val, sep="")),
-                   envir=.rpenv)
-      else { 
-         if ((is.null(names(val))) && (is.null(labels))) {  
-            eval(parse(text=paste(pnm, name, " <- ", list(val), sep="")),
-                   envir=.rpenv) 
-         }
-         else { 
-            for (j in 1:length(val)) {
-               eval(parse(text=paste(pnm, name, "[", j, "] <- ",
-                     val[j], sep="")), envir=.rpenv) 
-               if (is.null(labels))
-                  eval(parse(text=paste("names(", pnm, name,
-                     ")[", j, "] <- '", names(val)[j], "'", sep="")), envir=.rpenv) 
-               else {
-                  eval(parse(text=paste("names(", pnm, name,
-                     ")[", j, "] <- '", labels[j], "'", sep="")), envir=.rpenv) 
-               }     
-            }
-         }
+      for (j in 1:length(val)) {
+         eval(parse(text=paste(pnm, name, "[", j, "] <- ", val[j], sep="")), envir=.rpenv) 
+         if (is.null(labels))
+            eval(parse(text=paste("names(", pnm, name,
+                 ")[", j, "] <- '", names(val)[j], "'", sep="")), envir=.rpenv) 
+         else
+            eval(parse(text=paste("names(", pnm, name,
+                 ")[", j, "] <- '", labels[j], "'", sep="")), envir=.rpenv)   
       }
    }
 }
@@ -389,15 +373,15 @@ rp.widget.put <- function(panelname, name, val) {
 }
 
 rp.control.get <- function(panelname, panel = NULL) {
-  if (exists(panelname, envir=.rpenv))
-    panel <- eval(parse(text=panelname), envir=.rpenv)
+  if (exists(panelname, envir = .rpenv))
+    panel <- eval(parse(text = panelname), envir = .rpenv)
   else
     assign(panelname, panel, envir=.rpenv)
   panel
 }
 
 rp.control.put <- function(panelname, panel) {
-  assign(panelname, panel, envir=.rpenv)    
+  assign(panelname, panel, envir=.rpenv)
 }
 
 rp.screenresolution <- function() {
@@ -417,4 +401,8 @@ if(getRversion() >= "2.15.1")
                 "plot1", "plot1a", "plot2", "points.only", "prob", "prop", "pSill",
                 "random.alignment", "Range", "ranges", "savepanel", "slope", "sp.type", "ssize",
                 "stan", "str.type", "stype", "theta", "trend.setting", "tsb", "tsw",
-                "var1", "var2", "var3", "vgm.checks", "year.ind"))
+                "var1", "var2", "var3", "vgm.checks", "year.ind", ".make.tkindex", ".my.tkdev",
+                "scaling", "e.sim", "nsim", "gdp", "co2.emissions", "population", "life.expectancy",
+                "CofE", "rodent", "poisons", "gullweight", "river", "luthor", "aircond", "Clyde", "SO2",
+                "tkrreplot", "tkrplot"
+                ))

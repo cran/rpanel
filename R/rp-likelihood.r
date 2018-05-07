@@ -13,7 +13,7 @@ rp.likelihood <- function(loglik.fn, data, theta.low, theta.high,
 rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
                             form = "log-likelihood") {
 
-   if (!require(tkrplot)) stop("the tkrplot library is required.")
+   if (!requireNamespace("tkrplot")) stop("the tkrplot library is required.")
 
    theta.range <- c(theta.low, theta.high)
 
@@ -208,7 +208,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
 
 rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
 	
-   if (!require(rgl)) stop("the rgl library is required.")
+   if (!requireNamespace("rgl", quietly = TRUE)) stop("the rgl library is required.")
       
    theta1.range <- c(theta.low[1], theta.high[1])
    theta2.range <- c(theta.low[2], theta.high[2])
@@ -262,7 +262,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
    loglik2.plot.add <- function(panel) {
 
       if (panel$n.add > 0) {
-         for (i in 1:panel$n.add) pop3d()
+         for (i in 1:panel$n.add) rgl::pop3d()
          panel$n.add <- 0
       }
 
@@ -275,15 +275,15 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
          ax <- scaling(theta1,  theta1,  theta1)$x
          ay <- scaling(loglik.mat, loglik.mat, loglik.mat)$y
          az <- scaling(theta2, theta2, theta2)$z
-         pop3d()
-         rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr.surface)
-         material3d(alpha = 1)
+         rgl::pop3d()
+         rgl::rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr.surface)
+         rgl::material3d(alpha = 1)
          
          if (display["mle"]) {
            if ((mloglik$par[1] >= theta1.low) & (mloglik$par[1] <= theta1.high) & 
                 (mloglik$par[2] >= theta2.low) & (mloglik$par[2] <= theta2.high)) {
                a <- scaling(mloglik$par[1], mloglik$value, mloglik$par[2])
-               points3d(a$x, a$y, a$z, col = "red", size = 5)
+               rgl::points3d(a$x, a$y, a$z, col = "red", size = 5)
                }
             }
             
@@ -294,7 +294,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
                a <- scaling(c(theta1.low, theta1.low, theta1.high, theta1.high),
                       rep(mloglik$value - 3, 4), 
                       c(theta2.high, theta2.low, theta2.low, theta2.high))
-               quads3d(a$x, a$y, a$z, col = "red", size = 5)
+               rgl::quads3d(a$x, a$y, a$z, col = "red", size = 5)
                }
             }
             
@@ -319,8 +319,8 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
             ax   <- scaling(theta1,  theta1,  theta1)$x
             ay   <- scaling(quad.mat, quad.mat, quad.mat)$y
             az   <- scaling(theta2, theta2, theta2)$z
-            rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr, front = "line", back = "line")
-            material3d(alpha = 1)
+            rgl::rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr, front = "line", back = "line")
+            rgl::material3d(alpha = 1)
             }
          })
       panel$n.add <- 0
@@ -337,8 +337,8 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
       panel
       }
 
-   open3d()
-   bg3d(color = c("white", "black"))
+   rgl::open3d()
+   rgl::bg3d(color = c("white", "black"))
       
    panel <- rp.control(data = data, ngrid = 50, loglik.text = loglik.text,
                        theta1.range = theta1.range, theta2.range = theta2.range,

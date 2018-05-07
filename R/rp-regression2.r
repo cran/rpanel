@@ -8,7 +8,7 @@ rp.rotate <- function(panel) {
    with(panel, {
       if (phi < -90) phi <- -90
       if (phi >  90) phi <-  90
-      rgl.viewpoint(theta = theta, phi = phi, fov = fov)
+      rgl::rgl.viewpoint(theta = theta, phi = phi, fov = fov)
       })
    panel
    }
@@ -16,12 +16,12 @@ rp.rotate <- function(panel) {
 rp.regression2.model <- function(panel) {
    with(panel, {
       if (current.model != "None") {
-         rgl.pop()
-         if (residuals.showing) rgl.pop()
+         rgl::rgl.pop()
+         if (residuals.showing) rgl::rgl.pop()
          }
       if (model != "None") {
          a <- scaling(xgrid, smat[,, model], zgrid)
-         rgl.surface(a$x, a$z, a$y, alpha = 0.5)
+         rgl::rgl.surface(a$x, a$z, a$y, alpha = 0.5)
          if (residuals.showing)
             rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
          }
@@ -35,13 +35,13 @@ rp.regression2.residuals <- function(panel) {
       if (model != "None") {
          if (residuals.showing)
             rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
-         else rgl.pop()
+         else rgl::rgl.pop()
          }
       })
    panel
    } 
    
-    if (require(rgl)) {
+    if (requireNamespace("rgl", quietly = TRUE)) {
 
         if (is.na(x1lab))
             x1lab <- deparse(substitute(x1))
@@ -122,6 +122,6 @@ rp.regression2.residuals <- function(panel) {
         }
     }
     else {
-        stop("regression2 will not run without package RGL installed as this plots in 3D.")
+        stop("regression2 will not run without the rgl package.")
     }
 }

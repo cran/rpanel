@@ -1,6 +1,6 @@
 w.radiogroup <- function(parent, title, vals, labels, initval = vals[1], action = I, pos = NULL,
-                         foreground = NULL, background = "white", font = NULL)
-{
+                         foreground = NULL, background = "white", font = NULL) {
+                         	
   widget       <- w.createwidget(parent, pos, background, title)
   widget$.type <- "radiogroup"
   widget$.var  <- handshake(tclVar, initval)

@@ -32,7 +32,7 @@ This will dispose of a widget and its memory usage.
 \dontrun{
  p1 <- rp.control()
  rp.button(p1, I, "press me", name="b1")
- rp.widget.dispose(p1, b1 )
+ rp.widget.dispose(p1, "b1")
 }}
 
 \keyword{iplot}

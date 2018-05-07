@@ -12,7 +12,7 @@ This function launches a panel which allows standard normal, t, chi-squared and 
   rp.tables(panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
             distribution = "normal", degf1 = 5, degf2 = 30,
             observed.value = " ", observed.value.showing = !is.na(observed.value),
-            probability = 0.05, tail.probability, tail.direction)
+            probability = 0.05, tail.probability, tail.direction, heading)
 }
 
 \arguments{
@@ -26,6 +26,7 @@ This function launches a panel which allows standard normal, t, chi-squared and 
 \item{probability}{the value of the tail probability used when tail area is shaded.}
 \item{tail.probability}{a character string which determines whether the tail area is drawn from the observed value (\code{"from observed value"}), using a fixed probability (\code{"fixed probability"}) or not shown (\code{"none"}).}
 \item{tail.direction}{a character string which determines whether the lower (\code{"lower"}), upper (\code{"upper"}) or two-sided (\code{"two-sided"}) tail area is drawn.}
+\item{heading}{a character string which will appear as a heading of the plot.  If this is missing, a heading based on the selected distribution will be created.}
 }
 
 \details{

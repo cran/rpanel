@@ -3,7 +3,7 @@
 rp.tables <- function(panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
                       distribution = "normal", degf1 = 5, degf2 = 30,
                       observed.value = " ", observed.value.showing = !is.na(observed.value),
-                      probability = 0.05, tail.probability, tail.direction) {
+                      probability = 0.05, tail.probability, tail.direction, heading) {
 	
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1
@@ -17,6 +17,8 @@ rp.tables <- function(panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hsc
    tail.area <- tail.probability   
    if (missing(tail.direction))
    	 tail.direction <- if (distribution %in% c("normal", "t")) "two-sided" else "upper"
+   
+   missing.heading <- missing(heading)
 
 tables.draw <- function(tables) {
   with(tables, {
@@ -47,7 +49,7 @@ tables.draw <- function(tables) {
 #     pval <- if (two.sided) 2 * (1 - pt(abs(xobs), degf)) else 1 - pt(xobs, degf)
     }
     if (distribution == "chi-squared") {
-      xr1    <- max(degf1 + 3 * sqrt(2 * degf1), qchisq(1 - prob, degf1) + 1)
+      xr1    <- max(degf1 + 3 * sqrt(2 * degf1), qchisq(1 - prob, degf1) + 1, qchisq(0.99, degf1) + 1)
       xrange <- c(0.01, xr1)
       x      <- seq(xrange[1], max(xrange[2], extend), length = ngrid)
       dens   <- dchisq(x, degf1)
@@ -67,6 +69,7 @@ tables.draw <- function(tables) {
       pshade <- min(pval, 1 - pval)
       qts    <- qf(c(prob, 1 - prob, prob/2, 1 - prob/2, pshade, 1 - pshade), degf1, degf2)
     }
+    par(mar = c(3, 3, 1, 1) + 0.1, mgp = c(1.5, 0.2, 0), tcl = -0.2)
     plot(x, dens, type = "l", ylim = ylim, ylab = paste(distribution, "density"))
     abline(h = 0, lty = 3)
     if (distribution == "normal")       title.text <- "Normal distribution"
@@ -120,7 +123,7 @@ tables.draw <- function(tables) {
           density = -1, col = "red", border = "red")
       }
     }
-    title(title.text, cex.main = 1)
+    if (missing.heading) title(title.text, cex.main = 1) else title(heading, cex.main = 1)
   })
   tables
   }
@@ -137,7 +140,7 @@ tables.redraw <- function(object) {
                   tail.area = tail.area, tail.direction = tail.direction)
   rp.grid(tables.panel, "controls", row = 0, column = 0)
   rp.grid(tables.panel, "plot",     row = 1, column = 0, background = "white")
-  if (panel.plot && require(tkrplot)) {
+  if (panel.plot && requireNamespace("tkrplot", quietly = TRUE)) {
     rp.tkrplot(tables.panel, plot, plotfun = tables.draw,
                     hscale = hscale, vscale = vscale, row = 1, column = 0, columnspan = 4,
                     grid = "plot", sticky = "ew", background = "white")

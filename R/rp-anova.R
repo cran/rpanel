@@ -1,12 +1,15 @@
 #     rpanel function for simple analysis of variance
 
 rp.anova <- function(y, x, z, model = NA, model0 = NA,
-                     ylab = NA, xlab = NA, zlab = NA,
+                     ylab = NA, xlab = NA, zlab = NA, title = NULL, lines = TRUE,
                      panel = TRUE, panel.plot = TRUE, hscale = 1.3, vscale = hscale / 1.3) {
 
-   if (!require(lattice)) stop("the lattice package is not available.")
-   if (!require(denstrip)) stop("the denstrip package is not available.")
-
+   # The denstrip package has direct references to lattice, so lattice needs to be loaded.
+   # An alternative is to use the code at the end of this file which copies the denstrip functions.
+   if (!requireNamespace("lattice")) stop("the lattice package is not available.")
+   if (!requireNamespace("denstrip", quietly = TRUE)) stop("the denstrip package is not available.")
+   if (!requireNamespace("colorspace", quietly = TRUE)) stop("the colorspace package is not available.")
+  
    type <- if (missing(z)) "One-way" else "Two-way"
 
    if (is.na(ylab)) ylab <- deparse(substitute(y))
@@ -93,80 +96,61 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
          form <- as.formula(form)
          ngps <- nrow(unique(data.frame(x, z)))
          if (graphics != "boxplot") {
-            print(stripplot(form, groups = x, layout = c(length(levels(z)), 1),
-               ylab = ylab, xlab = xlab,
-               panel = function(x, y, subscripts, groups) {
-       	          # panel.grid(-1, 0)
-       	          # if (type != "one sample")
-                  #    for (i in 1:length(unique(x)))
-                  #       panel.rect(as.numeric(unique(x)[i]) - 0.3, min(y[x == unique(x)[i]]),
-                  #            as.numeric(unique(x)[i]) + 0.3, max(y[x == unique(x)[i]]),
-                  #            col = "grey90", border = "grey90")
-       	          # panel.abline(v = 1:(length(unique(groups)) - 1) + 0.5, 
-       	          #              col = "grey", lty = 2)
-       	          zgp <- levels(groups[subscripts])
-       	          if (!(model0.check & model.check) | all(model == model0)) {
-       	             for (k in zgp) {
-       	                ind  <- which(groups[subscripts] == k)
-       	                panel.denstrip(y[ind], at = match(k, zgp), width = 0.5, colmax = "grey90",
-       	                               horiz = FALSE)
-       	             }
-       	          }
-       	          else if (model.check & !all(model == model0)) {
-       	          	 for (k in zgp) {
-       	          	    ind  <- which(groups[subscripts] == k)
-       	          	    n.se <- length(ind)
-       	          	    if (n.se > 0) {
-       	          	       wt   <- seq(0, 1, length = 101)
-       	          	       cl   <- matrix(col2rgb("green"),  nrow = length(wt), ncol = 3, byrow = TRUE)
-       	          	       bck1 <- matrix(col2rgb("grey90"), nrow = length(wt), ncol = 3, byrow = TRUE)
-       	          	       bck2 <- matrix(col2rgb("white"),  nrow = length(wt), ncol = 3, byrow = TRUE)
-       	                   clr  <- wt * cl + (1 - wt) * bck1
-       	                   clr2 <- wt * cl + (1 - wt) * bck2
-       	                   grd  <- seq(-3, 3, length = 51)
-       	                   ind1 <- cut(exp(-0.5 * grd^2), nrow(clr), labels = FALSE)
-       	                   clr  <- clr[ind1, ]
-       	                   clr2 <- clr2[ind1, ]
-       	                   fv0  <- mean(fitted(mdl0)[subscripts][ind])
-       	          	       se   <- summary(mdl)$sigma * sqrt(abs(df0 - df1)) / sqrt(n.se * ngps)
-       	                   lim1 <- (min(y[ind]) - fv0) / se
-       	                   lim2 <- (max(y[ind]) - fv0) / se
-       	          	       indb <- (grd < min(lim1, lim2)) | (grd > max(lim1, lim2))
-       	          	       clr[indb, ] <- clr2[indb, ]
-       	                   clr  <- rgb(clr[ , 1], clr[ , 2], clr[ , 3], maxColorValue = 255)
-       	                   del  <- diff(grd)[1] / 2
-       	          	       panel.denstrip(fv0 + (grd - del) * se, dnorm(grd), at = match(k, zgp),
-       	          	                      width = 0.5, colmax = "green", horiz = FALSE)
-       	          	       # panel.rect(which(k == zgp) - 0.15, fv0 + (grd - del) * se,
-       	          	       #            which(k == zgp) + 0.15, fv0 + (grd + del) * se,
-       	          	       #            col = clr, border = clr)
-       	          	    }
-       	          	 }
-        	      }
-        	      if (model.check) {
-        	         panel.xyplot(jitter.x[subscripts], y, col = "blue")
-       	             fv  <- tapply(fitted(mdl)[subscripts], groups[subscripts], mean)
-       	             panel.lines(1:length(zgp), fv, lwd = 2, col = "grey")
-       	             panel.segments(1:length(zgp) - 0.4, fv, 1:length(zgp) + 0.4, fv,
-       	                            lwd = 2, col = "red")
-        	      }
-        	      panel.xyplot(jitter.x[subscripts], y, col = "blue")
-               }
-            ))
+            clr  <- colorspace::rainbow_hcl(3)
+         	dfrm <- data.frame(x, y, z, jitter.x)
+           	plt  <- ggplot2::ggplot(dfrm, ggplot2::aes(y, x)) + ggplot2::xlab(ylab) + ggplot2::ylab(xlab) +
+         	          ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
+         	                panel.grid.minor = ggplot2::element_blank(),
+         	                panel.background = ggplot2::element_rect(fill = "grey90")) +
+         	  	     ggplot2::ggtitle(ttl)
+            if (!(model0.check & model.check) | all(model == model0)) {
+               plt <- plt + ggplot2::stat_density(ggplot2::aes(fill = ..density..), geom = "tile",
+                            height = 0.7, position = "identity", show.legend = FALSE) +
+		         ggplot2::scale_fill_gradient(low = "grey90", high = clr[3])
+            }
+            else if (model.check & !all(model == model0)) {
+               mn    <- tapply(fitted(mdl0), list(x, z), mean)
+               se    <- tapply(fitted(mdl0), list(x, z), length)
+               se    <- summary(mdl)$sigma * sqrt(abs(df0 - df1)) / sqrt(se * ngps)
+               dfrm1 <- data.frame(y = c(mn), x = rep(rownames(mn), ncol(mn)),
+                                   z = rep(colnames(mn), each = nrow(mn)))
+               ngrid <- 200
+               xgrid <- seq(min(y), max(y), length = ngrid)
+               dfrm1 <- data.frame(xgrid = rep(xgrid, each = nrow(dfrm1)),
+                                   x = rep(dfrm1$x, ngrid), z = rep(dfrm1$z, ngrid))
+               dfrm1$dgrid <- dnorm(dfrm1$xgrid, mn[cbind(dfrm1$x, dfrm1$z)],
+                                    se[cbind(dfrm1$x, dfrm1$z)])
+               plt <- plt + ggplot2::geom_tile(ggplot2::aes(x = xgrid, y = x, fill = dgrid),
+                                      height = 0.8, data = dfrm1,
+                                      show.legend = FALSE) +
+                  	 ggplot2::scale_fill_gradient(low = "grey90", high = clr[2])
+            }
+        	   if (model.check) {
+               plt <- plt + ggplot2::stat_summary(ggplot2::aes(x = fitted(mdl)), width = 0,
+                               fun.y = "mean", size = 1,
+          	     				    fun.ymin = function(x) mean(x) - 0.45,
+          	     				    fun.ymax = function(x) mean(x) + 0.45,
+          						    geom = "crossbar", col = clr[1])
+        	   }
+          	# plt <- plt + ggplot2::geom_jitter(width = 0, height = 0.1, col = clr[3])
+          	plt <- plt + ggplot2::geom_point(ggplot2::aes(x = y, y = jitter.x), col = clr[3])
+        	   plt <- plt + ggplot2::coord_flip()
+         	if (type == "Two-way") plt <- plt + ggplot2::facet_grid(. ~ z)
+            print(plt)
          }
          else if (graphics == "boxplot") {
-            print(bwplot(form, groups = x, layout = c(length(levels(z)), 1),
+            print(lattice::bwplot(form, groups = x, layout = c(length(levels(z)), 1),
                ylab = ylab, xlab = xlab,
                panel = function(x, y, subscripts, groups) {
        	          # panel.grid(-1, 0)
-                  panel.bwplot(x, y, col = groups[subscripts], horizontal = FALSE)
+                  lattice::panel.bwplot(x, y, col = groups[subscripts], horizontal = FALSE)
        	          if (any(model) & model.check) {
        	             fv <- unique(cbind(groups[subscripts], fitted(mdl)[subscripts]))
        	             ind <- apply(fv, 1, function(x) !any(is.na(x)))
        	             fv <- fv[ind, ]
        	             fv <- fv[order(fv[ , 1]), ]
-       	             panel.lines(fv[ , 1], fv[ , 2], lwd = 2, col = "grey")
-       	             panel.segments(fv[ , 1] - 0.4, fv[ , 2], fv[ , 1] + 0.4, fv[ , 2],
+       	             lattice::panel.lines(fv[ , 1], fv[ , 2], lwd = 2, col = "grey")
+       	             lattice::panel.segments(fv[ , 1] - 0.4, fv[ , 2], fv[ , 1] + 0.4, fv[ , 2],
        	                            lwd = 2, col = "red")
        	          }
                }
@@ -209,33 +193,33 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       panel
    }
 
-   if (panel.plot & !require(tkrplot)) {
+   if (panel.plot & !requireNamespace("tkrplot", quietly = TRUE)) {
       warning("the tkrplot package is not available so panel.plot has been set to FALSE.")
       panel.plot <- FALSE
-      }
+   }
 
-      model.options <- c("overall mean")
-      if (type == "One-way") {
-         model.options <- c(model.options, xterm)
-         term.names    <- c("x")
-      }
-      if (type == "Two-way") {
-         model.options <- c(model.options, zterm, xterm, paste(xterm, ":", zterm))
-         term.names    <- c("z", "x", "z:x")
-      }
-      init.model  <- model
-      init.model0 <- model0
-      if (any(is.na(init.model)))  init.model  <- rep(FALSE, 4)
-      if (any(is.na(init.model0))) init.model0 <- rep(FALSE, 4)
-      names(init.model) <- model.options
-      bgdcol <- "grey85"
+   model.options <- c("overall mean")
+   if (type == "One-way") {
+      model.options <- c(model.options, xterm)
+      term.names    <- c("x")
+   }
+   if (type == "Two-way") {
+      model.options <- c(model.options, zterm, xterm, paste(xterm, ":", zterm))
+      term.names    <- c("z", "x", "z:x")
+   }
+   init.model  <- model
+   init.model0 <- model0
+   if (any(is.na(init.model)))  init.model  <- rep(FALSE, 4)
+   if (any(is.na(init.model0))) init.model0 <- rep(FALSE, 4)
+   names(init.model) <- model.options
+   bgdcol <- "grey85"
 
    if (panel) {
    	
       panel <- rp.control(paste(type, "anova"), 
-                    x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab,
+                    x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab, ttl = NULL,
                     xterm = xterm, zterm = zterm, term.names = term.names, jitter.x = jitter.x, 
-                    graphics = "strip plot",
+                    graphics = "strip plot", lines = lines,
                     model11 = init.model[1],  model12 = init.model[2],  model13 = init.model[3], 
                     model14 = init.model[4],  model01 = init.model0[1], model02 = init.model0[2],
                     model03 = init.model0[3], model04 = init.model0[4],
@@ -286,9 +270,9 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       rp.do(panel, action.fn)
    }
    else {
-      panel <- list(x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab,
+      panel <- list(x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab, ttl = title,
                     xterm = xterm, zterm = zterm, term.names = term.names, jitter.x = jitter.x, 
-                    graphics = "strip plot",
+                    graphics = "strip plot", lines = lines,
                     model11 = init.model[1],  model12 = init.model[2],  model13 = init.model[3], 
                     model14 = init.model[4],  model01 = init.model0[1], model02 = init.model0[2],
                     model03 = init.model0[3], model04 = init.model0[4],
@@ -299,3 +283,124 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
    invisible()
    
 }
+
+# This is Chris Jackson's function, copied here because of the requireNamespace issue
+
+# rp.denstrip <- function (x, dens, at, width, horiz = TRUE, colmax, colmin = "white", 
+    # scale = 1, gamma = 1, ticks = NULL, tlen = 1.5, twd, tcol, 
+    # mticks = NULL, mlen = 1.5, mwd, mcol, lattice = FALSE, ...) 
+# {
+    # if (!is.numeric(x)) 
+        # stop("'x' must be numeric")
+    # if (missing(dens)) {
+        # de <- density(x, ...)
+        # x <- de$x
+        # dens <- de$y
+    # }
+    # else {
+        # if (!is.numeric(dens)) 
+            # stop("'dens' must be numeric")
+        # if (length(dens) != length(x)) 
+            # stop("Lengths of 'dens' and 'x' must be the same")
+        # dens <- dens[order(x)]
+        # x <- sort(x)
+    # }
+    # if (lattice) {
+        # rect.fn <- lattice::panel.rect
+        # seg.fn <- lattice::panel.segments
+        # default.width <- diff(lattice::current.panel.limits()[[if (horiz) 
+            # "ylim"
+        # else "xlim"]])/30
+        # default.colmax <- lattice::trellis.par.get("add.line")$col
+        # default.twd <- lattice::trellis.par.get("add.line")$lwd
+        # default.mwd <- lattice::trellis.par.get("add.line")$lwd * 2
+    # }
+    # else {
+        # rect.fn <- rect
+        # seg.fn <- segments
+        # default.width <- diff(par("usr")[if (horiz) 
+            # 3:4
+        # else 1:2])/30
+        # default.colmax <- par("fg")
+        # default.twd <- par("lwd")
+        # default.mwd <- par("lwd") * 2
+    # }
+    # if (missing(width)) 
+        # width <- default.width
+    # if (missing(colmax)) 
+        # colmax <- default.colmax
+    # if (missing(twd)) 
+        # twd <- default.twd
+    # if (missing(mwd)) 
+        # mwd <- default.mwd
+    # if (missing(tcol)) 
+        # tcol <- colmax
+    # if (missing(mcol)) 
+        # mcol <- colmax
+    # dens <- dens/max(dens) * scale
+    # n <- length(x)
+    # rgbmax <- col2rgb(colmax, alpha = TRUE)
+    # rgbmin <- if (colmin == "transparent") 
+        # c(col2rgb(colmax, alpha = FALSE), 0)
+    # else col2rgb(colmin, alpha = TRUE)
+    # if (gamma <= 0) 
+        # stop("gamma must be greater than 0")
+    # p <- dens[1:(n - 1)]^gamma
+    # if (colmin == "transparent") 
+        # cols <- rgb(p * rgbmax[1] + (1 - p) * rgbmin[1], p * 
+            # rgbmax[2] + (1 - p) * rgbmin[2], p * rgbmax[3] + 
+            # (1 - p) * rgbmin[3], alpha = p * rgbmax[4] + (1 - 
+            # p) * rgbmin[4], maxColorValue = 255)
+    # else cols <- rgb(p * rgbmax[1] + (1 - p) * rgbmin[1], p * 
+        # rgbmax[2] + (1 - p) * rgbmin[2], p * rgbmax[3] + (1 - 
+        # p) * rgbmin[3], alpha = rgbmax[4], maxColorValue = 255)
+    # first.col <- c(TRUE, cols[2:(n - 1)] != cols[1:(n - 2)])
+    # next.col <- c(first.col, TRUE)
+    # next.col[1] <- FALSE
+    # if (horiz) {
+        # xleft <- x[-n][first.col]
+        # xright = x[next.col]
+        # ybottom <- at - width/2
+        # ytop <- at + width/2
+    # }
+    # else {
+        # xleft <- at - width/2
+        # xright <- at + width/2
+        # ybottom <- x[-n][first.col]
+        # ytop <- x[next.col]
+    # }
+    # rect.fn(xleft = xleft, ybottom = ybottom, xright = xright, 
+        # ytop = ytop, border = NA, col = cols[first.col])
+    # if (!is.null(ticks)) {
+        # if (horiz) {
+            # tx0 <- tx1 <- ticks
+            # ty0 <- at - width * tlen/2
+            # ty1 <- at + width * tlen/2
+        # }
+        # else {
+            # tx0 <- at - width * tlen/2
+            # tx1 <- at + width * tlen/2
+            # ty0 <- ty1 <- ticks
+        # }
+        # seg.fn(tx0, ty0, tx1, ty1, lwd = twd, col = tcol)
+    # }
+    # if (!is.null(mticks)) {
+        # if (horiz) {
+            # tmx0 <- tmx1 <- mticks
+            # tmy0 <- at - width * mlen/2
+            # tmy1 <- at + width * mlen/2
+        # }
+        # else {
+            # tmx0 <- at - width * mlen/2
+            # tmx1 <- at + width * mlen/2
+            # tmy0 <- tmy1 <- mticks
+        # }
+        # seg.fn(tmx0, tmy0, tmx1, tmy1, lwd = mwd, col = mcol)
+    # }
+    # invisible()
+# }
+
+# rp.panel.denstrip <- function (...) 
+# {
+    # rp.denstrip(..., lattice = TRUE)
+# }

@@ -188,29 +188,36 @@ mururoa.draw <- function(panel) {
 mururoa.predict <- function(panel) {
 
   ind <- which(panel$trend.setting == c("cte", "1st", "2nd"))
+  
+  if (!requireNamespace("sp", quietly = TRUE)) {
+     cat("the sp package is required.\n")
+     return(panel)
+  }
       
   if (!panel$prediction.computed[ind]) {
      sz   <- panel$sz
-     z0 <- sz
-     fg <- as.geodata(z0)                            # convert to format usable by geoR
-     vg2 <- variog(fg, trend = panel$trend.setting, max.dist = 60, messages = FALSE)  # quadratic trend
-     vfit <- variofit(vg2, ini.cov.pars = c(max(vg2$v), 20), nugget = min(vg2$v), cov.model = "matern", 
-                      kappa = 4, messages = FALSE)
+     z0 <- sz 
+     fg <- geoR::as.geodata(z0)                            # convert to format usable by geoR
+     vg2 <- geoR::variog(fg, trend = panel$trend.setting, max.dist = 60, messages = FALSE) # quadratic trend
+     vfit <- geoR::variofit(vg2, ini.cov.pars = c(max(vg2$v), 20), nugget = min(vg2$v),
+                      cov.model = "matern", kappa = 4, messages = FALSE)
      xx <- 0:60
      yy <- 100 + 625 * (xx / 20 - 0.5 * (xx / 30)^3)
      yy[32:61] <- 725
      pred.grid <- expand.grid(0.25 + 0:199/2, 0.25 + 0:99/2)      # offset from samples
-     KC  <- krige.control(obj.model = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
-     shh <- output.control(messages = FALSE)
-     kc  <- try(krige.conv(fg, locations = pred.grid, krige = KC, output = shh), silent = TRUE)
+     KC  <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting,
+                       trend.l = panel$trend.setting)
+     shh <- geoR::output.control(messages = FALSE)
+     kc  <- try(geoR::krige.conv(fg, locations = pred.grid, krige = KC, output = shh), silent = TRUE)
      if (class(kc) == "try-error" & panel$trend.setting == "cte") {
         rp.messagebox("There are numerical problems in producing predictions with this model.  Try fitting a linear or quadratic trend function.")
         return(panel)
      }
      kcm <- matrix(kc$predict, nrow = 200)
      pg2 <- expand.grid(0:200 / 2, 0:100 / 2)               # use 'real' grid to find RSS
-     KC2 <- krige.control(obj.model = vfit, trend.d = panel$trend.setting, trend.l = panel$trend.setting)
-     kc2 <- krige.conv(fg, locations = pg2, krige = KC2, output = shh)
+     KC2 <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting,
+                      trend.l = panel$trend.setting)
+     kc2 <- geoR::krige.conv(fg, locations = pg2, krige = KC2, output = shh)
      panel$kpred[ , , ind] <- matrix(kc2$predict, ncol = 101) * panel$mur.mat
      panel$kse[ , , ind]   <- sqrt(matrix(kc2$krige.var, ncol = 101))
      panel$prediction.computed[ind] <- TRUE
@@ -265,7 +272,7 @@ mururoa.samp <- function(panel) {
   ptsm <- as.matrix(expand.grid(seq(0, 100, by = 0.5), seq(0, 50, by = 0.5)))
   warn <- options()$warn
   options(warn = -1)
-  nug  <- grf(nrow(ptsm), ptsm, cov.model = "pure.nugget", cov.pars = c(panel$nugget, 0), 
+  nug  <- geoR::grf(nrow(ptsm), ptsm, cov.model = "pure.nugget", cov.pars = c(panel$nugget, 0), 
                   nugget = 0, messages = FALSE)
   options(warn = warn)
   z <- panel$field[a] + c(panel$trendmurmat)[a] + nug$data[a]
@@ -276,6 +283,7 @@ mururoa.samp <- function(panel) {
   panel$mask <- mask
   panel$true.surface <- panel$trendmurmat + panel$fieldm
   panel$zlim <- range(panel$sz[ , 3], c(panel$true.surface))
+
   rp.control.put(panel$panelname, panel)
 
   rp.tkrplot(panel, plot1a, mururoa.colour.chart, 
@@ -335,9 +343,9 @@ mururoa.start <- function(panel) {
    panel
    }
   
-   if (!require(tkrplot))      stop("The tkrplot package is not available.")
-   if (!require(geoR))         stop("The geoR package is not available.")
-   if (!require(RandomFields)) stop("the RandomFields package is not available.")
+   if (!requireNamespace("tkrplot",      quietly = TRUE)) stop("The tkrplot package is not available.")
+   if (!requireNamespace("geoR",         quietly = TRUE)) stop("The geoR package is not available.")
+   if (!requireNamespace("RandomFields", quietly = TRUE)) stop("the RandomFields package is not available.")
 
    if (is.list(parameters)) {
    	  nms <- names(parameters)
@@ -346,7 +354,7 @@ mururoa.start <- function(panel) {
       }
       
    if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
+      if (.Platform$OS.type == "unix") hscale <- 1.2
       else                             hscale <- 1.4
       }
 	
@@ -361,8 +369,8 @@ mururoa.start <- function(panel) {
 
    ptsm  <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 1, length = 101)))
    covp  <- mururoa.list$cov.pars
-   field <- GaussRF(ptsm, grid = FALSE, model = "matern", 
-                     param = c(NA, covp[1], 0, covp[2] / 100, 4))
+   field <- RandomFields::GaussRF(ptsm, grid = FALSE, model = "matern", 
+                     param = c(0, covp[1], 0, covp[2] / 100, 4))
    
    panel <- rp.control("Sampling at Mururoa",
      stype = "Random", npts = 25, gsp = 10, 

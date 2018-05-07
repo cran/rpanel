@@ -16,7 +16,7 @@ rp.control.dispose(panel)
 \arguments{
   \item{title}{the title of the panel displayed in the banner.}
   \item{size}{a two-element numeric vector specifying width and height of the panel in pixels.  If this argument is omitted the size of the panel will adapt to the subsequent addition of widgets.}
-  \item{panelname}{the name of the panel. It is important to set this parameter for \code{\link{rp.block}} and \code{rp.control.dispose}.}
+  \item{panelname}{the name of the panel. It is usually not necessary to set this as it will be given a name automatically.}
   \item{background}{the background colour of the control e.g. "white". (New parameter with version 2.0.)}
   \item{\dots}{additional arguments which are treated as variable initialisations and are stored within the returned rpanel object. For example inserting \code{x=3} creates a variable \code{x} in the rpanel object with the value 3.  Note that the names of these additional arguments should not conflict with those of the main arguments of \code{rp.control}.}
   \item{panel}{the panel to be disposed of.  This represents the object and its parameters}
@@ -69,9 +69,8 @@ Objects passed into \code{rp.control} are then available to be used by action fu
                  title="Plot type", action = hist.or.boxp)  
 
    # Try also
-   # panel <- rp.control(ischar = TRUE) # returns a string ".rpanel1" in panel
-   # panel <- rp.control(ischar = FALSE) # returns the panel list object itself
-   # rp.control.dispose(panel, "panel")
+   # panel <- rp.control()
+   # rp.control.dispose(panel)
 }}
 
 \keyword{iplot}

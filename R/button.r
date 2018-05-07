@@ -1,4 +1,4 @@
-rp.button <- function(panel, action, title=deparse(substitute(action)), 
+rp.button <- function(panel, action = I, title=deparse(substitute(action)), 
                       repeatdelay = 0, repeatinterval = 0, quitbutton = FALSE, 
                       pos = NULL, foreground = NULL, background = NULL, font = NULL,
                       parentname = deparse(substitute(panel)), 

@@ -7,8 +7,6 @@ rp.bubbleplot <- function(x, y, year, size, col, col.palette = topo.colors(20),
    size.label <- deparse(substitute(size))
    col.label  <- deparse(substitute(col))
    
-   if (!require(rpanel)) stop("the rpanel package is required.")
-
    size.missing <- missing(size)
    if (size.missing)    size <- matrix(1, ncol = ncol(x), nrow = nrow(x))
    if (missing(col))    col  <- matrix("lightblue", ncol = ncol(x), nrow = nrow(x))
@@ -136,7 +134,7 @@ rp.bubbleplot <- function(x, y, year, size, col, col.palette = topo.colors(20),
 
    bubble.movie.start <- function(panel) {
       panel$movie.stop <- FALSE
-   	  # rp.control.put(panel$panelname, panel)      
+   	  rp.var.put(panel$panelname, "movie.stop", FALSE)
    	  rp.timer(panel, 1, bubble.movie.call, function(panel) !panel$movie.stop)
       panel
    }
@@ -150,9 +148,13 @@ rp.bubbleplot <- function(x, y, year, size, col, col.palette = topo.colors(20),
       if (panel$year.ind < max(panel$year)) {
          panel$year.ind <- panel$year.ind + (max(panel$year) - min(panel$year)) / 30
          panel$year.ind <- min(panel$year.ind, max(panel$year))
-   	     # rp.control.put(panel$panelname, panel)
+   	     rp.var.put(panel$panelname, "year.ind", panel$year.ind)
          rp.tkrreplot(panel, plot)
          rp.slider.change(panel, "slider", panel$year.ind)
+         # pdf(paste("figures/bubbleplot", panel$npdf + 1, ".pdf", sep = ""))
+         # rp.do(panel, bubble.draw)
+         # dev.off()
+         # panel$npdf <- panel$npdf + 1
       }
       else
          panel$movie.stop <- TRUE
@@ -161,21 +163,21 @@ rp.bubbleplot <- function(x, y, year, size, col, col.palette = topo.colors(20),
    
    click <- function(panel, x, y) {
    	  panel$coords <- c(x, y)
-   	  # rp.control.put(panel$panelname, panel)
+   	  rp.var.put(panel$panelname, "coords", c(x, y))
       rp.tkrreplot(panel, plot)
       panel
    }
    
    release <- function(panel, x, y) {
    	  panel$coords <- rep(NA, 2)
-   	  # rp.control.put(panel$panelname, panel)
+   	  rp.var.put(panel$panelname, "coords", rep(NA, 2))
       rp.tkrreplot(panel, plot)
       panel
    }
    
    panel <- rp.control(x = x, y = y, year = year, year.ind = min(year), coords = rep(NA, 2),
                        scl = scl, clr = clr, clr.brks = clr.brks, col.palette = col.palette,
-                       size.label = size.label, col.label = col.label,
+                       size.label = size.label, col.label = col.label, npdf = 1,
                        interpolate = interpolate, country = "none", movie.stop = FALSE)
 #   rp.grid(panel, "plot",      row = 0, column = 0)
 #   rp.grid(panel, "key",       row = 0, column = 1)
@@ -196,6 +198,10 @@ rp.bubbleplot <- function(x, y, year, size, col, col.palette = topo.colors(20),
    rp.listbox(panel, country, labels = c("none", labels), rows = round(31 * vscale),
       action = bubble.redraw,
       row = 0, column = 2, title = "Country")
+
+   # pdf(paste("figures/bubbleplot", panel$npdf, ".pdf", sep = ""))
+   # rp.do(panel, bubble.draw)
+   # dev.off()
 
    invisible()
 }

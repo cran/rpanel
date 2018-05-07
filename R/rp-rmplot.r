@@ -5,6 +5,8 @@ rp.rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all",
                           lwd = 1, col = NA, lty = NA, panel = TRUE, 
                           panel.plot = TRUE, hscale = NA, vscale = hscale, ...) {
 
+   if (!requireNamespace("tkrplot", quietly = TRUE)) stop("the tkrplot package is not available.")
+
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1
       else                             hscale <- 1.4

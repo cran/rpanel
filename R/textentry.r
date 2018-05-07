@@ -1,7 +1,7 @@
-w.textentry <- function(parent, label, text, action=I, pos=NULL, foreground=NULL, background=NULL, font=NULL, 
+w.textentry <- function(parent, label, text, title, action=I, pos=NULL, foreground=NULL, background=NULL, font=NULL, 
   width=20, keydown=FALSE)
 {
-  widget <- w.createwidget(parent, pos, background)
+  widget <- w.createwidget(parent, pos, background, title)
   widget$.type = "textentrys"
   widget$.var <- c()
   widget$.label <- list()   
@@ -100,7 +100,7 @@ rp.textentry <- function(panel, variable, action = I, labels = NULL, names = lab
   if (is.list(pos) && !is.null(pos$grid))
      parent <- rp.widget.get(panelname, pos$grid)
   
-  widget <- w.textentry(parent, labels, text = variable, action = f, pos, 
+  widget <- w.textentry(parent, labels, text = variable, title = title, action = f, pos, 
                         foreground, background, font, width, keydown)
   rp.widget.put(panelname, name, widget)
 

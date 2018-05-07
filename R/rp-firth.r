@@ -76,19 +76,25 @@ firth.points <- function(panel) {
 
 firth.predict <- function(panel) {
 	
+	  if (!requireNamespace("sp", quietly = TRUE)) {
+         cat("the sp package is required.\n")
+         return(panel)
+      }
+
+	
       ind <- which(panel$trend.setting == c("cte", "1st", "2nd", "stratum"))
       
       if (!panel$prediction.computed[ind]) {
          sz   <- panel$sz
-         fg   <- as.geodata(sz)
-         vg2  <- variog(fg, trend = "cte", max.dist = 120, messages = FALSE)
-         shh  <- output.control(messages = FALSE)
+         fg   <- geoR::as.geodata(sz)
+         vg2  <- geoR::variog(fg, trend = "cte", max.dist = 120, messages = FALSE)
+         shh  <- geoR::output.control(messages = FALSE)
       	 if (ind == 4) {
             a    <- 1 + sz[ , 1] + 201 * sz[ , 2]
             sgd  <- factor(panel$strat[a])
-            fg   <- as.geodata(data.frame(sz[,1], sz[,2], sz[,3], sgd), 
+            fg   <- geoR::as.geodata(data.frame(sz[,1], sz[,2], sz[,3], sgd), 
                       covar.col = 4, covar.names = "stratum")
-      	 	fit  <- likfit(fg, ini.cov.pars = c(max(vg2$v), 20), trend = ~stratum)
+      	 	fit  <- geoR::likfit(fg, ini.cov.pars = c(max(vg2$v), 20), trend = ~stratum)
             pg2  <- expand.grid(0:200, 0:60)
             sgp  <- c(panel$strat)
             # indg <- (sgp %in% as.numeric(levels(sgd)))
@@ -96,24 +102,24 @@ firth.predict <- function(panel) {
             # sgp  <- sgp[indg]
             sgp[sgp == 0] <- 1
             sgp  <- factor(sgp)
-            KC   <- krige.control(obj.model = fit, trend.d = ~stratum, trend.l = ~sgp)
-            kc   <- krige.conv(fg, locations = pg2, krige = KC, output = shh)
+            KC   <- geoR::krige.control(obj.model = fit, trend.d = ~stratum, trend.l = ~sgp)
+            kc   <- geoR::krige.conv(fg, locations = pg2, krige = KC, output = shh)
       	    }
       	 else {
-            vfit <- variofit(vg2, ini.cov.pars = c(max(vg2$v), 20), nugget = 10, cov.model = "matern",
+            vfit <- geoR::variofit(vg2, ini.cov.pars = c(max(vg2$v), 20), nugget = 10, cov.model = "matern",
                              kappa = 4, messages = FALSE)
             xx   <- 0:120
             yy   <- 0.04 + 0.25 * (xx / 20 - 0.5 * (xx / 30)^3)
             yy[32:121] <- 0.29
             pred.grid <- expand.grid(0.5 + 0:199, 0.5 + 0:59) 	# offset from samples
-            KC   <- krige.control(obj.model = vfit, trend.d = panel$trend.setting, 
+            KC   <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting, 
                            trend.l = panel$trend.setting)
-            kc   <- krige.conv(fg, locations = pred.grid, krige = KC, output = shh)
+            kc   <- geoR::krige.conv(fg, locations = pred.grid, krige = KC, output = shh)
             kcm  <- matrix(kc$predict, nrow = 200)
             pg2  <- expand.grid(0:200, 0:60) # use 'real' grid to find RSS
-            KC   <- krige.control(obj.model = vfit, trend.d = panel$trend.setting, 
+            KC   <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting, 
                          trend.l = panel$trend.setting)
-            kc   <- try(krige.conv(fg, locations = pg2, krige = KC , output = shh), silent = TRUE)
+            kc   <- try(geoR::krige.conv(fg, locations = pg2, krige = KC , output = shh), silent = TRUE)
             if (class(kc) == "try-error" & panel$trend.setting == "cte") {
                rp.messagebox("There are numerical problems in producing predictions with this model.  Try fitting a linear or quadratic trend function, or a stratum effect.")
                return(panel)
@@ -258,7 +264,7 @@ firth.samp <- function(panel) {
    a <- 1 + x1 + 201 * y1		       # find right place in trend etc. vectors
    warn <- options()$warn
    options(warn = -1)
-   nug <- grf(nrow(panel$pts), panel$pts, cov.model = "pure.nugget",	# add nugget effect
+   nug <- geoR::grf(nrow(panel$pts), panel$pts, cov.model = "pure.nugget",	# add nugget effect
               nugget = 0, cov.pars = c(panel$nugget, 0), messages = FALSE)	# 'sampling error'
    options(warn = warn)
    # z <- panel$field[a] + panel$trend[a] + nug$data[a] + panel$strat.sm[a] / 2
@@ -326,9 +332,9 @@ firth.samp <- function(panel) {
       panel
       }
   
-   if (!require(tkrplot))      stop("The tkrplot package is not available.")
-   if (!require(geoR))         stop("The geoR package is not available.")
-   if (!require(RandomFields)) stop("the RandomFields package is not available.")
+   if (!requireNamespace("tkrplot",      quietly = TRUE)) stop("The tkrplot package is not available.")
+   if (!requireNamespace("geoR",         quietly = TRUE)) stop("The geoR package is not available.")
+   if (!requireNamespace("RandomFields", quietly = TRUE)) stop("the RandomFields package is not available.")
    if (is.list(parameters)) {
    	  nms <- names(parameters)
       for (i in 1:length(nms))
@@ -336,7 +342,7 @@ firth.samp <- function(panel) {
       }
       
    if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
+      if (.Platform$OS.type == "unix") hscale <- 1.2
       else                             hscale <- 1.4
       }
 
@@ -347,8 +353,8 @@ firth.samp <- function(panel) {
 #   options(warn = warn)
    pts   <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 0.6, length = 61)))
    covp  <- firth.list$cov.pars
-   field <- GaussRF(pts, grid = FALSE, model = "matern", 
-                     param = c(NA, covp[1], 0, covp[2] / 100, 4))
+   field <- RandomFields::GaussRF(pts, grid = FALSE, model = "matern", 
+                     param = c(0, covp[1], 0, covp[2] / 100, 4))
    pts   <- firth.list$pts
    trend <- apply(pts, 1, firth.list$trend.fn)
 

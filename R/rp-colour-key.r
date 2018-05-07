@@ -1,7 +1,7 @@
 rp.colour.key <- function(cols, brks, par.mar = c(5, 0, 4, 3) + 0.1, natural = TRUE,
                           margin = FALSE)  {
-   ngrid <- length(cols)
-   xvec  <- rep(0, ngrid)
+   ngrid   <- length(cols)
+   xvec    <- rep(0, ngrid)
     if (length(brks) == 2)
       brks <- seq(brks[1], brks[2], length = ngrid + 1)
    else if (length(brks) != ngrid + 1)
@@ -20,12 +20,13 @@ rp.colour.key <- function(cols, brks, par.mar = c(5, 0, 4, 3) + 0.1, natural = T
    xrange <- if (margin) c(-1, 1) else c(0, 1)
    plot(xrange, zlim, type = "n", axes = FALSE, xaxs = "i", yaxs = yaxs, xlab = " ", ylab = " ")
    if (natural)
-      axis(4)
+      axis(4, col = grey(0.6), col.ticks = grey(0.6), col.axis = grey(0.6), cex.axis = 0.8)
    else {
       ticks <- pretty(0:ngrid)
       lbls  <- as.character(signif(brks.orig))[match(ticks, 0:ngrid)]
       lbls[lbls == "Inf"] <- NA
-      axis(4, at = ticks, labels = lbls)
+      axis(4, at = ticks, labels = lbls, col = grey(0.6), col.ticks = grey(0.6),
+                          col.axis = grey(0.6), cex.axis = 0.8)
    }
    nbrks <- length(brks)
    brks[c(1, nbrks)] <- par()$usr[3:4]

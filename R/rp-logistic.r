@@ -130,7 +130,7 @@ rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, panel = T
                      alpha = alpha, beta = beta, par.est = par.est, par.se = par.se,
                      xlab = xlab, ylab = ylab, jitter.old = FALSE,
                      hscale = hscale, vscale = vscale, display = display)
-      if (panel.plot & require(tkrplot)) {
+      if (panel.plot & requireNamespace("tkrplot", quietly = TRUE)) {
          rp.tkrplot(panel, plot, plot.logistic, pos = "right", hscale = hscale, vscale = vscale,
                     background = "white")
          action <- replot.logistic

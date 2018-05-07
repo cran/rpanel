@@ -9,7 +9,7 @@
 }
 
 \usage{
-rp.button(panel, action, title=deparse(substitute(action)), repeatdelay=0,
+rp.button(panel, action = I, title=deparse(substitute(action)), repeatdelay=0,
   repeatinterval=0, quitbutton=FALSE, pos=NULL, foreground=NULL, 
   background=NULL, font=NULL, parentname=deparse(substitute(panel)), 
   name=paste("button", .nc(), sep=""), ...)

@@ -13,22 +13,16 @@ rp.block(panel)
 }
 
 \arguments{
-  \item{panel}{ the panel whose closure will lead to termination of rp.block. Note that
-  the panelname needs to have been set appropriately in \code{\link{rp.control}}. }
+  \item{panel}{the panel whose closure will lead to termination of rp.block.}
 }
 
 \details{
 \code{rp.block} should usually be the very last function executed in a script, to prevent 
-termination until the panel has been closed.  It should not normally be used in interactive 
-mode, except where one wishes to prevent use of the \R command line whilst the panel is running.
+termination until the panel has been closed.
 }
 
 \value{
-If the argument \code{panel} is the panelname string, the same string is returned. If the panel object is used, the altered panel is assigned to both the calling level and panel's environment level.
-}
-
-\section{Warning}{
-Note: This may stop the panel responding to button and other events in the MacOS command line.
+Nothing is returned.
 }
 
 \references{
@@ -45,7 +39,7 @@ boxp.sim <- function(panel) {
   panel
 }
 # Create an rpanel and add the button "Simulate" to it.
-panel <- rp.control(panelname="panel")
+panel <- rp.control()
 rp.button(panel, action = boxp.sim, title = "Simulate")
 rp.block(panel)
 }

@@ -1,9 +1,9 @@
-w.combo <- function(parent, prompt=NULL, values, pos=NULL, action=I, foreground=NULL, background=NULL, font=NULL, editable=FALSE)
-{
+w.combo <- function(parent, prompt = NULL, values, pos = NULL, action = I, 
+                    foreground = NULL, background = NULL, font = NULL,
+                    editable = FALSE, initval) {
   widget <- w.createwidget(parent, pos, background)
-  widget$.type = "combobox"
-  f <- function(...) 
-  { 
+  widget$.type <- "combobox"
+  f <- function(...) { 
     val <- values[as.numeric(handshake(tcl, widget$.combo[[1]]$.widget,"getvalue"))+1]
     action(val)
   }
@@ -18,7 +18,6 @@ w.combo <- function(parent, prompt=NULL, values, pos=NULL, action=I, foreground=
 #      }
       if (as.integer(handshake(.Tcl, paste('font measure systemfont "', values[i], '"', sep="") )) > len) {
         len <- as.integer(handshake(.Tcl, paste('font measure systemfont "', values[i], '"', sep="") ))
-#        print(len)
       }
     }
     invisible(len)  
@@ -50,9 +49,10 @@ w.combo <- function(parent, prompt=NULL, values, pos=NULL, action=I, foreground=
       height=as.integer(handshake(.Tcl, 'font metrics systemfont -linespace'))
     ), background)
     
-  combo$.type <- "combo"
-  combo$.widget <- handshake(tkwidget, parent$.handle, "ComboBox", editable=FALSE, values=values, modifycmd=f, width=maxlen2(values),
-     textvariable = tclVar(values[1]))
+  combo$.type   <- "combo"
+  combo$.widget <- handshake(tkwidget, parent$.handle, "ComboBox", editable = FALSE, 
+                             values = values, modifycmd = f, width = maxlen2(values),
+                             textvariable = tclVar(initval))
   w.appearancewidget(combo, font, foreground, background)
   widget$.label <- list(label)
   widget$.combo <- list(combo)
@@ -60,9 +60,11 @@ w.combo <- function(parent, prompt=NULL, values, pos=NULL, action=I, foreground=
   invisible(widget)
 }
 
-rp.combo <- function(panel, variable, prompt=NULL, vals, initval=vals[1], pos=NULL, action=I, foreground=NULL, 
-  background=NULL, font=NULL, editable=FALSE, parentname=deparse(substitute(panel)), name=paste("combo", .nc(), sep=""), ...) 
-{
+rp.combo <- function(panel, variable, prompt = NULL, vals, initval = vals[1],
+                     pos = NULL, action = I, foreground = NULL, background=NULL,
+                     font = NULL, editable = FALSE, parentname = deparse(substitute(panel)),
+                     name = paste("combo", .nc(), sep = ""), ...) {
+                     	
   if (!exists(panel$panelname, .rpenv, inherits = FALSE)) # if the panelname is not set then
   { 
     panelname = deparse(substitute(panel)) # the panel name should be the panel deparse subst'ed
@@ -78,26 +80,32 @@ rp.combo <- function(panel, variable, prompt=NULL, vals, initval=vals[1], pos=NU
 #    panel <- rp.control.get(panelname, panel) # now get the panel
   }
   
-  varname = deparse(substitute(variable))
-  if (!rp.isnull(panelname, varname)) { variable = rp.var.get(panelname, varname) } 
-  else { variable = initval; rp.var.put(panelname, varname, variable); } 
+  varname <- deparse(substitute(variable))
+  if (!rp.isnull(panelname, varname))
+     variable <- rp.var.get(panelname, varname)
+  else {
+     variable <- initval
+     rp.var.put(panelname, varname, variable)
+  }
 
   if (is.null(pos)) { if (length(list(...)) > 0) { pos <- list(...) } }
 
-  f <- function(val)
-  {
+  f <- function(val) {
     rp.var.put(panelname, varname, val)
     panel <- rp.control.get(panelname)
     panel <- action(panel)
     rp.control.put(panelname, panel)
   }
 
-  if (rp.widget.exists(panelname, parentname)) { parent <- rp.widget.get(panelname, parentname) }
-  else { parent <- panel }
+  if (rp.widget.exists(panelname, parentname))
+     parent <- rp.widget.get(panelname, parentname)
+  else
+     parent <- panel
   if (is.list(pos)) { if (!is.null(pos$grid)) { parent <- rp.widget.get(panelname, pos$grid) } }
   
-  widget <- w.combo(parent, prompt, vals, pos, action=f, foreground, background, font, editable)
+  widget <- w.combo(parent, prompt, vals, pos, action = f, foreground, background, font,
+                    editable, initval)
   rp.widget.put(panelname, name, widget)
-  if (.rpenv$savepanel) { rp.control.put(panelname, panel) } # put the panel back into the environment
+  if (.rpenv$savepanel) rp.control.put(panelname, panel) # put the panel back into the environment
   invisible(panelname)
 }

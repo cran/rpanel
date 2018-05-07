@@ -61,6 +61,7 @@ export(
   rp.normal, 
   rp.plot3d, 
   rp.plot4d,
+  rp.sample,
   rp.spacetime,
   rp.surface,
   rp.power,
@@ -70,3 +71,15 @@ export(
   rp.tables
 
 )
+
+import(tcltk)
+importFrom("grDevices", "col2rgb", "grey", "heat.colors", "rgb2hsv",
+           "terrain.colors", "topo.colors")
+importFrom("graphics", "abline", "axTicks", "axis", "box", "hist",
+           "image", "layout", "lines", "mtext", "par", "persp", "plot",
+           "points", "polygon", "rect", "segments", "strheight",
+           "text", "title")
+importFrom("stats", "as.formula", "binomial", "coef", "dnorm",
+           "fitted", "glm", "lm", "na.exclude", "optim", "pnorm",
+           "qqnorm", "qt", "rnorm", "runif", "sd")
+importFrom("utils", "demo", "menu")

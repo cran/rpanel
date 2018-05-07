@@ -15,9 +15,10 @@ panel.launch <- function(menu.panel) {
       rp.slider(panel, lambda, -2, 2, qq.draw)
       rp.do(panel, qq.draw)
    }
-   else if (menu.panel$demo == "bubbleplot")
+   else if (menu.panel$demo == "bubbleplot") {
       rp.bubbleplot(log(gdp), log(co2.emissions), 1960:2007, size = population, 
          col = life.expectancy, interpolate = TRUE, hscale = hscale)
+   }
    else if (menu.panel$demo == "Binomial distribution") {
       plot.binomial <- function(panel) {
          with(panel, {
@@ -45,6 +46,9 @@ panel.launch <- function(menu.panel) {
       y <- rnorm(50, mean = 10, sd = 0.5)
       rp.normal(y, hscale = hscale)
       rm(y)
+   }
+   else if (menu.panel$demo == "Drawing samples") {
+      rp.sample(hscale = hscale)
    }
    else if (menu.panel$demo == "Confidence intervals") {
       rp.ci(hscale = hscale)
@@ -96,33 +100,33 @@ panel.launch <- function(menu.panel) {
       rp.power(hscale = hscale)
    }
    else if (menu.panel$demo == "Density estimation (1d)") {
-      sm.density(tephra$Al2O3, panel = TRUE)
+      sm::sm.density(sm::tephra$Al2O3, panel = TRUE)
    }
    else if (menu.panel$demo == "Density estimation (2d)") {
-      with(airpc, {
+      with(sm::airpc, {
          y <- cbind(Comp.1, Comp.2)[Period==3,]
-         sm.density(y, panel = TRUE)
+         sm::sm.density(y, panel = TRUE)
       })
    }
    else if (menu.panel$demo == "Flexible regression (1d)") {
-      with(trawl, {
-         sm.regression(Longitude, Score1, panel = TRUE)
+      with(sm::trawl, {
+         sm::sm.regression(Longitude, Score1, panel = TRUE)
       })
    }
    else if (menu.panel$demo == "Flexible regression (2d)") {
-      with(trawl, {
+      with(sm::trawl, {
          Position <- cbind(Longitude - 143, Latitude)
-         sm.regression(Position, Score1, panel = TRUE)
+         sm::sm.regression(Position, Score1, panel = TRUE)
       })
    }
    else if (menu.panel$demo == "Surface uncertainty") {
-      with(trawl, {
+      with(sm::trawl, {
          location  <- cbind(Longitude, Latitude)
-         model     <- sm.regression(location, Score1, ngrid = 15, display = "none")
+         model     <- sm::sm.regression(location, Score1, ngrid = 15, display = "none")
          longitude <- model$eval.points[ , 1]
          latitude  <- model$eval.points[ , 2]
          xgrid     <- as.matrix(expand.grid(longitude, latitude))
-         S         <- sm.weight2(location, xgrid, model$h)
+         S         <- sm::sm.weight2(location, xgrid, model$h)
          covar     <- tcrossprod(S) * model$sigma^2
          rp.surface(model$estimate, covar, longitude, latitude, location, Score1, hscale = hscale)
       })
@@ -131,7 +135,8 @@ panel.launch <- function(menu.panel) {
       rp.gulls()
    }
    else if (menu.panel$demo == "Quakes") {
-      with(quakes, {
+      requireNamespace("datasets", quietly = TRUE)
+      with(datasets::quakes, {
          rp.plot4d(cbind(long, lat), depth, mag, hscale = hscale)
       })
    }
@@ -143,10 +148,11 @@ panel.launch <- function(menu.panel) {
    else if (menu.panel$demo == "SO2") {
       with(SO2, {
          location <- cbind(longitude, latitude)
-         if (require(mgcv) & require(maps)) {
+         if (requireNamespace("mgcv", quietly = TRUE) & 
+             requireNamespace("maps", quietly = TRUE)) {
             location1 <- location[,1]
             location2 <- location[,2]
-            model   <- gam(logSO2 ~ s(location1, location2, year))
+            model   <- mgcv::gam(logSO2 ~ s(location1, location2, year))
             loc1    <- seq(min(location1), max(location1), length = 30)
             loc2    <- seq(min(location2), max(location2), length = 30)
             yr      <- seq(min(year), max(year), length = 30)
@@ -155,8 +161,8 @@ panel.launch <- function(menu.panel) {
             model <- predict(model, newdata)
             model <- list(x = cbind(loc1, loc2), z = yr,
                           y = array(model, dim = rep(30, 3)))
-            mapxy <- map('world', plot = FALSE,
-                         xlim = range(longitude), ylim = range(latitude))
+            mapxy <- maps::map(plot = FALSE,
+                          xlim = range(longitude), ylim = range(latitude))
             rp.plot4d(location, year, logSO2, model, hscale = hscale,
                       col.palette = rev(heat.colors(20)),
                       foreground.plot = function() map(mapxy, add = TRUE))
@@ -167,25 +173,24 @@ panel.launch <- function(menu.panel) {
       })
    }
    else if (menu.panel$demo == "Spatial simulation") {
-      rp.geosim(hscale = hscale)
+      rp.geosim(hscale = hscale * 1.2)
    }
    else if (menu.panel$demo == "Mururoa") {
-      rp.mururoa(hscale = hscale)
+      rp.mururoa(hscale = hscale * 1.2)
    }
    else if (menu.panel$demo == "Firth") {
-      rp.firth(hscale = hscale)
+      rp.firth(hscale = hscale * 1.2)
    }
    menu.panel
 }
 
-menu.panel <- rp.control("Cartoons", homer = FALSE, number.list = list(),
-      ss = list(), trans = list(), theta = list())
 menu.list  <-  list(list("Introductory",
                          "q-q plot",
                          "bubbleplot",
                          "Binomial distribution",
                          "Tables",
                          "Normal fitting",
+                         "Drawing samples",
                          "Confidence intervals"
                          ),
                     list("Regression",
@@ -219,8 +224,10 @@ menu.list  <-  list(list("Introductory",
                          "Firth"
                           )
                     )
-                    
-if (!require(sm)) menu.list <- menu.list[-4]
+if (!requireNamespace("sm", quietly = TRUE)) menu.list <- menu.list[-4]
+
+menu.panel <- rp.control("Cartoons", homer = FALSE, number.list = list(),
+      ss = list(), trans = list(), theta = list())
 rp.menu(menu.panel, demo, menu.list, action = panel.launch)
 image.file <- file.path(system.file(package = "rpanel"), "images", "cartoons.gif")
 rp.image(menu.panel, image.file)

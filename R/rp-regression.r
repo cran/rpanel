@@ -1,8 +1,13 @@
 #   Simple regression with R graphics
 
-rp.regression <- function (x, y, ylab = NA, x1lab = NA, x2lab = NA, xlab = NA, 
+rp.regression <- function (x, y, ylab = NA, x1lab = NA, x2lab = NA, xlab = NA, yrange,
            panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
-           model = "None", line.showing = TRUE, residuals.showing = FALSE, size = 3, col = "red") {
+           model = "None", line.showing = TRUE, residuals.showing = FALSE, size = 3, col) {
+
+   prng <- if (missing(yrange)) NA else yrange
+   if (missing(col)) col <- NA
+   if (class(x) %in% c("formula", "lm")) return(rp.regression3(x, prng, col))
+   if (is.na(col)) col <- "red"
 
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1
@@ -120,6 +125,7 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
    }
    
    intercept.initial <- runif(1, 0.7*min(y) + 0.3*max(y), 0.3*min(y) + 0.7*max(y)) 
+   rr <- range(y)
    intercept.delta   <- diff(range(y)) / 200
    slope.delta       <- (diff(range(y)) / diff(range(x))) / 50
    # slope.delta       <- abs(coef(lm(y ~ x))[2]) / 50
@@ -165,6 +171,7 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
       rp.regression1(x, y, ylab, xlab, panel.plot, hscale = hscale, vscale = vscale)
    }
    else if (is.matrix(x)) {
+      if (!requireNamespace("rgl", quietly = TRUE)) stop("the rgl package is not available.")
    	  x.names <- dimnames(x)[[2]]
       name.comp<-if (!is.null(x.names) & !all(x.names == "")) x.names
                  else {if (!is.null(attributes(x)$names)) attributes(x)$names

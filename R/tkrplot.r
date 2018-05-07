@@ -2,20 +2,11 @@ rp.tkrplot <- function(panel, name, plotfun, action = NA, mousedrag = NA, mouseu
                        hscale = 1, vscale = 1, pos = NULL, foreground = NULL, background = NULL, 
                        margins=c(0, 0, 0, 0), parentname = deparse(substitute(panel)),
                        mar = par()$mar, ...) {
+      
+  if (!requireNamespace("tkrplot", quietly = TRUE)) stop("the tkrplot package is not available.") 
                        	
-  if (!exists(panel$panelname, .rpenv, inherits = FALSE)) { # if the panelname is not set then
-     panelname <- deparse(substitute(panel))
-     # the panel name should be the panel deparse subst'ed
-     #    panel <- rp.control.get(panelname, panel) # now get the panel
-     #    panel$panelname = panelname # now set the panelname properly
-     #    assign(panelname, panel, envir=.rpenv) # now send back the panel
-  } 
-  else {
-     panelname <- panel$panelname 
-     #    panel <- rp.control.get(panelname, panel) # now get the panel
-  }
-
-  name <- deparse(substitute(name))
+  panelname <- panel$panelname 
+  name      <- deparse(substitute(name))
 
   if (is.null(pos) && length(list(...)) > 0) pos <- list(...)
   
@@ -113,7 +104,7 @@ rp.tkrplot <- function(panel, name, plotfun, action = NA, mousedrag = NA, mouseu
 w.tkrplot <- function(parent, plotfun, action = NA, mousedrag = NA, mouseup = NA,
                       hscale = 1, vscale = 1, pos = NULL, foreground = NULL, background = NULL,
                       margins=c(0, 0, 0, 0), name = paste("plot", .nc(), sep = ""), mar) {
-  if (require(tkrplot)) {
+  if (requireNamespace("tkrplot", quietly = TRUE)) {
     widget <- w.createwidget(parent, pos, NULL, tkrplottype = TRUE)
     widget$.type <- "tkrplot"
     plotter <- function() {
@@ -123,7 +114,7 @@ w.tkrplot <- function(parent, plotfun, action = NA, mousedrag = NA, mouseup = NA
        assign(paste(name, ".usr", sep = ""), par('usr'), envir = .rpenv)
     }
     if (is.null(foreground)) {
-       widget$.widget <- handshake(tkrplot, parent$.handle, plotter,
+       widget$.widget <- handshake(tkrplot::tkrplot, parent$.handle, plotter,
                                    hscale = hscale, vscale = vscale)
        w.setbackground(widget$.widget, background)
     }
@@ -174,10 +165,10 @@ rp.tkrreplot <- function(panel, name) {
      panelname <- panel$panelname
   name <- deparse(substitute(name))
   img  <- rp.widget.get(panelname, name)
-  handshake(tkrreplot, img$.widget)
+  handshake(tkrplot::tkrreplot, img$.widget)
   invisible(panelname)
 }
 
 w.tkrreplot <- function(img) {
-  handshake(tkrreplot, img$.widget)
+  handshake(tkrplot::tkrreplot, img$.widget)
 }

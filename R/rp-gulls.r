@@ -129,7 +129,7 @@ rp.gulls.plot <- function(panel) {
       text(gulls[,var.vec], txt, col = clr)
     }
     if (nvars == 3) {
-       if (require(rgl)) {
+       if (requireNamespace("rgl", quietly = TRUE)) {
           rp.plot3d(
           gulls[,var.vec[2]], gulls[,var.vec[1]], gulls[,var.vec[3]], 
           xlab  = names(gulls)[var.vec[2]], ylab = names(gulls)[var.vec[1]],

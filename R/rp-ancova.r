@@ -162,7 +162,7 @@ rp.ancova.new <- function(x, y, group, panel = TRUE, panel.plot = TRUE,
       panel
    }
 
-   if (panel.plot & !require(tkrplot)) {
+   if (panel.plot & !requireNamespace("tkrplot", quietly = TRUE)) {
       warning("the tkrplot package is not available so panel.plot has been set to FALSE.")
       panel.plot <- FALSE
       }
@@ -302,7 +302,7 @@ rp.ancova.redraw <- function(panel) {
    panel
    }
 
-   if (panel.plot & !require(tkrplot)) {
+   if (panel.plot & !requireNamespace("tkrplot", quietly = TRUE)) {
       warning("the tkrplot package is not available so panel.plot has been set to FALSE.")
       panel.plot <- FALSE
       }

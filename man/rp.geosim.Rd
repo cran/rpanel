@@ -65,7 +65,7 @@ Note that the Matern covariance function is parameterised in the form described 
    Journal of the American Statistical Association, 89, 368-378.
    }
 
-\seealso{\code{\link{rp.firth}},\code{\link{rp.mururoa}}}
+\seealso{\code{\link{rp.firth}}, \code{\link{rp.mururoa}}}
 
 \examples{
 \dontrun{

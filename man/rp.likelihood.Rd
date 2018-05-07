@@ -46,8 +46,7 @@ rp.likelihood(loglik.fn, data, theta.low, theta.high, form = "log-likelihood",
 }
 
 \references{
-	rpanel: Statistical cartoons in \R. 
-       (\url{http://www.mathstore.ac.uk/headocs/doc.php?doc=7403_bowman_a_statsr.pdf})
+	rpanel: Statistical cartoons in \R. MSOR Connections, 7, 3-7.
 
    rpanel: Simple interactive controls for R functions using the tcltk package.
       Journal of Statistical Software, 17, issue 9.
