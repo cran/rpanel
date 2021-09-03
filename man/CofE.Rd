@@ -14,8 +14,7 @@ The data are used in the \code{\link{rp.regression}} example script.
 }
 
 \references{
-   rpanel: Simple interactive controls for R functions using the tcltk package.
-      Journal of Statistical Software, 17, issue 9.
+Pickering, J.F. (1985). Giving in the Church of England: an econometric analysis.  Applied Economics 17, 619-632.
    }
 
 \examples{

@@ -32,7 +32,7 @@ rp.textentry(panel, variable, action = I, labels = NULL, names = labels,
   \item{background}{colour of the text background}
   \item{font}{font to be used}
   \item{width}{character width of the textboxes}  
-  \item{keydown}{if TRUE the action function will be called on every keypress - 
+  \item{keydown}{if TRUE the action function will be called on every key press - 
     this may not be wise}
   \item{parentname}{this specifies the widget inside which the text entry widget 
     should appear. In the current version, it should not normally be used.}

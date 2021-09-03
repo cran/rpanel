@@ -5,7 +5,7 @@
 \title{Sulphur dioxide measurements over Europe}
 
 \description{
-The data document values of SO2, on a log scale, from monitoring stations across Europe from 1990 to 2001. The data were collected through the 'European monitoring and evaluation programme' (EMEP) and they are available at www.emep.int. The data recorded here have been organised into a convenient form for analysis.
+The data document values of SO2, on a log scale, from monitoring stations across Europe from 1990 to 2001. The data were collected through the 'European monitoring and evaluation programme' (EMEP) and they are available at \url{https://www.emep.int}. The data recorded here have been organised into a convenient form for analysis.
 
 The data file consists of six variables:
    \code{site}: a site code for the monitoring station

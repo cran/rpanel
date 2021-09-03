@@ -66,8 +66,8 @@ third covariate.  In particular, it is useful for plotting spatiotemporal data.
 \item{background.plot,foreground.plot}{function to add further graphical material, such as
 	a map, onto the background or foreground of the plot.}
 \item{z.window,time.window}{a character string which determines whether the window in
-	\code{z} is intially "normal" or "uniform".  This can be changed in the interactive panel.}
-\item{z.window.pars,time.window.pars}{a vector of length two which sets intial values for
+	\code{z} is initially "normal" or "uniform".  This can be changed in the interactive panel.}
+\item{z.window.pars,time.window.pars}{a vector of length two which sets initial values for
 	the location and width of the \code{z.window}.  These values can be changed in the
 	interactive panel.}
 \item{coords}{a vector of length two which defines the location of the window in the
@@ -79,7 +79,7 @@ third covariate.  In particular, it is useful for plotting spatiotemporal data.
 \item{location.plot}{a logical value which determines whether the mouse can be used to
 	interact with the \code{x} plot to create a plot of \code{y} against \code{z} for a
 	nominated neighbourhood.}
-\item{retain.location.plot}{a logical value which determines the intial state of the
+\item{retain.location.plot}{a logical value which determines the initial state of the
 	checkbox determining whether a plot of \code{y} against \code{z} for a nominated
 	neighbourhood remains in place after the mouse has been released.}
 \item{group.level}{the initial value of the \code{group} factor.  This defaults to the first level.}

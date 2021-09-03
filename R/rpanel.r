@@ -23,7 +23,7 @@ handshakereverse <- function(fun, ...) {
   invisible(tclvalue)
 }
 
-handshake(.Tcl, 'package require BWidget')
+# handshake(.Tcl, 'package require BWidget')
 .rpenv <- new.env()
 
 .onLoad <- function(libname, pkgname) {
@@ -35,7 +35,7 @@ handshake(.Tcl, 'package require BWidget')
 }
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Package `rpanel', version 1.1-4: type help(rpanel) for summary information")
+  packageStartupMessage("Package `rpanel', version 1.1-5: type help(rpanel) for summary information")
 }
 
 .nc <- function()
@@ -404,5 +404,5 @@ if(getRversion() >= "2.15.1")
                 "var1", "var2", "var3", "vgm.checks", "year.ind", ".make.tkindex", ".my.tkdev",
                 "scaling", "e.sim", "nsim", "gdp", "co2.emissions", "population", "life.expectancy",
                 "CofE", "rodent", "poisons", "gullweight", "river", "luthor", "aircond", "Clyde", "SO2",
-                "tkrreplot", "tkrplot"
-                ))
+                "tkrreplot", "tkrplot", "ttl", "model0.check", "model.check", "..density..",
+                "df0", "df1", "dgrid", "p.value"))

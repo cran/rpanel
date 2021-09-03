@@ -36,9 +36,9 @@ rp.likelihood(loglik.fn, data, theta.low, theta.high, form = "log-likelihood",
   This is intended to allow students and lecturers to explore likelihood surfaces
   in a manner which promotes an intuitive understanding of the concepts involved.
   
-  In the case of one parameter, the vertical axes of teh (log-)likelihood plot can be
-  cliked and grabbed to alter the plotting region interactively.  This can be useful,
-  in particular, in identifying the maximum likelihood estimator graphicall.
+  In the case of one parameter, the vertical axes of the (log-)likelihood plot can be
+  clicked and grabbed to alter the plotting region interactively.  This can be useful,
+  in particular, in identifying the maximum likelihood estimator graphically.
 }
 
 \value{

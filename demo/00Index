@@ -15,7 +15,6 @@ rp.notebook     Demonstrates how to use the notebook tabs (rp. functions)
 rp.pos          Demonstrates the use of the pos parameter used by most widgets
 rp.radiogroup   A radiogroup example (rp. functions)
 rp.slider       Use of a slider to set a value (rp. functions)
-rp.table        Demonstration of a table/spreadsheet (rp. functions)
 rp.text         A text label (rp. functions)
 rp.textentry    One or more text entry boxes (rp. functions)
 rp.tkrplot      A plot which can be placed in a rpanel window (rp. functions)

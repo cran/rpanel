@@ -81,5 +81,5 @@ importFrom("graphics", "abline", "axTicks", "axis", "box", "hist",
            "text", "title")
 importFrom("stats", "as.formula", "binomial", "coef", "dnorm",
            "fitted", "glm", "lm", "na.exclude", "optim", "pnorm",
-           "qqnorm", "qt", "rnorm", "runif", "sd")
+           "qqnorm", "qt", "rnorm", "runif", "sd", "pf")
 importFrom("utils", "demo", "menu")

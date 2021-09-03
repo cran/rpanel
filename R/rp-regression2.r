@@ -4,41 +4,41 @@
 rp.regression2 <- function (y, x1, x2, ylab = NA, x1lab = NA, x2lab = NA, panel = TRUE,
     model = "None", residuals.showing = FALSE, size = 3, col = "red") {
 
-rp.rotate <- function(panel) {
-   with(panel, {
-      if (phi < -90) phi <- -90
-      if (phi >  90) phi <-  90
-      rgl::rgl.viewpoint(theta = theta, phi = phi, fov = fov)
+   rp.rotate <- function(panel) {
+      with(panel, {
+         if (phi < -90) phi <- -90
+         if (phi >  90) phi <-  90
+         rgl::rgl.viewpoint(theta = theta, phi = phi, fov = fov)
       })
-   panel
+      panel
    }
 
-rp.regression2.model <- function(panel) {
-   with(panel, {
-      if (current.model != "None") {
-         rgl::rgl.pop()
-         if (residuals.showing) rgl::rgl.pop()
-         }
-      if (model != "None") {
-         a <- scaling(xgrid, smat[,, model], zgrid)
-         rgl::rgl.surface(a$x, a$z, a$y, alpha = 0.5)
-         if (residuals.showing)
-            rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
-         }
-      })
+   rp.regression2.model <- function(panel) {
+     with(panel, {
+         if (current.model != "None") {
+            rgl::rgl.pop()
+            if (residuals.showing) rgl::rgl.pop()
+            }
+         if (model != "None") {
+            a <- scaling(xgrid, smat[,, model], zgrid)
+            rgl::rgl.surface(a$x, a$z, a$y, alpha = 0.5)
+            if (residuals.showing)
+               rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
+            }
+         })
    panel$current.model <- panel$model
    panel
    }
 
-rp.regression2.residuals <- function(panel) {
-   with(panel, {
-      if (model != "None") {
-         if (residuals.showing)
-            rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
-         else rgl::rgl.pop()
-         }
+   rp.regression2.residuals <- function(panel) {
+      with(panel, {
+         if (model != "None") {
+            if (residuals.showing)
+               rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
+            else rgl::rgl.pop()
+        }
       })
-   panel
+      panel
    } 
    
     if (requireNamespace("rgl", quietly = TRUE)) {
@@ -77,18 +77,17 @@ rp.regression2.residuals <- function(panel) {
         zgrid <- seq(zlo, zhi, length = ngrid)
         smatx <- matrix(rep(xgrid, ngrid), ncol = ngrid)
         smatz <- t(matrix(rep(zgrid, ngrid), ncol = ngrid))
-        smat <- array(c(mean(y, na.rm = TRUE) + 0 * smatx, coef(lm(y ~
-            x))[1] + coef(lm(y ~ x))[2] * smatx, coef(lm(y ~
-            z))[1] + coef(lm(y ~ z))[2] * smatz, coef(lm(y ~
-            x + z))[1] + coef(lm(y ~ x + z))[2] * smatx + coef(lm(y ~
-            x + z))[3] * smatz), dim = c(ngrid, ngrid, 4))
+        smat <- array(c(mean(y, na.rm = TRUE) + 0 * smatx,
+                        coef(lm(y ~ x))[1] + coef(lm(y ~ x))[2] * smatx,
+                        coef(lm(y ~ z))[1] + coef(lm(y ~ z))[2] * smatz,
+                        coef(lm(y ~ x + z))[1] + coef(lm(y ~ x + z))[2] * smatx +
+                                coef(lm(y ~ x + z))[3] * smatz),
+                      dim = c(ngrid, ngrid, 4))
         fv <- matrix(c(fitted(lm(y ~ 1)), fitted(lm(y ~ x)),
-            fitted(lm(y ~ z)), fitted(lm(y ~ x + z))), ncol = 4)
+                       fitted(lm(y ~ z)), fitted(lm(y ~ x + z))), ncol = 4)
         both <- paste(xlab, "and", zlab)
-        dimnames(smat) <- list(NULL, NULL, c("No effects", xlab,
-            zlab, both))
-        dimnames(fv) <- list(NULL, c("No effects", xlab, zlab,
-            both))
+        dimnames(smat) <- list(NULL, NULL, c("No effects", xlab, zlab, both))
+        dimnames(fv) <- list(NULL, c("No effects", xlab, zlab, both))
         ylo <- min(ylo, smat)
         yhi <- max(yhi, smat)
         ylim <- c(ylo, yhi)

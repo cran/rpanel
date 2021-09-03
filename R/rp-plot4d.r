@@ -522,7 +522,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    if (all(is.na(y))) location.plot <- FALSE
 
    names(z.window.pars) <- c("location", "width")
-      
+   
    if (panel.flag) {
       panel <- rp.control(x = x, y = y, z = z, missing.y = missing.y,
                   x1lab = x1lab, x2lab = x2lab, ylab = ylab, zlab = zlab,

@@ -5,7 +5,7 @@
 \title{Runs a user-written action function}
 
 \description{
-Runs a user-written action function, passing a panel to it as a parameter. This can be used to put the rpanel into its intial state.  For example, it is useful when using radiobuttons as these do not automatically call the action function when the controls are first created.
+Runs a user-written action function, passing a panel to it as a parameter. This can be used to put the rpanel into its initial state.  For example, it is useful when using radiobuttons as these do not automatically call the action function when the controls are first created.
 }
 
 \usage{

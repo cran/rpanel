@@ -33,8 +33,9 @@ rp.notebook.raise(panel, parentname, label)
   \item{...}{...}
 }
 
-\details{The role of this function is to specify a notebook.  Nesting of notebooks is permitted. rp.notebook.raise is 
-used to bring the contents of a particular tab to the foreground. 
+\details{The role of this function is to specify a notebook.  Nesting of notebooks is permitted. \code{rp.notebook.raise} is used to bring the contents of a particular tab to the foreground.
+
+These functions make use of the BWidget extension to the Tcl/Tk system.  If Bwidget has not been installed on your system, download it from \url{https://sourceforge.net/projects/tcllib/files/BWidget/} and expand the compressed file into a folder.  On a Windows machine, this folder should then be copied into the folder containing the Tcl libraries that were installed as part of \R.  This may be in a location such as C:\\Program Files\\R\\R-4.0.2\\Tcl\\lib (with an obvious change to the version number of R being used).  On a Mac, the downloaded folder should be copied into the folder where the main Tcl package is located (note: not inside the Tcl folder but at the same level as the Tcl folder).  This may be in a location such as /usr/local/lib.
 }
 
 \references{

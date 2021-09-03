@@ -16,7 +16,7 @@ rp.timer(panel, microseconds, action, where)
   \item{panel}{the panel which has some relevant variables.}
   \item{microseconds}{time between each call of action.}
   \item{action}{function to be executed on each timer tick.}
-  \item{where}{a functiomn which should return true or false, taking parameter panel. When false the loop will stop.}
+  \item{where}{a function which should return true or false, taking parameter panel. When false the loop will stop.}
 }
 
 \details{

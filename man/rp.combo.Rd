@@ -38,9 +38,13 @@ word issues.
 }
 
 \details{
-  The function \code{action} should take one argument, which should be the panel to which the combobox is attached. 
-  
-    See \code{\link{rp.grid}} for details of the grid layout system.
+The function \code{action} should take one argument, which should be the panel to which the combobox is attached.
+
+See \code{\link{rp.grid}} for details of the grid layout system.
+
+This function makes use of the BWidget extension to the Tcl/Tk system.  If Bwidget has not been installed on your system, download it from \url{https://sourceforge.net/projects/tcllib/files/BWidget/} and expand the compressed file into a folder.  On a Windows machine, this folder should then be copied into the folder containing the Tcl libraries that were installed as part of \R.  This may be in a location such as C:\\Program Files\\R\\R-4.0.2\\Tcl\\lib (with an obvious change to the version number of R being used).  On a Mac, the downloaded folder should be copied into the folder where the main Tcl package is located (note: not inside the Tcl folder but at the same level as the Tcl folder).  This may be in a location such as /usr/local/lib.
+
+Note that \code{\link{rp.listbox}} provides an alternative to \code{rp.combo} if the latter is unavailable.
 }
 
 \value{
@@ -58,7 +62,7 @@ word issues.
       Journal of Statistical Software, 17, issue 9.
    }
 
-\seealso{\code{\link{rp.checkbox}},\code{\link{rp.control}}}
+\seealso{\code{\link{rp.checkbox}}, \code{\link{rp.control}}}
 
 \examples{
 \dontrun{

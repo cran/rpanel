@@ -6,7 +6,7 @@ rp.regression <- function (x, y, ylab = NA, x1lab = NA, x2lab = NA, xlab = NA, y
 
    prng <- if (missing(yrange)) NA else yrange
    if (missing(col)) col <- NA
-   if (class(x) %in% c("formula", "lm")) return(rp.regression3(x, prng, col))
+   if (any(class(x) %in% c("formula", "lm"))) return(rp.regression3(x, prng, col))
    if (is.na(col)) col <- "red"
 
    if (is.na(hscale)) {
@@ -172,10 +172,12 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
    }
    else if (is.matrix(x)) {
       if (!requireNamespace("rgl", quietly = TRUE)) stop("the rgl package is not available.")
-   	  x.names <- dimnames(x)[[2]]
-      name.comp<-if (!is.null(x.names) & !all(x.names == "")) x.names
-                 else {if (!is.null(attributes(x)$names)) attributes(x)$names
-                       else outer(x.name, c("[1]", "[2]"), paste, sep = "")}
+   	  x.names   <- dimnames(x)[[2]]
+      name.comp <- if (!is.null(x.names) & !all(x.names == "")) x.names
+                   else {
+                      if (!is.null(attributes(x)$names)) attributes(x)$names
+                      else outer(x.name, c("[1]", "[2]"), paste, sep = "")
+                   }
       if (is.na(x1lab)) x1lab <- name.comp[1]
       if (is.na(x2lab)) x2lab <- name.comp[2]
    	  rp.regression2(y, x[ , 1], x[ , 2], ylab, x1lab, x2lab, panel, model, 

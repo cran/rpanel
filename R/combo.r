@@ -1,6 +1,7 @@
 w.combo <- function(parent, prompt = NULL, values, pos = NULL, action = I, 
                     foreground = NULL, background = NULL, font = NULL,
                     editable = FALSE, initval) {
+
   widget <- w.createwidget(parent, pos, background)
   widget$.type <- "combobox"
   f <- function(...) { 
@@ -65,6 +66,10 @@ rp.combo <- function(panel, variable, prompt = NULL, vals, initval = vals[1],
                      font = NULL, editable = FALSE, parentname = deparse(substitute(panel)),
                      name = paste("combo", .nc(), sep = ""), ...) {
                      	
+  bwidget.present <- handshake(tclRequire, "BWidget")
+  if (is.logical(bwidget.present) && !bwidget.present)
+    stop("This function requires the BWidget tools and these are not available.\n  See the rp.combo help page for details.")
+  
   if (!exists(panel$panelname, .rpenv, inherits = FALSE)) # if the panelname is not set then
   { 
     panelname = deparse(substitute(panel)) # the panel name should be the panel deparse subst'ed

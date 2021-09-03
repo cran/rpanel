@@ -2,7 +2,7 @@
 
 \alias{rp.var.get}
 
-\title{Retrieves an object from the rpanel envrionment, usually from a panel.}
+\title{Retrieves an object from the rpanel environment, usually from a panel.}
 
 \description{
 The management of objects within the rpanel environment is usually handled `behind the scenes' but it can occasionally be useful to retrieve an object there explicitly.

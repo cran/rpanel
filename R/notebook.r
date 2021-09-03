@@ -3,6 +3,11 @@ rp.notebook <- function(panel, tabs, tabnames = tabs, width = 600, height = 400,
                         background = "lightgray", font = NULL,
                         parentname = deparse(substitute(panel)),
                         name = paste("notebook", .nc(), sep=""), ...)  {
+
+  bwidget.present <- handshake(tclRequire, "BWidget")
+  if (is.logical(bwidget.present) && !bwidget.present)
+    stop("This function requires the BWidget tools and these are not available.\n  See the rp.combo help page for details.")
+  
   if (is.na(charmatch("window", panel$panelname)))
     panelname <- deparse(substitute(panel))
   else 

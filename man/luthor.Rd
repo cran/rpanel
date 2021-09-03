@@ -7,7 +7,7 @@
 \description{
 These data, reported by Raz(1989, Biometrics 54, 851-71) refer to
 an experiment which compared the concentrations of
-leutinizing hormone (LH) in 16 suckled and 16 nonsuckled cows.
+leutinizing hormone (LH) in 16 suckled and 16 non-suckled cows.
 Measurements were made daily from day 1 through to day 4 postpartum,
 and twice daily from day 5 through to day 10 postpartum.  The cows
 were ovariectomised on day 5 postpartum.

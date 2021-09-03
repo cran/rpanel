@@ -13,8 +13,8 @@ rp.tables <- function(panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hsc
       vscale <- hscale
       
    xobs.prob <- c(observed.value, probability)
-   if (missing(tail.probability) | is.na(as.numeric(observed.value))) tail.probability <- "none"
-   tail.area <- tail.probability   
+   if (missing(tail.probability)) tail.probability <- "none"
+   tail.area <- tail.probability
    if (missing(tail.direction))
    	 tail.direction <- if (distribution %in% c("normal", "t")) "two-sided" else "upper"
    

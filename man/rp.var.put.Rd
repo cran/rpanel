@@ -2,7 +2,7 @@
 
 \alias{rp.var.put}
 
-\title{Places an object in the rpanel envrionment, usually within a panel.}
+\title{Places an object in the rpanel environment, usually within a panel.}
 
 \description{
 The management of objects within the rpanel environment is usually handled `behind the scenes' but it can occasionally be useful to place an object there explicitly.

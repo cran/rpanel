@@ -18,7 +18,7 @@ rp.radiogroup(panel, variable, vals, labels=NULL, initval=vals[1], pos=NULL,
 \arguments{
   \item{panel}{the panel in which the radiobuttons should appear.}
   \item{variable}{the name of the variable whose values are set by the buttons.}
-  \item{vals}{the values attached to the labels for return from the action function. NOTE: for implmentation.}
+  \item{vals}{the values attached to the labels for return from the action function. NOTE: for implementation.}
   \item{labels}{the labels for the radiobuttons.}
   \item{initval}{the initial value for the variable (optional). The initial value can also be specified in the call to \code{rp.control}.}
   \item{pos}{the layout instructions. Please see the \code{\link{rp.pos}} example and help for full details.}
@@ -53,7 +53,7 @@ The \code{action} function should return the panel.  Without this assignment any
       Journal of Statistical Software, 17, issue 9.
    }
 
-\seealso{\code{\link{rp.checkbox}},\code{\link{rp.control}}}
+\seealso{\code{\link{rp.checkbox}}, \code{\link{rp.control}}}
 
 \examples{
 \dontrun{

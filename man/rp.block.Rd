@@ -27,7 +27,7 @@ Nothing is returned.
 
 \references{
 rpanel: Simple interactive controls for R functions using the tcltk package 
-(http://www.stats.gla.ac.uk/~adrian/rpanel/)}
+(\url{http://www.stats.gla.ac.uk/~adrian/rpanel/})}
 
 \seealso{\code{\link{rp.control}} }
 

@@ -28,7 +28,7 @@
 }
 
 \details{
-  This plot mimics the plots made famous by Hans Rosling through the Gapminder project (see \url{www.gapminder.org}).  This type of plot is also available at the Google Public Data Explorer (\url{www.google.com/publicdata/directory}).  The aim of this function is to make this type of plot available directly from within R.  The controls provide a slider or button for animation, plus a list of country names for individual identification.
+  This plot mimics the plots made famous by Hans Rosling through the Gapminder project (see \url{https://www.gapminder.org}).  The aim of this function is to make this type of plot available directly from within R.  The controls provide a slider or button for animation, plus a list of country names for individual identification.
 }
 
 \value{

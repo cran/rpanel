@@ -5,13 +5,9 @@
                rp.listbox and rp.menu as well as other changes.
 15/12/2008: Version 1.0-5 released.
                Functions rp.geosim, rp.mururoa and rp.firth added. 
-            
                rp.grid added and extended settings for pos parameter allowed. 
-           
                Parameters hscale, vscale added to rp.tkrplot.
-            
                Arguments mouseupfun and mousedragfun added to rp.image.
-            
                rp.checkbox extended to multiple boxes and initialisation 
                    enabled.
                rp.textentry extended to multiple boxes.
@@ -20,14 +16,12 @@
 14/02/2013: Version 1.1-1 released.
                A major redesign of internal code.
                New functions rp.plot4d, rp.spacetime, rp.anova, rp.bubbleplot.
-            
                Additional controls such as rp.timer.
-            
-            
-            
 02/04/2013: Version 1.1-2 released.
                Minor corrections.
 20/02/2014: Version 1.1-3 released.
                Minor corrections.
 06/05/2018: Version 1.1-4 released.
                Minor corrections.
+02/09/2021: Version 1.1-5 released.
+               Installation made possible without BWidget.

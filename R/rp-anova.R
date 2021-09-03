@@ -86,27 +86,30 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       mdl0 <- lm(as.formula(form), na.action = na.exclude)
       panel$df0 <- mdl0$df.residual
             
-      rss1        <- sum(mdl$residuals^2)
-      rss0        <- sum(mdl0$residuals^2)
-      panel$fstat <- (abs(rss0 - rss1) / abs(panel$df1 - panel$df0)) / panel$sigma^2
+      rss1          <- sum(mdl$residuals^2)
+      rss0          <- sum(mdl0$residuals^2)
+      panel$fstat   <- (abs(rss0 - rss1) / abs(panel$df1 - panel$df0)) / panel$sigma^2
+      panel$p.value <- 1 - pf(panel$fstat, abs(panel$df0 - panel$df1), min(panel$df0, panel$df1))
 
-      with(panel, {
+      wfn <- with
+      if (!panel$interactive) wfn <- within
+      panel <- wfn(panel, {
       	
          form <- if (type == "Two-way") "y ~ x | z" else "y ~ x"
          form <- as.formula(form)
          ngps <- nrow(unique(data.frame(x, z)))
          if (graphics != "boxplot") {
             clr  <- colorspace::rainbow_hcl(3)
-         	dfrm <- data.frame(x, y, z, jitter.x)
+         	  dfrm <- data.frame(x, y, z, jitter.x)
            	plt  <- ggplot2::ggplot(dfrm, ggplot2::aes(y, x)) + ggplot2::xlab(ylab) + ggplot2::ylab(xlab) +
          	          ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
          	                panel.grid.minor = ggplot2::element_blank(),
          	                panel.background = ggplot2::element_rect(fill = "grey90")) +
-         	  	     ggplot2::ggtitle(ttl)
+         	  	      ggplot2::ggtitle(ttl)
             if (!(model0.check & model.check) | all(model == model0)) {
                plt <- plt + ggplot2::stat_density(ggplot2::aes(fill = ..density..), geom = "tile",
                             height = 0.7, position = "identity", show.legend = FALSE) +
-		         ggplot2::scale_fill_gradient(low = "grey90", high = clr[3])
+		           ggplot2::scale_fill_gradient(low = "grey90", high = clr[3])
             }
             else if (model.check & !all(model == model0)) {
                mn    <- tapply(fitted(mdl0), list(x, z), mean)
@@ -123,19 +126,23 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
                plt <- plt + ggplot2::geom_tile(ggplot2::aes(x = xgrid, y = x, fill = dgrid),
                                       height = 0.8, data = dfrm1,
                                       show.legend = FALSE) +
-                  	 ggplot2::scale_fill_gradient(low = "grey90", high = clr[2])
+                  	  ggplot2::scale_fill_gradient(low = "grey90", high = clr[2])
             }
-        	   if (model.check) {
+        	  if (model.check) {
                plt <- plt + ggplot2::stat_summary(ggplot2::aes(x = fitted(mdl)), width = 0,
-                               fun.y = "mean", size = 1,
-          	     				    fun.ymin = function(x) mean(x) - 0.45,
-          	     				    fun.ymax = function(x) mean(x) + 0.45,
-          						    geom = "crossbar", col = clr[1])
+                                  fun = "mean", size = 1,
+          	     				       fun.min = function(x) mean(x) - 0.45,
+          	     				       fun.max = function(x) mean(x) + 0.45,
+          						       geom = "crossbar", orientation = "x", col = clr[1])
         	   }
           	# plt <- plt + ggplot2::geom_jitter(width = 0, height = 0.1, col = clr[3])
           	plt <- plt + ggplot2::geom_point(ggplot2::aes(x = y, y = jitter.x), col = clr[3])
         	   plt <- plt + ggplot2::coord_flip()
          	if (type == "Two-way") plt <- plt + ggplot2::facet_grid(. ~ z)
+        	   if (!interactive) {
+        	      plt   <- plt + ggplot2::ggtitle(paste("p-value:", round(p.value, 3)))
+        	      panel <- plt
+        	   }
             print(plt)
          }
          else if (graphics == "boxplot") {
@@ -165,19 +172,19 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
          if (model.check & model0.check & any(model) & any(model0) & !all(model == model0)) {
          	clr  <- paste("grey", round(seq(100, 0, length = 101)), sep = "")
          	pct  <- qf(0.99, abs(df0 - df1), min(df0, df1))
-       	    xlim <- max(pct * 1.5, fstat * 1.1)
-       	    grd  <- seq(0, xlim, length = 100)
-       	    del  <- diff(grd)[1] / 2
-       	    grd  <- grd[-1] - del
-       	    ind  <- cut(df(grd, abs(df0 - df1), min(df0, df1)), length(clr), labels = FALSE)
-       	    par(mar = c(1, 1, 1, 1), oma = rep(0, 4), tcl = -0.2, xaxs = "i", mgp = c(1, 0, 0))
-       	    plot(c(0, xlim), c(0, 1), type = "n", xlab = "", ylab = "", axes = FALSE)
-       	    axis(1, cex.axis = 0.7)
-       	    lines(par()$usr[1:2], rep(par()$usr[3], 2))
-       	    rect(grd - del, 0.05, grd + del, 1, col = clr[ind], border = clr[ind])
-       	    points(fstat, 0.525, col = "red", pch = 16)
-       	    title(paste("p-value:", round(1 - pf(fstat, abs(df0 - df1), min(df0, df1)), 3)),
-       	        cex.main = 0.8, font.main = 1)
+       	   xlim <- max(pct * 1.5, fstat * 1.1)
+       	   grd  <- seq(0, xlim, length = 100)
+       	   del  <- diff(grd)[1] / 2
+       	   grd  <- grd[-1] - del
+       	   ind  <- cut(df(grd, abs(df0 - df1), min(df0, df1)), length(clr), labels = FALSE)
+       	   par(mar = c(1, 1, 1, 1), oma = rep(0, 4), tcl = -0.2, xaxs = "i", mgp = c(1, 0, 0))
+       	   plot(c(0, xlim), c(0, 1), type = "n", xlab = "", ylab = "", axes = FALSE)
+       	   axis(1, cex.axis = 0.7)
+       	   lines(par()$usr[1:2], rep(par()$usr[3], 2))
+       	   rect(grd - del, 0.05, grd + del, 1, col = clr[ind], border = clr[ind])
+       	   points(fstat, 0.525, col = "red", pch = 16)
+       	   # title(paste("p-value:", round(1 - pf(fstat, abs(df0 - df1), min(df0, df1)), 3)),
+       	   title(paste("p-value:", round(p.value, 3)), cex.main = 0.8, font.main = 1)
          }
          else {
        	    par(mar = c(0, 0, 0, 0) + 0.1, bg = bgdcol)
@@ -219,7 +226,7 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       panel <- rp.control(paste(type, "anova"), 
                     x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab, ttl = NULL,
                     xterm = xterm, zterm = zterm, term.names = term.names, jitter.x = jitter.x, 
-                    graphics = "strip plot", lines = lines,
+                    graphics = "strip plot", lines = lines, interactive = TRUE,
                     model11 = init.model[1],  model12 = init.model[2],  model13 = init.model[3], 
                     model14 = init.model[4],  model01 = init.model0[1], model02 = init.model0[2],
                     model03 = init.model0[3], model04 = init.model0[4],
@@ -268,20 +275,20 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
                grid = "models", row = 5, column = 2, background = bgdcol)
       }
       rp.do(panel, action.fn)
+      return(invisible())
    }
    else {
       panel <- list(x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab, ttl = title,
                     xterm = xterm, zterm = zterm, term.names = term.names, jitter.x = jitter.x, 
-                    graphics = "strip plot", lines = lines,
+                    graphics = "strip plot", lines = lines, interactive = FALSE,
                     model11 = init.model[1],  model12 = init.model[2],  model13 = init.model[3], 
                     model14 = init.model[4],  model01 = init.model0[1], model02 = init.model0[2],
                     model03 = init.model0[3], model04 = init.model0[4],
                     model.check = TRUE, model0.check = TRUE, bgdcol = bgdcol)
-      rp.anova.draw(panel)
+      plt <- rp.anova.draw(panel)
+      return(invisible(plt))
    }
-      
-   invisible()
-   
+
 }
 
 # This is Chris Jackson's function, copied here because of the requireNamespace issue

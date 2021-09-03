@@ -8,7 +8,7 @@
 
 \title{Data on CO2 emissions, GDP, life.expectancy and population for the countries of the world between 1960 and 2007}
 
-\description{Loading this file makes the dataframes \code{co2.emissions}, \code{gdp}, \code{life.expectancy} and \code{population} available.  These contain the CO2 emissions, gross domenstic product, life expectancy and population data for each country of the world (rows indexed by rownames) for the years 1960-2007.
+\description{Loading this file makes the dataframes \code{co2.emissions}, \code{gdp}, \code{life.expectancy} and \code{population} available.  These contain the CO2 emissions, gross domestic product, life expectancy and population data for each country of the world (rows indexed by rownames) for the years 1960-2007.
 
 These data are provided by the World Bank through the database at
    \code{http://data.worldbank.org/data-catalog/world-development-indicators}

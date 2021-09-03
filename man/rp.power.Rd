@@ -5,7 +5,7 @@
 \title{Interactive power calculations for a two-sample t-test }
 
 \description{
-This function creates a panel which allows the sample size, population means and common standard deviation to be set.  The correponding power curve for a two-sample t-test is displayed in the graphics window.
+This function creates a panel which allows the sample size, population means and common standard deviation to be set.  The corresponding power curve for a two-sample t-test is displayed in the graphics window.
 }
 
 \usage{
@@ -29,7 +29,7 @@ rp.power(panel = TRUE, panel.plot = TRUE, populations.showing = FALSE,
 }
 
 \details{
-The population parameters and sample size are controlled by doublebuttons.  The sample size refer to the total sample size, assuming two groups of equal size.  A checkbox allows plots of the population distributions also to be diplayed.}
+The population parameters and sample size are controlled by doublebuttons.  The sample size refer to the total sample size, assuming two groups of equal size.  A checkbox allows plots of the population distributions also to be displayed.}
 
 \value{
   Nothing is returned.
