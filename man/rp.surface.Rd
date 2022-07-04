@@ -26,7 +26,7 @@
 \item{panel}{a logical variable which determines whether a panel is created to allow interactive control.}
 \item{Speed}{this determines the initial value of the speed of animations by setting the value of the sleep time (in hundredths of a second, with an offset of 2) between displayed surfaces.}
 \item{ntime}{the number of interpolated surfaces displayed between successive simulated surfaces, to control the smoothness of the animation.}
-\item{ninterp}{the number of grid values in each dimension when constructing a surface for the "image" display option.  This is used because the input grid of \code{surface} may have quite low resolution which produces a rather chunky image display.  A finer grid is constructed if the \code{akima} package is available.}
+\item{ninterp}{the number of grid values in each dimension when constructing a surface for the "image" display option.  This is used because the input grid of \code{surface} may have quite low resolution which produces a rather chunky image display.  A finer grid is constructed if the \code{interp} package is available.}
 \item{zlim}{a vector of length two which defines the range of plotting on the surface scale.  By default, \code{zlim} is determined by the range of \code{surface} plus and minus three standard deviations (available from \code{covar}).}
 \item{col.palette}{the colour palette used to paint the surface.  The colours are determined simply by the height of the surface.}
 \item{coords}{a vector of length two which defines the location where the uncertainty in the surface is examined, through the construction of a variability interval.  This applies when \code{panel = FALSE} and \code{Display = "image"}.}

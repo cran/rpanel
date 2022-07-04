@@ -6,7 +6,7 @@ rp.firth <- function(hscale = NA, col.palette = rev(heat.colors(40)), col.se = "
                  file = NA, parameters = NA) {
 
 firth.points <- function(panel) {
-	
+
    if (panel$random.alignment) {
       panel$gx <- runif(1)
       panel$gy <- runif(1)
@@ -16,7 +16,7 @@ firth.points <- function(panel) {
   if (panel$stype=="Random") {
      wh          <- which(panel$strat > 0)
      sind        <- sample(wh, panel$npts) - 1
-     panel$sampx <- (sind %% 201) 
+     panel$sampx <- (sind %% 201)
      panel$sampy <- (sind %/% 201)
      }
 
@@ -31,7 +31,7 @@ firth.points <- function(panel) {
         nt <- length(ycoords)
         for (i in 1:nt) {
           xcoords <- which(panel$strat[ , ycoords[i] + 1] > 0) - 1
-          Ly <- length(xcoords)   
+          Ly <- length(xcoords)
      	  # find which pts on transect are in Firth using strat matrix as look-up
           if (Ly > 0) grx <- c(grx, sample(xcoords, size = round(Ly / gsp)))
 	      # take suitably sized sample
@@ -43,7 +43,7 @@ firth.points <- function(panel) {
     else {
        gr <- expand.grid(txc, tyc)
        a <- which(panel$strat[txc + 1, tyc + 1] > 0)
-       gr <- gr[a, ] 
+       gr <- gr[a, ]
        panel$sampx <- gr[ , 1]
        panel$sampy <- gr[ , 2]
        }
@@ -70,20 +70,20 @@ firth.points <- function(panel) {
      rp.control.put(panel$panelname, panel)
      rp.tkrreplot(panel, plot1)
   }
-  
+
   panel
   }
 
 firth.predict <- function(panel) {
-	
+
 	  if (!requireNamespace("sp", quietly = TRUE)) {
          cat("the sp package is required.\n")
          return(panel)
       }
 
-	
+
       ind <- which(panel$trend.setting == c("cte", "1st", "2nd", "stratum"))
-      
+
       if (!panel$prediction.computed[ind]) {
          sz   <- panel$sz
          fg   <- geoR::as.geodata(sz)
@@ -92,7 +92,7 @@ firth.predict <- function(panel) {
       	 if (ind == 4) {
             a    <- 1 + sz[ , 1] + 201 * sz[ , 2]
             sgd  <- factor(panel$strat[a])
-            fg   <- geoR::as.geodata(data.frame(sz[,1], sz[,2], sz[,3], sgd), 
+            fg   <- geoR::as.geodata(data.frame(sz[,1], sz[,2], sz[,3], sgd),
                       covar.col = 4, covar.names = "stratum")
       	 	fit  <- geoR::likfit(fg, ini.cov.pars = c(max(vg2$v), 20), trend = ~stratum)
             pg2  <- expand.grid(0:200, 0:60)
@@ -112,15 +112,15 @@ firth.predict <- function(panel) {
             yy   <- 0.04 + 0.25 * (xx / 20 - 0.5 * (xx / 30)^3)
             yy[32:121] <- 0.29
             pred.grid <- expand.grid(0.5 + 0:199, 0.5 + 0:59) 	# offset from samples
-            KC   <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting, 
+            KC   <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting,
                            trend.l = panel$trend.setting)
             kc   <- geoR::krige.conv(fg, locations = pred.grid, krige = KC, output = shh)
             kcm  <- matrix(kc$predict, nrow = 200)
             pg2  <- expand.grid(0:200, 0:60) # use 'real' grid to find RSS
-            KC   <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting, 
+            KC   <- geoR::krige.control(obj.model = vfit, trend.d = panel$trend.setting,
                          trend.l = panel$trend.setting)
             kc   <- try(geoR::krige.conv(fg, locations = pg2, krige = KC , output = shh), silent = TRUE)
-            if (class(kc) == "try-error" & panel$trend.setting == "cte") {
+            if (inherits(kc, "try-error") & panel$trend.setting == "cte") {
                rp.messagebox("There are numerical problems in producing predictions with this model.  Try fitting a linear or quadratic trend function, or a stratum effect.")
                return(panel)
             }
@@ -138,16 +138,16 @@ firth.predict <- function(panel) {
       rp.control.put(panel$panelname, panel)
       rp.do(panel, firth.colour.chart.redraw)
       rp.do(panel, firth.samp.redraw)
-      
+
       panel
       }
 
 firth.draw <- function(panel) {
-	
+
    ind <- which(panel$trend.setting == c("cte", "1st", "2nd", "stratum"))
-   
+
    with(panel, {
-   	
+
    plot(c(10, 10), type = "n", asp = 1, xaxs = "i", xlim = c(0, 200), ylim = c(0, 60),
         xlab = "easting", ylab = "northing", xaxp = c(0, 200, 10))
    polygon(rosx, rosy, col = hsv(0.08, 0.3, 0.9))
@@ -159,21 +159,21 @@ firth.draw <- function(panel) {
    polygon(p6xa, p6ya, col = hsv(0.12, 0.3, 1))
    polygon(p7xa, p7ya, col = hsv(0.16, 0.3, 1))
    polygon(p8xa, p8ya, col = hsv(0.12, 0.3, 1))
-   
+
    if (sample.taken) {
-   	
+
      if (display.options["predicted surface"])
-        image(seq(0, 200, len = 201), seq(0, 60, len = 61), kpred[,,ind], 
+        image(seq(0, 200, len = 201), seq(0, 60, len = 61), kpred[,,ind],
                add = TRUE, col = col.palette, zlim = zlim)
 
      if (display.options["prediction s.e."])
         contour(seq(0, 200, len = 201), seq(0, 60, len = 61), kse[,,ind], add = TRUE,
                levels = pretty(range((kse[,,ind] * mask)[kse[,,ind] > 0], na.rm = TRUE), 10), col = col.se)
-     
+
      if (firth.true)
         image(seq(0, 200, len = 201), seq(0, 60, len = 61), true.surface,
                add = TRUE, col = col.palette, zlim = zlim)
-        
+
      if (display.options["predicted surface"] | firth.true) {
         polygon(rosx, rosy)
         polygon(p1xa, p1ya)
@@ -192,18 +192,18 @@ firth.draw <- function(panel) {
         points(sz[ , 1], sz[ , 2], col = col.palette[clr], pch = 16)
         points(sz[ , 1], sz[ , 2])
         }
-       
+
       }
-      
+
    else if (panel$sampling.started) {
-   
+
       sx <- round(as.numeric(sampx))
       sy <- round(as.numeric(sampy))
       if (stype == "Systematic") {
          x0 <- panel$txc
          y0 <- panel$tyc
          segments(x0,  0,  x0, 60, lty = 2)
-         segments( 0, y0, 200, y0, lty = 2) 
+         segments( 0, y0, 200, y0, lty = 2)
          }
       points(sx, sy, pch = 19)
       mtext(paste("Number of points = ",length(sx)), line = 3)
@@ -216,34 +216,34 @@ firth.draw <- function(panel) {
         ", ", n[3]==.(round(length(sx)*str.size[3]/100)),
         ", ", n[4]==.(round(length(sx)*str.size[4]/100)), "]")), line = 1)
       }
-      
+
    usr <- par()$usr
-   polygon(c(rsx[1:123], rsx[123], rsx[1]), c(rsy[1:123], rep(usr[3], 2)), 
+   polygon(c(rsx[1:123], rsx[123], rsx[1]), c(rsy[1:123], rep(usr[3], 2)),
               col = col.outside, density = -1, border = NA)
-   polygon(c(rnx[1:138], rnx[138], rnx[1]), c(rny[1:138], rep(usr[4], 2)), 
+   polygon(c(rnx[1:138], rnx[138], rnx[1]), c(rny[1:138], rep(usr[4], 2)),
               col = col.outside, density = -1, border = NA)
    box()
    polygon(rosx, rosy)
 
    })
-   
+
    panel
    }
 
 firth.colour.reset <- function(panel) {
   ind <- which(panel$trend.setting == c("cte", "1st", "2nd", "stratum"))
-  panel$zlim  <- range(panel$sz[ , 3],  panel$kpred[ , ,ind] * panel$mask, 
+  panel$zlim  <- range(panel$sz[ , 3],  panel$kpred[ , ,ind] * panel$mask,
                        panel$true.surface, na.rm = TRUE)
   rp.control.put(panel$panelname, panel)
   rp.do(panel, firth.colour.chart.redraw)
   rp.do(panel, firth.samp.redraw)
   panel
   }
-  
+
 firth.samp <- function(panel) {
-	
+
    if (!panel$sampling.started) return(panel)
-	
+
    panel$sample.taken <- TRUE
    x   <- round(panel$sampx)
    y   <- round(panel$sampy)
@@ -275,29 +275,29 @@ firth.samp <- function(panel) {
    mask[mask == 0] <- NA
    panel$mask      <- mask
    panel$true.surface <- matrix(panel$trend, ncol = 61) + matrix(panel$field, nrow = 201) +
-                             apply(panel$strat, 1:2, 
+                             apply(panel$strat, 1:2,
                                      function(x) if (x > 0) panel$strat.effect[x] else 0)
    panel$zlim <- range(panel$sz[ , 3], c(panel$true.surface))
    rp.control.put(panel$panelname, panel)
-   
-   rp.tkrplot(panel, plot1a, firth.colour.chart, 
-         hscale = 0.2, vscale = panel$hscale * 0.7, 
+
+   rp.tkrplot(panel, plot1a, firth.colour.chart,
+         hscale = 0.2, vscale = panel$hscale * 0.7,
          grid = "plot1a", row = 0, column = 0, background = "white")
    rp.checkbox(panel, display.options,
          labels = c("points", "predicted surface", "prediction s.e."),
-         action = firth.predict, title = "Display", 
+         action = firth.predict, title = "Display",
          grid = "controls2", row = 0, column = 0, sticky = "ew")
-   rp.radiogroup(panel, trend.setting, c("cte", "1st", "2nd", "stratum"), 
+   rp.radiogroup(panel, trend.setting, c("cte", "1st", "2nd", "stratum"),
          labels = c("constant", "linear", "quadratic", "stratum"),
-         action = firth.predict, title = "Trend", 
+         action = firth.predict, title = "Trend",
          grid = "controls2", row = 1, column = 0, sticky = "ew")
    rp.checkbox(panel, firth.true, firth.samp.redraw,
          labels = "true surface", grid = "controls2", row = 2, column = 0)
-   rp.button(panel, firth.colour.reset, "Reset colour scale", 
+   rp.button(panel, firth.colour.reset, "Reset colour scale",
          grid = "controls2", row = 3, column = 0, sticky = "ew")
    rp.control.put(panel$panelname, panel)
    rp.do(panel, firth.samp.redraw)
-       
+
    if (!is.na(panel$file)) {
       firth.data <- data.frame(x = x1, y = y1, z = z)
       save(firth.data, file = panel$file)
@@ -305,23 +305,23 @@ firth.samp <- function(panel) {
 
    panel
    }
-   
+
    firth.colour.chart <- function(panel) {
       par(mar = c(5, 1, 4, 2) + 0.1)
       rp.colour.chart(panel$col.palette, panel$zlim)
       panel
       }
-  
+
    firth.samp.redraw <- function(panel) {
 	  rp.tkrreplot(panel, plot1)
       panel
       }
-  
+
    firth.colour.chart.redraw <- function(panel) {
       rp.tkrreplot(panel, plot1a)
       panel
       }
-  
+
    firth.blank <- function(panel) {
       panel$sampling.started <- FALSE
       panel
@@ -331,7 +331,7 @@ firth.samp <- function(panel) {
       panel$sampling.started <- TRUE
       panel
       }
-  
+
    if (!requireNamespace("tkrplot",      quietly = TRUE)) stop("The tkrplot package is not available.")
    if (!requireNamespace("geoR",         quietly = TRUE)) stop("The geoR package is not available.")
    if (!requireNamespace("RandomFields", quietly = TRUE)) stop("the RandomFields package is not available.")
@@ -340,7 +340,7 @@ firth.samp <- function(panel) {
       for (i in 1:length(nms))
          firth.list[nms[i]] <- parameters[nms[i]]
       }
-      
+
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1.2
       else                             hscale <- 1.4
@@ -348,12 +348,12 @@ firth.samp <- function(panel) {
 
 #   warn <- options()$warn
 #   options(warn = -1)
-#   field <- grf(nrow(pts), grid = pts, cov.model = "matern", cov.pars = firth.list$cov.pars, 
+#   field <- grf(nrow(pts), grid = pts, cov.model = "matern", cov.pars = firth.list$cov.pars,
 #                  kappa = 4, nugget = 0, messages = FALSE)
 #   options(warn = warn)
    pts   <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 0.6, length = 61)))
    covp  <- firth.list$cov.pars
-   field <- RandomFields::GaussRF(pts, grid = FALSE, model = "matern", 
+   field <- RandomFields::GaussRF(pts, grid = FALSE, model = "matern",
                      param = c(0, covp[1], 0, covp[2] / 100, 4))
    pts   <- firth.list$pts
    trend <- apply(pts, 1, firth.list$trend.fn)
@@ -363,17 +363,17 @@ firth.samp <- function(panel) {
                 sampx = c(), sampy = c(), gx = 0, gy = 0, tbw = 0, file = file,
                 cov.pars = firth.list$cov.pars, nugget = firth.list$nugget,
                 strat.effect = firth.list$strat.effect,
-                display.options = c("points" = TRUE, "predicted surface" = FALSE, 
+                display.options = c("points" = TRUE, "predicted surface" = FALSE,
                                      "prediction s.e." = FALSE),
                 trend.setting = "cte", firth.true = FALSE,
                 sample.taken = FALSE, hscale = hscale, col.palette = col.palette, col.se = col.se,
                 str.type = "Proportional", sp.type = "Equal", pts = pts,
                 txc = round(seq(0, 200, by = sqrt(6041 / 25))),
                 tyc = round(seq(0,  60, by = sqrt(6041 / 25))),
-                diffm = 0, kvf = 0, 
+                diffm = 0, kvf = 0,
                 kpred = array(dim = c(201, 61, 4)), kse = array(dim = c(201, 61, 4)),
                 prediction.computed = rep(FALSE, 4), sampling.started = FALSE,
-                random.alignment = FALSE, random.alignment.old = FALSE, 
+                random.alignment = FALSE, random.alignment.old = FALSE,
                 field = field, trend = trend, col.outside = "palegreen4",
                 rnx.big = firth.list$rnx.big, rny.big = firth.list$rny.big,
                 rsx.big = firth.list$rsx.big, rsy.big = firth.list$rsy.big,
@@ -396,29 +396,29 @@ firth.samp <- function(panel) {
    rp.grid(panel, "plot1",     row = 0, column = 1, background = "white")
    rp.grid(panel, "plot1a",    row = 0, column = 2, background = "white")
 
-   rp.tkrplot(panel, plot1, firth.draw, 
+   rp.tkrplot(panel, plot1, firth.draw,
       hscale = hscale, vscale = hscale * 0.7,
       grid = "plot1", row = 0, column = 0, background = "white")
 
-   rp.radiogroup(panel, stype, c("Random","Systematic","Stratified"), 
+   rp.radiogroup(panel, stype, c("Random","Systematic","Stratified"),
       title = "Sample type", action = firth.points,
       grid = "controls1", row = 0, column = 0, sticky = "ew")
-   rp.radiogroup(panel, sp.type, c("Equal","Random x"), 
-      title = "Systematic spacing type", action = firth.points, 
+   rp.radiogroup(panel, sp.type, c("Equal","Random x"),
+      title = "Systematic spacing type", action = firth.points,
       grid = "controls1", row = 1, column = 0, sticky = "ew")
-   rp.radiogroup(panel, str.type, c("Proportional","Equal"), 
-      title = "Allocation type (stratified)", action = firth.points, 
+   rp.radiogroup(panel, str.type, c("Proportional","Equal"),
+      title = "Allocation type (stratified)", action = firth.points,
       grid = "controls1", row = 2, column = 0, sticky = "ew")
-   rp.button(panel, firth.points, title = "New Sampling Points", 
+   rp.button(panel, firth.points, title = "New Sampling Points",
       grid = "controls1", row = 3, column = 0, sticky = "ew")
    rp.slider(panel, npts, 10, 100, action = firth.points,
-      title = "Number of points", log = FALSE, 
+      title = "Number of points", log = FALSE,
       grid = "controls1", row = 4, column = 0, sticky = "ew")
-   rp.doublebutton(panel, gx, 0.05, range = c(0, 1), action = firth.points, title = "Grid x-align", 
+   rp.doublebutton(panel, gx, 0.05, range = c(0, 1), action = firth.points, title = "Grid x-align",
       grid = "controls1", row = 5, column = 0)
-   rp.doublebutton(panel, gy, 0.05, range = c(0, 1), action = firth.points, title = "Grid y-align", 
+   rp.doublebutton(panel, gy, 0.05, range = c(0, 1), action = firth.points, title = "Grid y-align",
       grid = "controls1", row = 6, column = 0)
-   rp.checkbox(panel, random.alignment, firth.points, 
+   rp.checkbox(panel, random.alignment, firth.points,
      labels = "Random x,y-alignment", grid = "controls1", row = 7, column = 0)
    rp.do(panel, firth.blank)
    rp.do(panel, firth.points)

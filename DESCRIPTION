@@ -1,12 +1,12 @@
 Package: rpanel
 Type: Package
 Title: Simple Interactive Controls for R using the 'tcltk' Package
-Version: 1.1-5
+Version: 1.1-5.1
 Date: 2021-09-02
 Author: Bowman, Bowman, Gibson and Crawford
 Maintainer: Adrian Bowman <adrian.bowman@glasgow.ac.uk>
 Depends: R (>= 3.0), tcltk
-Suggests: tkrplot, rgl, sp, geoR, RandomFields, akima, MASS, denstrip,
+Suggests: tkrplot, rgl, sp, geoR, RandomFields, interp, MASS, denstrip,
         lattice, sm, maps, mgcv, colorspace, ggplot2
 Description: A set of functions to build simple 
         GUI controls for R functions.  These are built on the 'tcltk' package. 
@@ -18,6 +18,6 @@ Description: A set of functions to build simple
 License: GPL (>= 2)
 LazyData: TRUE
 NeedsCompilation: no
-Packaged: 2021-09-02 21:18:23 UTC; adrianbowman
+Packaged: 2022-07-04 09:55:23 UTC; ripley
 Repository: CRAN
-Date/Publication: 2021-09-03 04:50:01 UTC
+Date/Publication: 2022-07-04 11:29:38 UTC
