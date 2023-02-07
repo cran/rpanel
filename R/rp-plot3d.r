@@ -1,14 +1,14 @@
-rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA, 
-    axes = TRUE, new.window = TRUE, type = "p", size = 3, col = "red", 
+rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
+    axes = TRUE, new.window = TRUE, type = "p", size = 3, col = "red",
     xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...) {
-    	
+
     if (requireNamespace("rgl", quietly = TRUE)) {
     	
         xname <- deparse(substitute(x))
         if (!missing(y)) yname <- deparse(substitute(y))
         if (!missing(z)) zname <- deparse(substitute(z))
         if (is.data.frame(x)) x <- as.matrix(x)
-        
+
         if (is.matrix(x)) {
            if (!is.null(colnames(x))) xname <- colnames(x)
            if (ncol(x) >= 3) {
@@ -31,7 +31,7 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
            if (is.na(ylab)) ylab <- yname
            if (is.na(zlab)) zlab <- zname
         }
-        
+
         xrange <- xlim
         yrange <- ylim
         zrange <- zlim
@@ -82,30 +82,30 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
               rgl::bg3d(col = c("white", "black"))
               }
            else
-              rgl::rgl.clear()
-           rgl::rgl.viewpoint(-30, 30, fov = 1)
+              rgl::clear3d()
+           rgl::view3d(-30, 30, fov = 1)
            if (axes) {
-               rgl::rgl.lines(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(1,
+               rgl::lines3d(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(1,
                    8)], rz[c(1, 1, 1, 2, 2, 2, 2, 1)], col = "black")
-               rgl::rgl.lines(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(2,
+               rgl::lines3d(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(2,
                    8)], rz[c(1, 1, 1, 2, 2, 2, 2, 1)], col = "black")
-               for (i in 1:2) for (j in 1:2) rgl::rgl.lines(rx[c(i, i)],
+               for (i in 1:2) for (j in 1:2) rgl::lines3d(rx[c(i, i)],
                    ry[c(1, 2)], rz[c(j, j)], col = "black")
-               rgl::rgl.texts(mean(rx), min(rx), min(rx), "")
+               rgl::text3d(mean(rx), min(rx), min(rx), "")
                delta <- 0.1
                nyticks <- length(yscale)
                if (nyticks/2 - floor(nyticks/2) > 0)
                    ypos <- 1/(nyticks - 1)
                else ypos <- 0
-               rgl::rgl.texts(c(0, -1 - 2 * delta, -1 - 2 * delta), c(-1 -
+               rgl::text3d(c(0, -1 - 2 * delta, -1 - 2 * delta), c(-1 -
                    2 * delta, ypos, -1 - 2 * delta), c(1 + 2 * delta,
                    -1 - 2 * delta, 0), c(xlab, ylab, zlab), adj = c(0.5,
                    0.5), col = "blue")
-               rgl::rgl.texts((xscale - xadj1)/xadj2, -1 - delta, 1 +
+               rgl::text3d((xscale - xadj1)/xadj2, -1 - delta, 1 +
                    delta, as.character(xscale), col = "black")
-               rgl::rgl.texts(-1 - delta, (yscale - yadj1)/yadj2, -1 -
+               rgl::text3d(-1 - delta, (yscale - yadj1)/yadj2, -1 -
                    delta, as.character(yscale), col = "black")
-               rgl::rgl.texts(-1 - delta, -1 - delta, (zscale - zadj1)/zadj2,
+               rgl::text3d(-1 - delta, -1 - delta, (zscale - zadj1)/zadj2,
                    as.character(zscale), col = "black")
                scaling <- function(x, y, z) list(x = x, y = y, z = z)
                rgl.segments(xscale.adj, -1, 1, xscale.adj, -1 -
@@ -123,7 +123,7 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
               if (length(col) == length(x.orig))
                   clr <- col[ind]
               else clr <- col
-              rgl::rgl.points(x[ind], y[ind], z[ind], size = size, col = clr)
+              rgl::points3d(x[ind], y[ind], z[ind], size = size, col = clr)
               }
            }
         scaling <- function(x, y, z) {
@@ -141,6 +141,6 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
 
 rgl.segments <- function(x0, y0, z0, x1, y1, z1, scaling, ...) {
          a <- scaling(c(rbind(x0, x1)), c(rbind(y0, y1)), c(rbind(z0, z1)))
-         rgl::rgl.lines(a$x, a$y, a$z, ...)
+         rgl::lines3d(a$x, a$y, a$z, ...)
          } 
          

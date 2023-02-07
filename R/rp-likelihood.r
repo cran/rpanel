@@ -5,7 +5,7 @@ rp.likelihood <- function(loglik.fn, data, theta.low, theta.high,
       if (.Platform$OS.type == "unix") hscale <- 1
       else                             hscale <- 1.4
       }
-   if (is.na(vscale)) 
+   if (is.na(vscale))
       vscale <- hscale
 
 #   One-parameter likelihood plots
@@ -18,7 +18,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
    theta.range <- c(theta.low, theta.high)
 
    loglik1.plot <- function(panel) {
-   	
+
       with(panel, {
          if (form == "likelihood") {
    	        fun.text <- paste("function(theta, data) exp(", panel$loglik.text, ")")
@@ -33,9 +33,9 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
 
          warn <- options()$warn
          options(warn = -1)
-         
+
          fnscale <- apply(matrix(mean(theta.range)), 1, eval(parse(text = fun.text)), data = data)
-         mloglik <- optim(mean(theta.range), eval(parse(text = fun.text)), data = data, 
+         mloglik <- optim(mean(theta.range), eval(parse(text = fun.text)), data = data,
                          method = "BFGS", hessian = TRUE,
                          control = list(fnscale = -abs(fnscale)))
          convergence <- (mloglik$convergence == 0)
@@ -58,13 +58,13 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
          lines(theta.grid, ll, col = "blue", lwd = 2)
          if (!is.na(axis.active))
             abline(v = new.range, lty = 2)
-      
+
          if (display["mle"] & convergence) {
             if (display["relative scale"]) {
                if (form == "likelihood") ymax <- 1
                   else                   ymax <- 0
                }
-            else 
+            else
                ymax <- mloglik$value
             segments(mle, par()$usr[3], mle, ymax, lty = 2)
             points(mle, ymax, pch = 16, col = "red")
@@ -78,28 +78,28 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
          	    }
          	 else {
          	 	if (display["relative scale"]) thresh <- log(prop)
-         	 	   else                        thresh <- log(prop) + mloglik$value 	
+         	 	   else                        thresh <- log(prop) + mloglik$value
          	    }
          	 abline(h = thresh, col = "brown")
             }
-      
-         if (display["quadratic approximation"] & 
+
+         if (display["quadratic approximation"] &
                   (form == "log-likelihood") & convergence) {
             quad.fn <- function(x, mloglik) mloglik$value + 0.5 * c(mloglik$hessian) * (x - mle)^2
             quad    <- apply(as.matrix(theta.grid), 1, quad.fn, mloglik = mloglik)
             if (display["relative scale"]) quad <- quad - mloglik$value
             lines(theta.grid, quad, lty = 2, col = "red", lwd = 2)
             }
-      
-         if (display["ci"] & 
+
+         if (display["ci"] &
                   (form == "log-likelihood") & convergence) {
             if (display["relative scale"]) ref <- -1.92
                else                        ref <- mloglik$value - 1.92
             abline(h = ref, lty = 2, col = "green")
-         
+
             ind <- min(which(ll > ref))
             if (ind > 1) {
-               ci.left  <- theta.grid[ind - 1] + (theta.grid[ind] - theta.grid[ind - 1]) * 
+               ci.left  <- theta.grid[ind - 1] + (theta.grid[ind] - theta.grid[ind - 1]) *
                                         (ref - ll[ind - 1]) / (ll[ind] - ll[ind - 1])
                segments(ci.left, par()$usr[3], ci.left, ref, lty = 2, col = "grey")
                }
@@ -107,7 +107,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
                ci.left <- theta.grid[1]
             ind <- max(which(ll > ref))
             if (ind < ngrid) {
-               ci.right  <- theta.grid[ind] + (theta.grid[ind + 1] - theta.grid[ind]) * 
+               ci.right  <- theta.grid[ind] + (theta.grid[ind + 1] - theta.grid[ind]) *
                                         (ll[ind] - ref) / (ll[ind] - ll[ind + 1])
                segments(ci.right, par()$usr[3], ci.right, ref, lty = 2, col = "grey")
                }
@@ -146,7 +146,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
          })
       panel
       }
-   
+
    find.pt <- function(panel, x, y) {
       tol   <- diff(range(panel$theta.range)) / 25
       d.pts <- abs(panel$theta.range - x)
@@ -167,7 +167,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
       rp.tkrreplot(panel, plot1)
       panel
    }
-   
+
    release <- function(panel, x, y) {
 	  if (!is.na(panel$axis.active))
          panel$theta.range[panel$axis.active] <- x
@@ -178,7 +178,7 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
    }
 
    loglik1.replot <- function(panel) {
-      if (!is.na(panel$axis.active))   
+      if (!is.na(panel$axis.active))
          panel$theta.range[panel$axis.active] <- panel$new.range
       panel$axis.active <- NA
       rp.control.put(panel$panelname, panel)
@@ -188,18 +188,18 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
 
    panel <- rp.control(data = data, ngrid = 50, loglik.text = loglik.text,
                        form = form, theta.range = theta.range, axis.active = NA,
-                       display = c(mle = FALSE, "relative scale" = FALSE, 
-                       "threshold proportion" = FALSE, ci = FALSE, 
+                       display = c(mle = FALSE, "relative scale" = FALSE,
+                       "threshold proportion" = FALSE, ci = FALSE,
                        "quadratic approximation" = FALSE), prop = 0.9)
-   rp.tkrplot(panel, plot1, loglik1.plot, find.pt, drag, release, 
+   rp.tkrplot(panel, plot1, loglik1.plot, find.pt, drag, release,
       hscale = hscale, vscale = vscale, pos = "right", background = "white")
    rp.textentry(panel, loglik.text, loglik1.replot,
       title = "Log-likelihood")
    rp.radiogroup(panel, form, c("likelihood", "log-likelihood"), action = loglik1.replot,
       title = "Form")
-   rp.checkbox(panel, display, loglik1.replot, 
+   rp.checkbox(panel, display, loglik1.replot,
       c("mle", "relative scale", "threshold proportion", "ci", "quadratic approximation"))
-   rp.slider(panel, prop, 0.01, 1, loglik1.replot, "Threshold proportion", 
+   rp.slider(panel, prop, 0.01, 1, loglik1.replot, "Threshold proportion",
       resolution = 0.01, showvalue = TRUE)
    rp.do(panel, loglik1.replot)
 }
@@ -207,9 +207,9 @@ rp.loglik1 <- function(loglik.text, data, theta.low, theta.high,
 #   Two-parameter likelihood plots
 
 rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
-	
+
    if (!requireNamespace("rgl", quietly = TRUE)) stop("the rgl library is required.")
-      
+
    theta1.range <- c(theta.low[1], theta.high[1])
    theta2.range <- c(theta.low[2], theta.high[2])
 
@@ -219,7 +219,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
 
       warn <- options()$warn
       options(warn = -1)
-      panel$mloglik <- optim(c(mean(panel$theta1.range), mean(panel$theta2.range)), 
+      panel$mloglik <- optim(c(mean(panel$theta1.range), mean(panel$theta2.range)),
                              eval(parse(text = fun.text)), data = panel$data,
                              control = list(fnscale = -1), hessian = TRUE)
       if (panel$mloglik$convergence > 0) {
@@ -229,7 +229,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
       else
          convergence <- TRUE
       options(warn = warn)
-      
+
       panel$theta1.low  <- as.numeric(panel$ranges["theta1.low"])
       panel$theta1.high <- as.numeric(panel$ranges["theta1.high"])
       panel$theta2.low  <- as.numeric(panel$ranges["theta2.low"])
@@ -267,7 +267,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
       }
 
       with(panel, {
-      	
+
       	 if (display["transparent"]) alpha.surface <- rep(0.5, ngrid^2)
             else                     alpha.surface <- rep(  1, ngrid^2)
          ind <- (loglik.mat <= threshold)
@@ -276,7 +276,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
          ay <- scaling(loglik.mat, loglik.mat, loglik.mat)$y
          az <- scaling(theta2, theta2, theta2)$z
          rgl::pop3d()
-         rgl::rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr.surface)
+         rgl::surface3d(ax, az, ay, alpha = alpha.surface, col = clr.surface)
          rgl::material3d(alpha = 1)
          
          if (display["mle"]) {
@@ -311,7 +311,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
             ints <- seq(min(quad.mat), max(quad.mat), length = 51)
             ind  <- findInterval(c(quad.mat), ints)
             clr  <- terrain.colors(50)[ind]
-            
+
       	    if (display["transparent"]) alpha.surface <- rep(0.5, ngrid^2)
                else                     alpha.surface <- rep(  1, ngrid^2)
             ind <- (quad.mat <= threshold)
@@ -319,7 +319,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
             ax   <- scaling(theta1,  theta1,  theta1)$x
             ay   <- scaling(quad.mat, quad.mat, quad.mat)$y
             az   <- scaling(theta2, theta2, theta2)$z
-            rgl::rgl.surface(ax, az, ay, alpha = alpha.surface, col = clr, front = "line", back = "line")
+            rgl::surface3d(ax, az, ay, alpha = alpha.surface, col = clr, front = "line", back = "line")
             rgl::material3d(alpha = 1)
             }
          })
@@ -339,7 +339,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
 
    rgl::open3d()
    rgl::bg3d(color = c("white", "black"))
-      
+
    panel <- rp.control(data = data, ngrid = 50, loglik.text = loglik.text,
                        theta1.range = theta1.range, theta2.range = theta2.range,
                        theta1.low  = theta1.range[1], theta1.high = theta1.range[2],
@@ -363,7 +363,7 @@ rp.loglik2 <- function(loglik.text, data, theta.low, theta.high) {
       rp.loglik2(loglik.text, data, theta.low, theta.high)
    else
       stop("theta.low must be a vector of length 1 or 2.")
-      
+
    invisible()
    }
-   
+

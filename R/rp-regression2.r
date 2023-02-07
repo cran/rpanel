@@ -8,7 +8,7 @@ rp.regression2 <- function (y, x1, x2, ylab = NA, x1lab = NA, x2lab = NA, panel 
       with(panel, {
          if (phi < -90) phi <- -90
          if (phi >  90) phi <-  90
-         rgl::rgl.viewpoint(theta = theta, phi = phi, fov = fov)
+         rgl::view3d(theta = theta, phi = phi, fov = fov)
       })
       panel
    }
@@ -21,7 +21,7 @@ rp.regression2 <- function (y, x1, x2, ylab = NA, x1lab = NA, x2lab = NA, panel 
             }
          if (model != "None") {
             a <- scaling(xgrid, smat[,, model], zgrid)
-            rgl::rgl.surface(a$x, a$z, a$y, alpha = 0.5)
+            rgl::surface3d(a$x, a$z, a$y, alpha = 0.5)
             if (residuals.showing)
                rgl.segments(x, fv[, model], z, x, y, z, scaling, col = "green")
             }
@@ -39,8 +39,8 @@ rp.regression2 <- function (y, x1, x2, ylab = NA, x1lab = NA, x2lab = NA, panel 
         }
       })
       panel
-   } 
-   
+   }
+
     if (requireNamespace("rgl", quietly = TRUE)) {
 
         if (is.na(x1lab))
@@ -59,7 +59,7 @@ rp.regression2 <- function (y, x1, x2, ylab = NA, x1lab = NA, x2lab = NA, panel 
            ind <- (ind & (!is.na(col)))
            clr <- col[ind]
            }
-        else 
+        else
            clr <- col
         if (!all(ind)) {
            x <- x[ind]
@@ -104,8 +104,8 @@ rp.regression2 <- function (y, x1, x2, ylab = NA, x1lab = NA, x2lab = NA, panel 
                 fv = fv, model = model, residuals.showing = residuals.showing)
             rp.doublebutton(spin.panel, theta, -1, title = "Theta", action = rp.rotate)
             rp.doublebutton(spin.panel, phi,   -1, title = "Phi",   action = rp.rotate)
-            rp.radiogroup(spin.panel, model, 
-                c("None", "No effects", xlab, zlab, paste(xlab, "and", zlab)), 
+            rp.radiogroup(spin.panel, model,
+                c("None", "No effects", xlab, zlab, paste(xlab, "and", zlab)),
                 title = "Model", action = rp.regression2.model)
             rp.checkbox(spin.panel, residuals.showing, rp.regression2.residuals, "Show residuals")
             rp.do(spin.panel, rp.regression2.model)

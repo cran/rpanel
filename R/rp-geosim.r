@@ -8,7 +8,7 @@ rp.geosim <- function(max.Range = 0.5, max.pSill = 1, max.Nugget = 1, max.Kappa 
                       col.palette = terrain.colors(40)) {
 
 field.new <- function(panel) {
-	
+
       r <- panel$Range / (2 * sqrt(panel$kappa))
       panel$family <- "matern"
       # Old code which matched the surface and data grids - no longer required.
@@ -24,7 +24,7 @@ field.new <- function(panel) {
       	 mdl <- RandomFields::RMmatern(nu = panel$kappa, scale = panel$Range /sqrt(2), var = panel$pSill,
                           Aniso = diag(c(1, 1 / ratio)) %*%
                               matrix(c(cos(angle), sin(angle), -sin(angle), cos(angle)), ncol = 2))
-         x.seq <- seq(0, 1, length = panel$smgrid) 
+         x.seq <- seq(0, 1, length = panel$smgrid)
          y.seq <- seq(0, 1, length = panel$smgrid)
          panel$fieldsm <- list()
          panel$fieldsm$data <- RandomFields::RFsimulate(mdl, x = x.seq, y = y.seq)$variable1
@@ -40,41 +40,41 @@ field.new <- function(panel) {
       igrid <- as.matrix(expand.grid(igrid, igrid))
       panel$fieldsm$data <- matrix(panel$fieldsm$data, ncol = panel$smgrid)
       panel$data <- panel$fieldsm$data[igrid] + panel$fieldnug$data
-      
+
       panel$ngrid.old  <- panel$ngrid
       panel$Range.old  <- panel$Range
       panel$pSill.old  <- panel$pSill
       panel$Nugget.old <- panel$Nugget
       panel$kappa.old  <- panel$kappa
-   
+
    if (!panel$first)
       rp.do(panel, graphics.update)
    else
       panel$first <- FALSE
-   
+
    panel
    }
-   
+
 graphics.update <- function(panel) {
-	
+
    rp.tkrreplot(panel, plot1)
-   
+
    if (any(panel$vgm.checks)) {
       if (!panel$vgm.present) {
-      	  rp.tkrplot(panel, plot2, vario.update, hscale = panel$hscale, vscale = panel$vscale, 
+      	  rp.tkrplot(panel, plot2, vario.update, hscale = panel$hscale, vscale = panel$vscale,
              grid = "rightplot", row = 0, column = 0)
          panel$vgm.present <- TRUE
          }
       else
          rp.tkrreplot(panel, plot2)
       }
-      
+
    if (("rgl plot" %in% names(panel$display.checks)) && (panel$display.checks["rgl plot"])) {
       w  <- panel$data
       x  <- panel$fieldnug$coords[, 1]
       y  <- panel$fieldnug$coords[, 2]
       if ("rgl.id" %in% names(panel))
-         try.out <- try(rgl::rgl.set(panel$rgl.id), silent = TRUE)
+         try.out <- try(rgl::set3d(panel$rgl.id), silent = TRUE)
       else
          try.out <- "try-error"
       if (is.null(try.out)) {
@@ -100,22 +100,22 @@ graphics.update <- function(panel) {
          x    <- seq(0, 1, length = panel$smgrid)
          y    <- seq(0, 1, length = panel$smgrid)
          a    <- panel$scaling(x, z, y)
-         panel$surface.id <- rgl::rgl.surface(a$x, a$z, a$y, col = cols)
+         panel$surface.id <- rgl::surface3d(a$x, a$z, a$y, col = cols)
          }
       rgl::bg3d("white")
       panel$rgl.id  <- rgl::rgl.cur()
       }
    else if (panel$rgl.old) {
       try.out <- try(rgl::rgl.set(panel$rgl.id), silent = TRUE)
-      if (is.null(try.out)) rgl::rgl.close()
+      if (is.null(try.out)) rgl::close3d()
       }
-   
+
    if (("rgl plot" %in% names(panel$display.checks)) && (panel$display.checks["rgl plot"]))
       panel$rgl.old <- panel$display.checks["rgl plot"]
-   
+
    panel
    }
-   
+
 cont.update <- function(panel) {
    mar.old <- par()$mar
    with(panel, {
@@ -138,11 +138,11 @@ cont.update <- function(panel) {
          points(rep(g, ngrid), rep(g, each = ngrid), col = col.palette[clr], pch = 16)
          points(rep(g, ngrid), rep(g, each = ngrid))
    	     }
-      title(paste("Range =", Range, "  Partial sill =", pSill, "  Nugget=", Nugget), 
+      title(paste("Range =", Range, "  Partial sill =", pSill, "  Nugget=", Nugget),
                     line = 2, cex = 1)
       title(paste("Kappa =", kappa, "  Data grid =", ngrid, "x", ngrid),   line = 1, cex = 1)
       if (aniso.ratio > 1)
-         title(paste("Anisotropy: ratio =", round(aniso.ratio, 2), 
+         title(paste("Anisotropy: ratio =", round(aniso.ratio, 2),
                                 " angle =", round(aniso.angle, 2)), line = 0, cex = 1)
 
    	  par(mar = c(5, 2, 4, 2) + 0.1)
@@ -183,21 +183,21 @@ vario.update <- function(panel) {
       })
    panel
    }
-   
+
    if (!requireNamespace("tkrplot", quietly = TRUE))
       stop("the tkrplot package is not available.")
    if (!requireNamespace("geoR", quietly = TRUE))
       stop("the geoR package is not available.")
    if (!requireNamespace("RandomFields", quietly = TRUE))
       stop("the RandomFields package is not available.")
-      
+
    if (is.na(hscale)) {
       if (.Platform$OS.type == "unix") hscale <- 1.2
       else                             hscale <- 1.4
       }
-   if (is.na(vscale)) 
+   if (is.na(vscale))
       vscale <- hscale
-      
+
    if (min.ngrid < 8) {
       cat("min.ngrid reset to 8.\n")
       min.ngrid <- 8
@@ -222,7 +222,7 @@ vario.update <- function(panel) {
       cat("max.Kappa reset to 10\n")
       max.Kappa <- 10
       }
-      
+
    display.checks.init <- c(TRUE, FALSE)
    checks.lbls <- c("surface", "points")
    if (requireNamespace("rgl", quietly = TRUE)) {
@@ -230,7 +230,7 @@ vario.update <- function(panel) {
       checks.lbls <- c(checks.lbls, "rgl plot")
       }
    names(display.checks.init) <- checks.lbls
-      
+
    panel <- rp.control("Spatial correlation",
       first = TRUE,
       xa = seq(0, 0.7, by = 0.01), smgrid = 25, z.range = c(-5, 5),
@@ -245,29 +245,29 @@ vario.update <- function(panel) {
    rp.grid(panel, "controls",  row = 0, column = 0)
    rp.grid(panel, "leftplot",  row = 0, column = 1, background = "white")
    rp.grid(panel, "rightplot", row = 0, column = 2, background = "white")
-   rp.tkrplot(panel, plot1, cont.update, hscale = hscale, vscale = vscale, 
+   rp.tkrplot(panel, plot1, cont.update, hscale = hscale, vscale = vscale,
             grid = "leftplot", row = 0, column = 0, sticky = "ew")
-   rp.button(panel, field.new, "New simulation",     
+   rp.button(panel, field.new, "New simulation",
             grid = "controls", row = 1, column = 0, sticky = "ew")
-   rp.slider(panel, Range, 0.01, max.Range,  field.new, "Range",     
+   rp.slider(panel, Range, 0.01, max.Range,  field.new, "Range",
             grid = "controls", row = 2, column = 0, sticky = "ew")
-   rp.slider(panel, pSill, 0, max.pSill,  field.new, "Partial sill",     
+   rp.slider(panel, pSill, 0, max.pSill,  field.new, "Partial sill",
             grid = "controls", row = 3, column = 0, sticky = "ew")
-   rp.slider(panel, Nugget, 0, max.Nugget, field.new, "Nugget",    
+   rp.slider(panel, Nugget, 0, max.Nugget, field.new, "Nugget",
             grid = "controls", row = 4, column = 0, sticky = "ew")
-   rp.checkbox(panel, display.checks, graphics.update, checks.lbls, title = "Display", 
+   rp.checkbox(panel, display.checks, graphics.update, checks.lbls, title = "Display",
        grid = "controls", row = 5, column = 0, sticky = "ew")
-   rp.checkbox(panel, vgm.checks, graphics.update, c("true", "sample"), title = "Variogram", 
+   rp.checkbox(panel, vgm.checks, graphics.update, c("true", "sample"), title = "Variogram",
        grid = "controls", row = 6, column = 0, sticky = "ew")
-   rp.checkbox(panel, points.only, title = "Sample points only", 
+   rp.checkbox(panel, points.only, title = "Sample points only",
        grid = "controls", row = 7, column = 0)
-   rp.slider(panel, ngrid, min.ngrid, max.ngrid, field.new, "Data grid", 
+   rp.slider(panel, ngrid, min.ngrid, max.ngrid, field.new, "Data grid",
        resolution = 1, grid = "controls", row = 8, column = 0, sticky = "ew")
-   rp.slider(panel, kappa, 0.5, max.Kappa, field.new, "Kappa",     
+   rp.slider(panel, kappa, 0.5, max.Kappa, field.new, "Kappa",
        grid = "controls", row = 9, column = 0, sticky = "ew")
    rp.slider(panel, aniso.angle, 0, pi, field.new, "Anisotropy angle",
        grid = "controls", row = 10, column = 0, sticky = "ew")
-   rp.slider(panel, aniso.ratio, 1, max.aniso.ratio, field.new, "Anisotropy ratio",     
+   rp.slider(panel, aniso.ratio, 1, max.aniso.ratio, field.new, "Anisotropy ratio",
        grid = "controls", row = 11, column = 0, sticky = "ew")
    rp.do(panel, graphics.update)
    }
