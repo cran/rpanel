@@ -3,11 +3,10 @@
 \alias{rp.tkrplot}
 \alias{rp.tkrreplot}
 
-\title{rpanel calls for tkrplot and tkrreplot}
+\title{Facilities for placing R plots inside \pkg{tcltk} windows.}
 
 \description{
-These functions call Luke Tierney's \code{tkrplot} and \code{tkrreplot} 
-functions from the \pkg{tkrplot} package to allow R graphics to be displayed in a panel.
+These functions allow R graphics to be displayed in a panel.
 }
 
 \usage{
@@ -21,7 +20,8 @@ rp.tkrreplot(panel, name)
   \item{panel}{the panel in which the plot should appear. This may be passed as 
     a panelname string or the panel object itself.}
   \item{name}{the name of the plot. This is subsequently used in tkrreplot to 
-    specify the plot to be redrawn.}
+    specify the plot to be redrawn. If \code{name} is not supplied as a string
+    it will be converted to one by calling \code{deparse(substitute(name))}.}
   \item{plotfun}{the function used to create the plot.}
   \item{action}{the function called when the plot is clicked.}
   \item{mousedrag}{the function called when the mouse is dragged.}

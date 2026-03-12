@@ -6,7 +6,7 @@ rp.firth <- function(hscale = NA, col.palette = rev(heat.colors(40)), col.se = "
                  file = NA, parameters = NA) {
 
 firth.points <- function(panel) {
-
+   
    if (panel$random.alignment) {
       panel$gx <- runif(1)
       panel$gy <- runif(1)
@@ -56,7 +56,7 @@ firth.points <- function(panel) {
      if (panel$str.type == "Equal")
         alloc <- rep(round(panel$npts / 4), 4)
      else
-       alloc <- round(panel$npts * panel$str.size / 100)
+        alloc <- round(panel$npts * panel$str.size / 100)
      sind1  <- sample(which(panel$strat == 1), alloc[1])
      sind2  <- sample(which(panel$strat == 2), alloc[2])
      sind3  <- sample(which(panel$strat == 3), alloc[3])
@@ -143,7 +143,7 @@ firth.predict <- function(panel) {
       }
 
 firth.draw <- function(panel) {
-
+   
    ind <- which(panel$trend.setting == c("cte", "1st", "2nd", "stratum"))
 
    with(panel, {
@@ -204,7 +204,7 @@ firth.draw <- function(panel) {
          y0 <- panel$tyc
          segments(x0,  0,  x0, 60, lty = 2)
          segments( 0, y0, 200, y0, lty = 2)
-         }
+      }
       points(sx, sy, pch = 19)
       mtext(paste("Number of points = ",length(sx)), line = 3)
       a <- 1 + sx + 201 * sy
@@ -332,29 +332,33 @@ firth.samp <- function(panel) {
       panel
       }
 
-   if (!requireNamespace("tkrplot",      quietly = TRUE)) stop("The tkrplot package is not available.")
-   if (!requireNamespace("geoR",         quietly = TRUE)) stop("The geoR package is not available.")
-   if (!requireNamespace("RandomFields", quietly = TRUE)) stop("the RandomFields package is not available.")
+   if (!requireNamespace("geoR",    quietly = TRUE)) stop("The geoR package is not available.")
+   if (!requireNamespace("fields",  quietly = TRUE)) stop("the fields package is not available.")
    if (is.list(parameters)) {
    	  nms <- names(parameters)
       for (i in 1:length(nms))
          firth.list[nms[i]] <- parameters[nms[i]]
       }
 
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1.2
-      else                             hscale <- 1.4
-      }
+   if (is.na(hscale)) hscale <- 1
 
 #   warn <- options()$warn
 #   options(warn = -1)
 #   field <- grf(nrow(pts), grid = pts, cov.model = "matern", cov.pars = firth.list$cov.pars,
 #                  kappa = 4, nugget = 0, messages = FALSE)
 #   options(warn = warn)
-   pts   <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 0.6, length = 61)))
    covp  <- firth.list$cov.pars
-   field <- RandomFields::GaussRF(pts, grid = FALSE, model = "matern",
-                     param = c(0, covp[1], 0, covp[2] / 100, 4))
+   # pts   <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 0.6, length = 61)))
+   # field <- RandomFields::GaussRF(pts, grid = FALSE, model = "matern",
+   #                   param = c(0, covp[1], 0, covp[2] / 100, 4))
+   grd   <- list(x = seq(0, 2, length = 21), y = seq(0, 0.6, length = 11))
+   obj   <- fields::circulantEmbeddingSetup(grd, Covariance = "Matern",
+                                            aRange = covp[2] / 4, smoothness = 4)
+   field <- fields::circulantEmbedding(obj) * sqrt(covp[1])
+   grd$z <- field
+   grdo  <- list(x = seq(0, 2, length = 201), y = seq(0, 0.6, length = 61))
+   field <- fields::interp.surface.grid(grd, grdo)$z
+   field <- c(field)
    pts   <- firth.list$pts
    trend <- apply(pts, 1, firth.list$trend.fn)
 

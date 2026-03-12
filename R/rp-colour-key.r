@@ -1,5 +1,5 @@
 rp.colour.key <- function(cols, brks, par.mar = c(5, 0, 4, 3) + 0.1, natural = TRUE,
-                          margin = FALSE)  {
+                          cex = 1, margin = FALSE)  {
    ngrid   <- length(cols)
    xvec    <- rep(0, ngrid)
     if (length(brks) == 2)
@@ -16,7 +16,7 @@ rp.colour.key <- function(cols, brks, par.mar = c(5, 0, 4, 3) + 0.1, natural = T
       zlim <- range(brks)
       yaxs <- "r"
    }
-   par(mar = par.mar, mgp = c(1.5, 0.2, 0), tcl = -0.2)
+   par(mar = par.mar, cex = cex, mgp = c(1.5, 0.2, 0), tcl = -0.2)
    xrange <- if (margin) c(-1, 1) else c(0, 1)
    plot(xrange, zlim, type = "n", axes = FALSE, xaxs = "i", yaxs = yaxs, xlab = " ", ylab = " ")
    if (natural)

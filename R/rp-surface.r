@@ -3,7 +3,6 @@ rp.surface <- function(surface, covariance, x1grid, x2grid, x, y, Display = "per
                        Speed = 5, ntime = 10, ninterp = 50,
                        zlim = NULL, col.palette = topo.colors(100), coords = rep(NA, 2)) {
 
-   if (!requireNamespace("tkrplot", quietly = TRUE)) stop("the tkrplot package is not available.")
    if (!requireNamespace("interp", quietly = TRUE))   stop("the interp package is not available.")
    # if (!requireNamespace("lattice", quietly = TRUE)) stop("the lattice package is not available.")
    # if (!requireNamespace("rgl", quietly = TRUE))     stop("the rgl package is not available.")

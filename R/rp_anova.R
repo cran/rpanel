@@ -4,18 +4,14 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
                      ylab = NA, xlab = NA, zlab = NA, title = NULL, lines = TRUE,
                      panel = TRUE, panel.plot = TRUE, hscale = 1.3, vscale = hscale / 1.3) {
 
-   # The denstrip package has direct references to lattice, so lattice needs to be loaded.
-   # An alternative is to use the code at the end of this file which copies the denstrip functions.
-   if (!requireNamespace("lattice")) stop("the lattice package is not available.")
-   if (!requireNamespace("denstrip", quietly = TRUE)) stop("the denstrip package is not available.")
-   if (!requireNamespace("colorspace", quietly = TRUE)) stop("the colorspace package is not available.")
-  
    type <- if (missing(z)) "One-way" else "Two-way"
 
    if (is.na(ylab)) ylab <- deparse(substitute(y))
    if (is.na(xlab)) xlab <- deparse(substitute(x))
+   if (is.na(zlab)) zlab <- deparse(substitute(z))
    zlab <- if (type == "One-way") "" else deparse(substitute(z))
    xterm <- xlab
+   yterm <- ylab
    zterm <- zlab
 
    if (type == c("One-way")) z <- rep(1, length(x))
@@ -31,13 +27,9 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
    graphics <- "strip plot"
    jitter.x <- jitter(as.numeric(x), factor = 0.5, amount = NULL)
    
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
-      else                             hscale <- 1.4
-      }
-   if (is.na(vscale)) 
-      vscale <- hscale
-
+   if (is.na(hscale)) hscale <- 1
+   if (is.na(vscale)) vscale <- hscale
+   
    rp.anova.draw <- function(panel) {
    	
       if (panel$type == "Two-way") {
@@ -48,8 +40,8 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
          panel$model  <- c(panel$model11, panel$model12)
          panel$model0 <- c(panel$model01, panel$model02)
       }
-   	  panel$model.check  <- any(panel$model)
-   	  panel$model0.check <- any(panel$model0)
+   	panel$model.check  <- any(panel$model)
+   	panel$model0.check <- any(panel$model0)
       if (!panel$model[1] & any(panel$model[-1])) {
          rp.messagebox("The overall mean must be included if other terms are present.")
          panel$model.check <- FALSE
@@ -60,12 +52,12 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       }
       if (any(panel$model) & !panel$model0[1] & any(panel$model0[-1])) {
          rp.messagebox("The overall mean must be included if other terms are present",
-                       "in the new model.")
+                       "in the reference model.")
          panel$model0.check <- FALSE
       }
       if (any(panel$model) & panel$type == "Two-way" & panel$model0[4] & !all(panel$model0[2:3])) {
          rp.messagebox("The main effects must be included if the interaction term",
-                       "is present in the new model.")
+                       "is present in the reference model.")
          panel$model0.check <- FALSE
       }
       
@@ -91,23 +83,26 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
       panel$fstat   <- (abs(rss0 - rss1) / abs(panel$df1 - panel$df0)) / panel$sigma^2
       panel$p.value <- 1 - pf(panel$fstat, abs(panel$df0 - panel$df1), min(panel$df0, panel$df1))
 
-      wfn <- with
-      if (!panel$interactive) wfn <- within
-      panel <- wfn(panel, {
+      # wfn <- with
+      # if (!panel$interactive) wfn <- within
+      # panel <- wfn(panel, {
       	
+      with(panel, {
          form <- if (type == "Two-way") "y ~ x | z" else "y ~ x"
          form <- as.formula(form)
          ngps <- nrow(unique(data.frame(x, z)))
          if (graphics != "boxplot") {
-            clr  <- colorspace::rainbow_hcl(3)
-         	  dfrm <- data.frame(x, y, z, jitter.x)
+            clr  <- c("#E495A5", "#86B875", "#7DB0DD")
+         	dfrm <- data.frame(x, y, z, jitter.x)
            	plt  <- ggplot2::ggplot(dfrm, ggplot2::aes(y, x)) + ggplot2::xlab(ylab) + ggplot2::ylab(xlab) +
          	          ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
-         	                panel.grid.minor = ggplot2::element_blank(),
-         	                panel.background = ggplot2::element_rect(fill = "grey90")) +
+         	                         panel.grid.minor = ggplot2::element_blank(),
+         	                         panel.background = ggplot2::element_rect(fill = "grey90")) +
+           	        # ggplot2::geom_hline(yintercept = 1:nlevels(x) + 0.5, col = "white") +
          	  	      ggplot2::ggtitle(ttl)
             if (!(model0.check & model.check) | all(model == model0)) {
-               plt <- plt + ggplot2::stat_density(ggplot2::aes(fill = ..density..), geom = "tile",
+               plt <- plt + ggplot2::stat_density(ggplot2::aes(fill = ggplot2::after_stat(density)),
+                            geom = "tile",
                             height = 0.7, position = "identity", show.legend = FALSE) +
 		           ggplot2::scale_fill_gradient(low = "grey90", high = clr[3])
             }
@@ -130,7 +125,7 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
             }
         	  if (model.check) {
                plt <- plt + ggplot2::stat_summary(ggplot2::aes(x = fitted(mdl)), width = 0,
-                                  fun = "mean", size = 1,
+                                  fun = "mean", linewidth = 1,
           	     				       fun.min = function(x) mean(x) - 0.45,
           	     				       fun.max = function(x) mean(x) + 0.45,
           						       geom = "crossbar", orientation = "x", col = clr[1])
@@ -187,7 +182,7 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
        	   title(paste("p-value:", round(p.value, 3)), cex.main = 0.8, font.main = 1)
          }
          else {
-       	    par(mar = c(0, 0, 0, 0) + 0.1, bg = bgdcol)
+       	   par(mar = c(0, 0, 0, 0) + 0.1, bg = bgdcol)
             plot(c(0, 1), c(0, 1), type = "n", xlab = "", ylab = "", axes = FALSE)
          }
       })
@@ -195,14 +190,9 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
    }
       
    rp.anova.redraw <- function(panel) {
-      rp.tkrreplot(panel, plot)
-      rp.tkrreplot(panel, fplot)
+      rp.tkrreplot(panel, 'plot')
+      rp.tkrreplot(panel, 'fplot')
       panel
-   }
-
-   if (panel.plot & !requireNamespace("tkrplot", quietly = TRUE)) {
-      warning("the tkrplot package is not available so panel.plot has been set to FALSE.")
-      panel.plot <- FALSE
    }
 
    model.options <- c("overall mean")
@@ -230,7 +220,9 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
                     model11 = init.model[1],  model12 = init.model[2],  model13 = init.model[3], 
                     model14 = init.model[4],  model01 = init.model0[1], model02 = init.model0[2],
                     model03 = init.model0[3], model04 = init.model0[4],
-                    model.check = TRUE, model0.check = TRUE, bgdcol = bgdcol)
+                    model = init.model, model0 = init.model0,
+                    model.check = any(init.model), model0.check = any(init.model0),
+                    bgdcol = bgdcol)
       
       rp.grid(panel, "controls", row = 1, column = 0, background = bgdcol)
       rp.grid(panel, "models",   grid = "controls", row = 0, column = 0, background = bgdcol)
@@ -238,21 +230,21 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
 
       if (panel.plot) {
          rp.grid(panel, "dataplot", row = 0, column = 0, background = "white")
-         rp.tkrplot(panel, plot,  rp.anova.draw,  hscale = hscale, vscale = vscale, 
-                   grid = "dataplot", row = 0, column = 0, background = "white")
-      	 rp.text(panel, "", grid = "fplot", row = 0, column = 0, background = bgdcol)
-      	 rp.text(panel, "", grid = "fplot", row = 1, column = 0, background = bgdcol)
-         rp.tkrplot(panel, fplot, rp.anova.fplot, hscale = hscale * 0.7, vscale = vscale * 0.2, 
-                   grid = "fplot", row = 2, column = 0, background = bgdcol)
-      	 rp.text(panel, "", grid = "fplot", row = 3, column = 0, background = bgdcol)
+         rp.tkrplot(panel, 'plot',  rp.anova.draw,  hscale = hscale, vscale = vscale, 
+                    grid = "dataplot", row = 0, column = 0, background = "white")
+      	rp.text(panel, "", grid = "fplot", row = 0, column = 0, background = bgdcol)
+      	rp.text(panel, "", grid = "fplot", row = 1, column = 0, background = bgdcol)
+         rp.tkrplot(panel, 'fplot', rp.anova.fplot, hscale = hscale * 0.7, vscale = vscale * 0.2, 
+                    grid = "fplot", row = 2, column = 0, background = bgdcol)
+      	rp.text(panel, "", grid = "fplot", row = 3, column = 0, background = bgdcol)
          action.fn <- rp.anova.redraw
       }
       else
          action.fn <- rp.anova.draw
 
       rp.text(panel, "        Model", grid = "models", row = 0, column = 1, background = bgdcol)
-      rp.text(panel,       "current", grid = "models", row = 1, column = 0, background = bgdcol)
-      rp.text(panel,           "new", grid = "models", row = 1, column = 2, background = bgdcol)
+      rp.text(panel,        "fitted", grid = "models", row = 1, column = 0, background = bgdcol)
+      rp.text(panel,     "reference", grid = "models", row = 1, column = 2, background = bgdcol)
       rp.checkbox(panel, model11, action.fn, labels = "", initval = init.model[1],
             grid = "models", row = 2, column = 0, background = bgdcol)
       rp.checkbox(panel, model12, action.fn, labels = "", initval = init.model[2],
@@ -275,7 +267,7 @@ rp.anova <- function(y, x, z, model = NA, model0 = NA,
                grid = "models", row = 5, column = 2, background = bgdcol)
       }
       rp.do(panel, action.fn)
-      return(invisible())
+      return(invisible(panel))
    }
    else {
       panel <- list(x = x, y = y, z = z, type = type, xlab = xlab, ylab = ylab, ttl = title,

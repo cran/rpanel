@@ -1,21 +1,23 @@
 #   Simple regression with R graphics
 
-rp.regression <- function (x, y, ylab = NA, x1lab = NA, x2lab = NA, xlab = NA, yrange,
-           panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
-           model = "None", line.showing = TRUE, residuals.showing = FALSE, size = 3, col) {
+rp.regression <- function (x, y,
+                           ylab = NA, x1lab = NA, x2lab = NA, xlab = NA, model = "None",
+                           line.showing = TRUE, residuals.showing = FALSE, size = 3,
+                           panel = TRUE, panel.plot = TRUE, hscale = NA, vscale = hscale,
+                           yrange, ci = TRUE, point.estimate = !ci, labels, subset,
+                           ngrid = 200, col) {
 
    prng <- if (missing(yrange)) NA else yrange
+   lbls <- if (missing(labels)) NA else labels
+   sbst <- if (missing(subset)) NA else subset
    if (missing(col)) col <- NA
-   if (any(class(x) %in% c("formula", "lm"))) return(rp.regression3(x, prng, col))
+   # if (any(class(x) %in% c("formula", "lm", "glm")))
+   #    return(rp.coefficients(x, prng, ci, point.estimate, lbls, sbst, col, ngrid))
    if (is.na(col)) col <- "red"
 
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
-      else                             hscale <- 1.4
-      }
-   if (is.na(vscale)) 
-      vscale <- hscale
-
+   if (is.na(hscale)) hscale <- 1
+   if (is.na(vscale)) vscale <- hscale
+   
 rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = hscale) {
                          	
    scatter.draw <- function(object) {
@@ -27,9 +29,21 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
             if (Influence["move points horizontally"] | Influence["move points vertically"])
                clr[ind] <- 2
          }
-         plot(x, y, xlim = range(xlim, x), ylim = range(ylim, y), 
-                 col = clr, xlab = xlab, ylab = ylab)
-         title("Simple linear regression", col.main = "red", line = 3, cex.main = 1)
+         par(par.ggplot)
+         plot(x, y, xlim = range(xlim, x), ylim = range(ylim, y),
+              type = 'n', axes = FALSE, xlab = xlab, ylab = ylab)
+         rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+              col = grey(0.9), border = NA)
+         pretty.x <- pretty(x)
+         pretty.y <- pretty(y)
+         axis(1, at = pretty.x, lwd = 0, lwd.ticks = 1)
+         axis(2, at = pretty.y, lwd = 0, lwd.ticks = 1)
+         abline(h = pretty.y, v = pretty.x, col = 'white')
+         points(x, y, pch = 16, col = clr)
+         # Old plotting instruction
+         # plot(x, y, xlim = range(xlim, x), ylim = range(ylim, y),
+         #         col = clr, xlab = xlab, ylab = ylab)
+         title("Simple linear regression", col.main = "darkred", line = 3, cex.main = 1)
          line.text <- character(0)
          if (Display["regression line"]) {
             intercept.adj <- intercept - slope * (mean(x))
@@ -62,7 +76,7 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
          if (Display["fitted line"]) {
             model <- lm(y ~ x)
             cfs   <- coef(model)
-            abline(cfs[1], cfs[2], col = "green")
+            abline(cfs[1], cfs[2], col = col.fitted)
             if (Display["residuals"]) {
                segments(x, y, x, fitted(model), col = "red")
                ss.text <- paste("       RSS =", signif(sum((y - fitted(model))^2), 5))
@@ -80,7 +94,7 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
             if (abs(cfs[2]) != 1) slp <- paste(signif(abs(cfs[2]), 5))
                else slp <- ""
             title(paste("E(", ylab, ") = ", int, sgn, slp, " ", xlab, ss.text, sep = ""), 
-               col.main = "green", line = 1, cex.main = 1)            
+               col.main = col.fitted, line = 1, cex.main = 1)            
             # title(line.text, col = "red")
          }
       })
@@ -134,6 +148,11 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
    sxy               <- sum((x - mean(x)) * (y - mean(y)))
    xlim              <- range(x)
    ylim              <- range(y)
+   
+   # Adjust par settings to mimic ggplot
+   par.old <- par('bty', 'mar', 'oma', 'tcl', 'mgp')
+   par.ggplot <- list(bty = 'n', mar = c(3, 3, 4, 2) + 0.1,
+                      oma = rep(0, 4), tcl = NA, mgp = c(1.5, 0.25, 0))
 
    scatter.panel <- rp.control("Scatterplot",
                       x = x, y = y, xlab = xlab, ylab = ylab,
@@ -141,6 +160,8 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
                       intercept = intercept.initial, slope = 0,
                       Display = c("regression line" = line.showing,
                          "residuals" = residuals.showing, "fitted line" = FALSE),
+                      col.fitted = 'darkgreen',
+                      par.ggplot = par.ggplot, par.old = par.old,
                       coords = rep(NA, 2))
    if (panel.plot) {
       rp.tkrplot(scatter.panel, plot, scatter.draw, find.pt, drag, release, 
@@ -160,7 +181,10 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
    if (panel.plot)
       rp.checkbox(scatter.panel, Influence, action.fn, 
                       c("move points horizontally", "move points vertically"))
-   rp.do(scatter.panel, action.fn) 
+   rp.do(scatter.panel, action.fn)
+   
+   par(par.old)
+   
    invisible(scatter.panel)
 }
 
@@ -172,7 +196,7 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
    }
    else if (is.matrix(x)) {
       if (!requireNamespace("rgl", quietly = TRUE)) stop("the rgl package is not available.")
-   	  x.names   <- dimnames(x)[[2]]
+   	x.names   <- dimnames(x)[[2]]
       name.comp <- if (!is.null(x.names) & !all(x.names == "")) x.names
                    else {
                       if (!is.null(attributes(x)$names)) attributes(x)$names
@@ -180,8 +204,14 @@ rp.regression1 <- function(x, y, ylab, xlab, panel.plot, hscale = NA, vscale = h
                    }
       if (is.na(x1lab)) x1lab <- name.comp[1]
       if (is.na(x2lab)) x2lab <- name.comp[2]
-   	  rp.regression2(y, x[ , 1], x[ , 2], ylab, x1lab, x2lab, panel, model, 
-   	                    residuals.showing, size, col)
+      # if (requireNamespace('ggplot2', quietly = TRUE)) {
+      #    dfrm <- data.frame(y = y, x1 = x[ , 1], x2 = x[ , 2])
+      #    mdl  <- lm(y ~ x1 + x2, data = dfrm, model = TRUE)
+      #    rp.lm(y ~ x1 + x2, data = dfrm, ylab, x1lab, x2lab, residuals.showing = residuals.showing)
+      # }
+      # else
+   	   rp.regression2(y, x[ , 1], x[ , 2], ylab, x1lab, x2lab, panel, model,
+   	                  residuals.showing, size, col)
    }
       
 }

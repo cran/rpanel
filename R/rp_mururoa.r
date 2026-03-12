@@ -6,8 +6,10 @@
 rp.mururoa <- function(hscale = NA, col.palette = rev(heat.colors(40)), col.se = "blue",
                  file = NA, parameters = NA) {
 
-mururoa.points <- function(panel) {
+# Locate sampling positions
 
+mururoa.points <- function(panel) {
+   
    if (panel$sample.taken) return(panel)
 
    if (panel$random.alignment) {
@@ -24,7 +26,7 @@ mururoa.points <- function(panel) {
       }
 
    else if (panel$stype == "Grid") {
-   	  gsp         <- sqrt(8522 / (4 * panel$npts))
+   	gsp         <- sqrt(8522 / (4 * panel$npts))
       txc         <- round(2 * seq(panel$gx * gsp, 100, by = gsp)) / 2
       tyc         <- round(2 * seq(panel$gy * gsp,  50, by = gsp)) / 2
       gr          <- expand.grid(txc, tyc)
@@ -37,7 +39,7 @@ mururoa.points <- function(panel) {
       }
 
    else if (panel$stype == "Transect") {
-   	  a  <- atan(panel$transect.angle)        # Work with axes rotated by angle a.
+   	a  <- atan(panel$transect.angle)        # Work with axes rotated by angle a.
       sp <- sqrt(8522 / (4 * panel$npts))     # Get (average) point spacing required.
       tt <- round(44 * cos(a) / sp)           # Set no. of transects - cos(a) correction due to rotation
       gy <- panel$gy
@@ -100,23 +102,24 @@ mururoa.points <- function(panel) {
       }
 
    if (panel$sampling.started) {
-   	  rp.control.put(panel$panelname, panel)
+   	rp.control.put(panel$panelname, panel)
       rp.tkrreplot(panel, plot1)
    }
 
    panel
-   }
+}
 
 mururoa.draw <- function(panel) {
-
+   
   ind <- which(panel$trend.setting == c("cte", "1st", "2nd"))
 
   with(panel, {
 
   plot(murx, mury, type = "n", asp = 1,
           xlab = "easting", ylab = "northing", main = paste("Number of points = ", length(sampx)))
+  axis(1, at = seq(0, 100, by = 10))
   polygon(murx, mury, col = col.inside, density = -1, border = NA)
-
+  
   if (sample.taken) {
 
     if (display.options["predicted surface"])
@@ -128,7 +131,7 @@ mururoa.draw <- function(panel) {
               levels = pretty(range((kse[,,ind] * mask)[kse[,,ind] > 0], na.rm = TRUE), 10), col = col.se)
 
     if (display.options["points"]) {
-   	   brks <- seq(zlim[1], zlim[2], length = length(col.palette) + 1)
+   	 brks <- seq(zlim[1], zlim[2], length = length(col.palette) + 1)
        clr  <- cut(sz[ , 3], brks, labels = FALSE, include.lowest = TRUE, right = FALSE)
        points(sz[ , 1], sz[ , 2], col = col.palette[clr], pch = 16)
        points(sz[ , 1], sz[ , 2])
@@ -165,17 +168,19 @@ mururoa.draw <- function(panel) {
               dst <- (pt[ , 1] - sx[i])^2 + (pt[ , 2] - sy[i])^2
               ind <- min(which(dst == min(dst)))
               points(pt[ind, 1], pt[ind, 2], pch = 16, col = col.points)
-              }
            }
         }
+     }
+     
      if (!(stype == "Transect" & tsb == "Systematic" & tsw == "Systematic"))
         points(round(2 * sx) / 2, round(2 * sy) / 2, pch = 16, col = col.points)
-     axis(1, at = seq(0, 100, by = 10))
+     
      }
 
+     # Add the outside shading at the end so that the surfaces are removed outside
      usr <- par()$usr
-     polygon(c(murx, murx[1], usr[1],  usr[1], usr[2], usr[2], usr[1], usr[1]),
-             c(mury, mury[1], mury[1], usr[4], usr[4], usr[3], usr[3], mury[1]),
+     polygon(c(murx, murx[1], usr[c(1, 2, 2, 1, 1)], murx[1]),
+             c(mury, mury[1], usr[c(3, 3, 4, 4, 3)], mury[1]),
              col = col.outside, density = -1, border = NA)
      box()
      lines(c(murx, murx[1]), c(mury, mury[1]), col = col.border, lwd = 3)
@@ -183,7 +188,9 @@ mururoa.draw <- function(panel) {
   })
 
   panel
-  }
+}
+
+#   Predict the surface from the sampled locations
 
 mururoa.predict <- function(panel) {
 
@@ -196,9 +203,9 @@ mururoa.predict <- function(panel) {
 
   if (!panel$prediction.computed[ind]) {
      sz   <- panel$sz
-     z0 <- sz
-     fg <- geoR::as.geodata(z0)                            # convert to format usable by geoR
-     vg2 <- geoR::variog(fg, trend = panel$trend.setting, max.dist = 60, messages = FALSE) # quadratic trend
+     z0   <- sz
+     fg   <- geoR::as.geodata(z0)                            # convert to format usable by geoR
+     vg2  <- geoR::variog(fg, trend = panel$trend.setting, max.dist = 60, messages = FALSE) # quadratic trend
      vfit <- geoR::variofit(vg2, ini.cov.pars = c(max(vg2$v), 20), nugget = min(vg2$v),
                       cov.model = "matern", kappa = 4, messages = FALSE)
      xx <- 0:60
@@ -233,7 +240,7 @@ mururoa.predict <- function(panel) {
   rp.do(panel, mururoa.samp.redraw)
 
   panel
-  }
+}
 
 mururoa.colour.reset <- function(panel) {
   ind <- which(panel$trend.setting == c("cte", "1st", "2nd"))
@@ -243,7 +250,9 @@ mururoa.colour.reset <- function(panel) {
   rp.do(panel, mururoa.colour.chart.redraw)
   rp.do(panel, mururoa.samp.redraw)
   panel
-  }
+}
+
+# Take a sample at the current locations
 
 mururoa.samp <- function(panel) {
 
@@ -305,58 +314,56 @@ mururoa.samp <- function(panel) {
   if (!is.na(panel$file)) {
      mururoa.data <- data.frame(x = x1, y = y1, z = z)
      save(mururoa.data, file = panel$file)
-     }
+  }
 
   panel
-  }
+}
 
 mururoa.colour.chart <- function(panel) {
   par(mar = c(5, 1, 4, 2) + 0.1)
   rp.colour.chart(panel$col.palette, panel$zlim)
   panel
-  }
+}
 
 mururoa.samp.redraw <- function(panel) {
    rp.control.put(panel$panelname, panel)
    rp.tkrreplot(panel, plot1)
    panel
-   }
+}
 
 mururoa.colour.chart.redraw <- function(panel) {
    rp.control.put(panel$panelname, panel)
    rp.tkrreplot(panel, plot1a)
    panel
-   }
+}
 
 mururoa.help <- function(panel) {
    eval(parse(text = "help(rp.mururoa)"), envir = .GlobalEnv)
    panel
-   }
+}
 
 mururoa.blank <- function(panel) {
    panel$sampling.started <- FALSE
    panel
-   }
+}
 
 mururoa.start <- function(panel) {
    panel$sampling.started <- TRUE
    panel
-   }
+}
 
-   if (!requireNamespace("tkrplot",      quietly = TRUE)) stop("The tkrplot package is not available.")
-   if (!requireNamespace("geoR",         quietly = TRUE)) stop("The geoR package is not available.")
-   if (!requireNamespace("RandomFields", quietly = TRUE)) stop("the RandomFields package is not available.")
+   if (!requireNamespace("geoR",    quietly = TRUE))
+      stop("The geoR package is not available.")
+   if (!requireNamespace("fields",  quietly = TRUE))
+      stop("the fields package is not available.")
 
    if (is.list(parameters)) {
-   	  nms <- names(parameters)
+   	nms <- names(parameters)
       for (i in 1:length(nms))
          mururoa.list[nms[i]] <- parameters[nms[i]]
-      }
+   }
 
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1.2
-      else                             hscale <- 1.4
-      }
+   if (is.na(hscale)) hscale <- 1
 
    ptsm        <- as.matrix(expand.grid(seq(0, 100, by = 0.5), seq(0, 50, by = 0.5)))
    trendmurmat <- apply(ptsm, 1, mururoa.list$trend.fn)
@@ -367,10 +374,19 @@ mururoa.start <- function(panel) {
 #                  kappa = 4, nugget = 0, messages = FALSE)
 #   options(warn = warn)
 
-   ptsm  <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 1, length = 101)))
    covp  <- mururoa.list$cov.pars
-   field <- RandomFields::GaussRF(ptsm, grid = FALSE, model = "matern",
-                     param = c(0, covp[1], 0, covp[2] / 100, 4))
+   ptsm  <- as.matrix(expand.grid(seq(0, 2, length = 201), seq(0, 1, length = 101)))
+   # Old RandomFields version
+   # field <- RandomFields::GaussRF(ptsm, grid = FALSE, model = "matern",
+   #                                param = c(0, covp[1], 0, covp[2] / 100, 4))
+   grd   <- list(x = seq(0, 2, length = 21), y = seq(0, 1, length = 11))
+   obj   <- fields::circulantEmbeddingSetup(grd, Covariance = "Matern",
+                           aRange = covp[2] / 4, smoothness = 4)
+   field <- fields::circulantEmbedding(obj) * sqrt(covp[1])
+   grd$z <- field
+   grdo  <- list(x = seq(0, 2, length = 201), y = seq(0, 1, length = 101))
+   field <- fields::interp.surface.grid(grd, grdo)$z
+   field <- c(field)
 
    panel <- rp.control("Sampling at Mururoa",
      stype = "Random", npts = 25, gsp = 10,
@@ -428,5 +444,5 @@ mururoa.start <- function(panel) {
 
    rp.text(panel, " \n \n \n \n \n ", grid = "controls2", row = 0, column = 0)
    rp.button(panel, mururoa.samp, "Take sample", grid = "controls2", row = 2, column = 0)
-   }
+}
 

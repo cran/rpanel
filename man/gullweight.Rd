@@ -6,6 +6,8 @@
 
 \description{These data are part of a large sample collected  by Prof. P. Monaghan of the University of  Glasgow in a study of the weight changes in herring  gulls throughout the year.  Some birds were caught in June (coded as month  1)  and others in December (month 2).  Since weight  is dependent on the size of the bird this information is recorded in  the  form  of the head and bill length, \code{hab} (in  mm),  the distance from the back of the head to the tip of the bill.
 
+Note that from version 1.1.6 of the package, \code{month} is defined as factors rather than as a simple numerical code.
+
 The data are used in the \code{\link{rp.ancova}} example script.
 }
 

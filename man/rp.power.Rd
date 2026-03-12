@@ -9,15 +9,16 @@ This function creates a panel which allows the sample size, population means and
 }
 
 \usage{
-rp.power(panel = TRUE, panel.plot = TRUE, populations.showing = FALSE,
+rp.power(panel = TRUE, panel.plot = TRUE,
+         populations.showing = FALSE,
          ngrid = seq(10, 300), mu1 = 0, mu2 = 1,
          sigma = 1, n = 20, xgrid = seq(- 4, 5, length = 100),
          popdens.lim = 0.7, hscale = 1, vscale = hscale)
 }
 
 \arguments{
-\item{panel}{a logical value determining whether an interactive panel is created.}
-\item{panel.plot}{a logical value determining whether the plot is placed inside the panel.}
+\item{panel}{a logical value determining whether an interactive panel is created or a static plot is produced.}
+\item{panel.plot}{a logical value, relevant to the \code{tcltk} case only, determining whether the plot is placed inside the panel.}
 \item{populations.showing}{a logical value determining whether the populations are initially showing.}
 \item{ngrid}{a vector which determines the grid a sample sizes used.}
 \item{mu1,mu2}{the initial values of the means of the two populations.}
@@ -29,10 +30,10 @@ rp.power(panel = TRUE, panel.plot = TRUE, populations.showing = FALSE,
 }
 
 \details{
-The population parameters and sample size are controlled by doublebuttons.  The sample size refer to the total sample size, assuming two groups of equal size.  A checkbox allows plots of the population distributions also to be displayed.}
+The sample size refer to the total sample size, assuming two groups of equal size.  A checkbox allows plots of the population distributions also to be displayed.}
 
 \value{
-  Nothing is returned.
+The \code{tcltk} panel object is returned.
 }
 
 \references{

@@ -9,24 +9,26 @@ This function allows Gaussian random fields to be simulated and visualised, usin
 
 \usage{
 rp.geosim(max.Range = 0.5, max.pSill = 1, max.Nugget = 1, max.Kappa = 10, 
-                      max.aniso.ratio = 5,
-                      min.ngrid = 10, max.ngrid = 25, hscale = NA, vscale = hscale,
-                      col.palette = terrain.colors(40))
+          max.aniso.ratio = 3, min.ngrid = 10, max.ngrid = 25,
+          hscale = NA, vscale = hscale, smgrid = 40, ngrid = 15,
+          Range = 0.1, pSill = 0.5, Nugget = 0, kappa = 4,
+          aniso.angle = 0, aniso.ratio = 1,
+          col.palette = terrain.colors(40), panel = TRUE)
 }
 
 \arguments{
-  \item{max.Range, max.pSill, max.Nugget}{the maximum values of the range, sill and nugget
-                    parameters.  These define the end-points of the corresponding slider scales.}
-  \item{max.Kappa}{The maximum value of the kappa parameter in the Matern family of 
-                    spatial covariance functions.}
-  \item{max.aniso.ratio}{The maximum value of the anisotropy ratio parameter, which
-                    controls the degree of anisotropy in the simulated field.}
-  \item{min.ngrid, max.ngrid}{the minimum and maximum values of the grid size for sampling points.}
-  \item{hscale, vscale}{horizontal and vertical scaling factors for the size of the plots.
-                    It can be useful to adjust these for different screen resolutions or for 
-                    projection in a lecture setting.  The default values are 1.2 on Unix platforms
-                    and 1.4 on Windows platforms.}
-  \item{col.palette}{the colour palette used to display the random fields.}
+\item{max.Range, max.pSill, max.Nugget}{the maximum values of the range, sill and nugget parameters. These define the end-points of the corresponding slider scales.}
+\item{max.Kappa}{The maximum value of the kappa parameter in the Matern family of spatial covariance functions.}
+\item{max.aniso.ratio}{The maximum value of the anisotropy ratio parameter, which controls the degree of anisotropy in the simulated field.}
+\item{min.ngrid, max.ngrid}{the minimum and maximum values of the grid size for sampling points.}
+\item{hscale, vscale}{horizontal and vertical scaling factors for the size of the plots. It can be useful to adjust these for different screen resolutions or for projection in a lecture setting. The default values are 1.}
+\item{smgrid}{the number of grid points on each dimension of the displayed process. The default is 40.}
+\item{ngrid}{the number of grid points in each dimension of the sampled locations. The default is 15.}
+\item{Range, pSill, Nugget}{the initial values of the range, partial sill and nugget parameters. the defaults values are 0.1, 0.5 and 0 respectively.}
+\item{kappa}{the initial value of the smoothness parameter of the Matern covariance function. The default is 4.}
+\item{aniso.angle, aniso.ratio}{the initial values of the anisotropy angle (in radians) and and ratio parameters. The default values are 0 and 1 respectively.}
+\item{col.palette}{the colour palette used to display the random fields.}
+\item{panel}{a logical variable which determines whether an interactive panel is created.}
 }
 
 \details{
@@ -34,13 +36,13 @@ The aim of the tool is to allow the generation of repeated simulated fields with
 
 The use of the function is discussed in the paper paper by Bowman et al. (2008) referenced below.
 
-The \pkg{geoR} and \pkg{RandomFields} packages are used to generate the data.
+The \pkg{geoR} and \pkg{fields} packages are used to generate the data.
 
 Note that the Matern covariance function is parameterised in the form described by Handcock & Wallis (1994) which separates the effects of the shape and range parameters.
 }
 
 \value{
-  Nothing is returned.
+The \code{tcltk} panel object is returned.
 }
 
 \references{

@@ -4,18 +4,26 @@
 rp.plot4d <- function(x, z, y, model, group, subset,
                   col.palette, col.breaks, col.labels,
                   hscale = 1, vscale = hscale, panel = TRUE,
-                  x1lab, x2lab, zlab, ylab,
+                  x1lab, x2lab, zlab, ylab, cex = 1,
 						display = "image", Display = NULL,
                   background.plot = NULL, foreground.plot = NULL,
                   z.window = "normal", z.window.pars = c(min(z), sd(z)/5),
                   coords = rep(NA, 2), radius = 0.05, col.circle = "black", lwd.circle = 1,
                   location.plot = TRUE, retain.location.plot = FALSE,
                   group.level, group.name,
+						colour.key = TRUE, z.key = TRUE, new.window = TRUE,
                   eqscplot = FALSE, location.plot.type = "histogram") {
 
    if (eqscplot & !requireNamespace("MASS", quietly = TRUE)) {
       cat("eqscplot requires the MASS package which is not available.\n")
       eqscplot <- FALSE
+   }
+   
+   if (display == "rgl") {
+      if (!requireNamespace("rgl", quietly = TRUE))
+         cat("The rgl package is not installed - reverting to image display.\n")
+      else if (new.window)
+         rgl::open3d(windowRect = c(0, 0, 500, 500))
    }
 
    draw.plot <- function(panel) {
@@ -25,7 +33,8 @@ rp.plot4d <- function(x, z, y, model, group, subset,
       	 zsd <- z.window.pars["width"]
 
       	 if (display == "image") {
-      	   par(mar = c(3, 3, 1, 1) + 0.1, mgp = c(1.5, 0.2, 0), tcl = -0.2)
+      	   par(mar = c(3, 3, 1, 1) + 0.1, mgp = c(1.5, 0.2, 0), tcl = -0.2,
+      	       cex = cex)
             if (eqscplot)
                MASS::eqscplot(x, type = "n", xlab = x1lab, ylab = x2lab)
             else {
@@ -57,8 +66,8 @@ rp.plot4d <- function(x, z, y, model, group, subset,
                my.ind <- !is.na(my)
                grdx <- model$x[ , 1]
                grdy <- model$x[ , 2]
-   	           dfrm <- data.frame(x = rep(grdx, length(grdy)), y = rep(grdy, each = length(grdx)), z = c(my))
-   	           if ("reference" %in% names(model)) {
+   	         dfrm <- data.frame(x = rep(grdx, length(grdy)), y = rep(grdy, each = length(grdx)), z = c(my))
+   	         if ("reference" %in% names(model)) {
                   mr     <- (1 - m.p) * model$reference[ , , m.low] + m.p * model$reference[ , , m.high]
                   mr.ind <- !is.na(mr)
                   dfrm$r <- c(mr)
@@ -77,48 +86,96 @@ rp.plot4d <- function(x, z, y, model, group, subset,
   	           }
   	           else {
   	              dfrm   <- as.list(dfrm)
-  	              dfrm$z <- matrix(dfrm$z, nrow = dim(model$y)[1])
+  	              ngrid  <- dim(model$y)[1]
+  	              dfrm$z <- matrix(dfrm$z, nrow = ngrid)
+  	              if ("reference" %in% names(model))
+  	                 dfrm$r <- matrix(dfrm$r, nrow = ngrid)
   	           }
-   	           if (is.list(model) & Display["model"]) {
-   	              all.y <- model$y
-   	              if (!missing.y) all.y <- c(all.y, y)
-                  brks[is.infinite(brks) & (brks > 0)] <- max(all.y, na.rm = TRUE) + 1
-                  brks[is.infinite(brks) & (brks < 0)] <- min(all.y, na.rm = TRUE) - 1
-                  # image(mx[ , 1], mx[ , 2], my, breaks = brks, col = col.palette, add = TRUE)
-                  if (display == "image") {
+   	        if (is.list(model) & Display["model"]) {
+   	           all.y <- model$y
+   	           if (!missing.y) all.y <- c(all.y, y)
+                 brks[is.infinite(brks) & (brks > 0)] <- max(all.y, na.rm = TRUE) + 1
+                 brks[is.infinite(brks) & (brks < 0)] <- min(all.y, na.rm = TRUE) - 1
+                 # image(mx[ , 1], mx[ , 2], my, breaks = brks, col = col.palette, add = TRUE)
+                 if (display == "image") {
   	                image(grdx, grdy, dfrm$z, breaks = brks, col = col.palette, add = TRUE)
-                  }
-  	              else if (display == "persp") {
+                 }
+  	              else if (display == "persp" | display == "rgl") {
   	                 ngrid <- dim(dfrm$z)[1]
-  	                 clr   <- array(c(dfrm$z[-ngrid, -ngrid], dfrm$z[    -1, -ngrid],
-                                      dfrm$z[-ngrid,     -1], dfrm$z[    -1,     -1]),
-                                      dim = c(ngrid - 1, ngrid - 1, 4))
-                     clr   <- apply(clr, 1:2, function(x)
-                                    if (length(which(is.na(x))) > 1) NA else mean(x, na.rm = TRUE))
-                     clr   <- col.palette[cut(c(clr), brks, labels = FALSE)]
-  	                 persp(grdx, grdy, dfrm$z, col = clr, ticktype = "detailed", d = 10,
-     	                     xlab = x1lab, ylab = x2lab, zlab = ylab, theta = theta, phi = phi, zlim = range(brks))
+  	                 if (Display["reference"]) {
+  	                    if (display == "persp") {
+  	                       sdiff <- array(c(dfrm$r[-ngrid, -ngrid], dfrm$r[    -1, -ngrid],
+  	                                        dfrm$r[-ngrid,     -1], dfrm$r[    -1,     -1]),
+  	                                      dim = c(ngrid - 1, ngrid - 1, 4))
+  	                       sdiff <- apply(sdiff, 1:2, function(x)
+  	                          if (length(which(is.na(x))) > 1) NA else mean(x, na.rm = TRUE))
+  	                       sdiff <- matrix(c(sdiff), nrow = ngrid - 1, ncol = ngrid - 1)
+  	                       # if (all(opt$order[1:2] == 2:1)) sdiff <- t(sdiff)
+  	                    }
+  	                    else
+  	                       sdiff <- dfrm$r
+  	                    se.breaks <- c(-3, -2, 2, 3)
+  	                    # col.pal   <- rev(rainbow(length(se.breaks) + 1, start = 0/6, end = 4/6))
+  	                    col.pal   <- diverge_hcl(length(se.breaks) + 1)
+  	                    se.breaks <- c(min(-3, sdiff, na.rm = TRUE) - 1, se.breaks,
+  	                                   max( 3, sdiff, na.rm = TRUE) + 1)
+  	                    ng  <- dim(sdiff)[1]
+  	                    clr <- col.pal[cut(c(sdiff), se.breaks, labels = FALSE)]
+  	                    clr <- matrix(clr, ng, ng)
+  	                 }
+  	                 else {
+  	                    if (display == "persp") {
+  	                       clr   <- array(c(dfrm$z[-ngrid, -ngrid], dfrm$z[    -1, -ngrid],
+                                           dfrm$z[-ngrid,     -1], dfrm$z[    -1,     -1]),
+                                         dim = c(ngrid - 1, ngrid - 1, 4))
+                          clr   <- apply(clr, 1:2, function(x)
+                                     if (length(which(is.na(x))) > 1) NA else mean(x, na.rm = TRUE))
+                          clr   <- col.palette[cut(c(clr), brks, labels = FALSE)]
+  	                    }
+  	                    else
+  	                       sdiff <- dfrm$r
+  	                 }
+  	                 if (display == "persp")
+  	                    persp(grdx, grdy, dfrm$z, col = clr, ticktype = "detailed", d = 10,
+     	                       xlab = x1lab, ylab = x2lab, zlab = ylab, theta = theta, phi = phi,
+  	                          zlim = range(brks))
+  	                 else {
+  	                    sv <- par3d(skipRedraw = TRUE)
+  	                    scaling <- rp.plot3d(rep(grdx, ngrid),
+  	                                         dfrm$z,
+  	                                         rep(grdy, each = ngrid),
+  	                                         xlab = x1lab, ylab = ylab, zlab = x2lab,
+  	                                         new.window = FALSE, cex = cex,
+  	                                         ylim = range(brks), 
+  	                                         type = "n")
+  	                    surf.ids <- sm.surface3d(cbind(grdx, grdy),
+  	                                             dfrm$z, scaling,
+  	                                             col = c(clr),
+  	                                             col.mesh = "black",
+  	                                             alpha = 0.7, alpha.mesh = 1, lit = FALSE)
+  	                    par3d(sv)
+  	                 }
   	              }
-   	           }
-               if (is.list(model) && (("reference" %in% names(model)) && Display["reference"])) {
-               	  lvls <- pretty(c(2, max(c(2, dfrm$r), na.rm = TRUE)))
-               	  mmx <- max(c(2, dfrm$r), na.rm = TRUE)
-               	  if (mmx >= 2) {
-               	     lvls <- if (trunc(mmx) > 5) pretty(c(2, trunc(mmx))) else 2:trunc(mmx)
-               	     # contour(mx[ , 1], mx[ , 2], mr, add = TRUE, col = "blue", levels = lvls, lty = 1)
-               	     if (display == "image")
-               	        contour(grdx, grdy, matrix(dfrm$r, ncol = length(grdx)),
-               	                add = TRUE, col = "blue", levels = lvls, lty = 1)
-               	  }
-               	  lvls <- pretty(c(-2, min(c(-2, mr), na.rm = TRUE)))
-               	  mmn <- min(c(-2, dfrm$r), na.rm = TRUE)
-               	  if (mmn <= -2) {
-               	     lvls <- if (trunc(mmn) < -5) pretty(c(-2, trunc(mmn))) else (-2):trunc(mmn)
-               	     # contour(mx[ , 1], mx[ , 2], mr, add = TRUE, col = "blue", levels = lvls, lty = 2)
-               	     if (display == "image")
-               	        contour(grdx, grdy, matrix(dfrm$r, , ncol = length(grdx)),
-               	                add = TRUE, col = "blue", levels = lvls, lty = 2)
-               	  }
+   	        }
+              if (is.list(model) && (("reference" %in% names(model)) && Display["reference"])) {
+                 lvls <- pretty(c(2, max(c(2, dfrm$r), na.rm = TRUE)))
+                 mmx <- max(c(2, dfrm$r), na.rm = TRUE)
+                 if (mmx >= 2) {
+               	  lvls <- if (trunc(mmx) > 5) pretty(c(2, trunc(mmx))) else 2:trunc(mmx)
+               	  # contour(mx[ , 1], mx[ , 2], mr, add = TRUE, col = "blue", levels = lvls, lty = 1)
+               	  if (display == "image")
+               	     contour(grdx, grdy, matrix(dfrm$r, ncol = length(grdx)),
+               	             add = TRUE, col = "black", levels = lvls, lty = 1)
+                 }
+                 lvls <- pretty(c(-2, min(c(-2, mr), na.rm = TRUE)))
+                 mmn <- min(c(-2, dfrm$r), na.rm = TRUE)
+                 if (mmn <= -2) {
+               	  lvls <- if (trunc(mmn) < -5) pretty(c(-2, trunc(mmn))) else (-2):trunc(mmn)
+               	  # contour(mx[ , 1], mx[ , 2], mr, add = TRUE, col = "blue", levels = lvls, lty = 2)
+               	  if (display == "image")
+               	     contour(grdx, grdy, matrix(dfrm$r, , ncol = length(grdx)),
+               	             add = TRUE, col = "black", levels = lvls, lty = 2)
+               	}
                }
             }
          }
@@ -170,11 +227,11 @@ rp.plot4d <- function(x, z, y, model, group, subset,
 
          if (all(!is.na(coords))) {
          	dr1          <- diff(range(panel$x[ , 1]))
-   	        dr2          <- diff(range(panel$x[ , 2]))
-   	        if (eqscplot) {
-   	           dr1 <- max(dr1, dr2)
-   	           dr2 <- max(dr1, dr2)
-   	        }
+   	      dr2          <- diff(range(panel$x[ , 2]))
+   	      if (eqscplot) {
+   	         dr1 <- max(dr1, dr2)
+   	         dr2 <- max(dr1, dr2)
+   	      }
             lines(coords[1] + circle[ , 1] * radius * dr1,
                   coords[2] + circle[ , 2] * radius * dr2, col = col.circle, lwd = lwd.circle)
          }
@@ -183,7 +240,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    }
 
    draw.key <- function(panel) {
-   	  if (panel$missing.y) return(panel)
+   	if (panel$missing.y) return(panel)
       if (is.factor(panel$y)) {
       	 par(mar = c(3, 0, 1, 0) + 0.1)
       	 plot(0:1, type = "n", axes = FALSE, xlab = "", ylab = "")
@@ -194,9 +251,11 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          #    text.col = panel$col.palette)
       }
       else {
-         rp.colour.key(panel$col.palette, panel$col.labels, par.mar = c(3, 1, 1, 1.5) + 0.1,
-             natural = panel$natural)
-         mtext(ylab, side = 2, line = 0.1, font = 1)
+         rp.colour.key(panel$col.palette, panel$col.labels,
+                       # par.mar = c(2 + panel$cex, panel$cex, 1, panel$cex + 0.5) + 0.1,
+                       par.mar = c(3, 1, 1, 1.5) + 0.1,
+                       cex = panel$cex, natural = panel$natural)
+         mtext(ylab, side = 2, line = 0.1, font = 1, cex = panel$cex)
       }
       panel
    }
@@ -210,7 +269,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          # par(mar = c(0, 3, 2, 1) + 0.1, mgp = c(1, 0.2, 0), tcl = -0.2)
          # plot(range(z), c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "",
          #       xaxs = "i", yaxs = "i")
-         par(mar = c(0, 3, 2, 1) + 0.1, mgp = c(1.5, 0.2, 0), tcl = -0.2)
+         par(mar = c(0, 3, 2, 1) + 0.1, cex = cex, mgp = c(1.5, 0.2, 0), tcl = -0.2)
          plot(range(z), c(0, 1), type = "n", axes = FALSE, yaxs = "i", xlab = " ", ylab = " ")
          zsd1  <- if (zsd >= 1.49 * sdz) 4 * sdz else zsd
          if (is.list(model)) z.window <- "uniform"
@@ -231,7 +290,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          }
          axis(3, font.main = 1,
               col = grey(0.6), col.ticks = grey(0.6), col.axis = grey(0.6), cex.axis = 0.8)
-         mtext(zlab, line = 1, font = 1)
+         mtext(zlab, line = 1, font = 1, cex = panel$cex)
          box()
       })
       panel
@@ -315,15 +374,15 @@ rp.plot4d <- function(x, z, y, model, group, subset,
       panel$zsdold <- panel$z.window.pars["width"]
       panel$z.window.pars["width"] <- panel$sdz * 4
       rp.control.put(panel$panelname, panel)
-      rp.tkrreplot(panel, plot)
-      rp.tkrreplot(panel, band)
+      rp.tkrreplot(panel, 'plot')
+      rp.tkrreplot(panel, 'band')
       if (panel$location.plot.showing)
-         rp.tkrreplot(panel, location)
+         rp.tkrreplot(panel, 'location')
       else {
          # rp.text(panel, "\n\n", name = "textpane", grid = "plots",
          #    row = 0, column = 1 + as.numeric(!panel$missing.y),
          #    sticky = "news", background = "white", fontsize = 12)
-         rp.tkrplot(panel, location, draw.location, grid = "plots",
+         rp.tkrplot(panel, 'location', draw.location, grid = "plots",
             row = 1, column = 1 + as.numeric(!panel$missing.y),
             hscale = panel$hscale, vscale = panel$vscale, background = "white")
       }
@@ -342,8 +401,8 @@ rp.plot4d <- function(x, z, y, model, group, subset,
       panel$locind <- which(d.pts <= panel$radius^2)
       panel$coords <- c(x, y)
       rp.control.put(panel$panelname, panel)
-      rp.tkrreplot(panel, plot)
-      rp.tkrreplot(panel, location)
+      rp.tkrreplot(panel, 'plot')
+      rp.tkrreplot(panel, 'location')
       panel
    }
 
@@ -354,9 +413,9 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          panel$coords <- rep(NA, 2)
          rp.control.put(panel$panelname, panel)
          rp.widget.dispose(panel, "location")
-         rp.tkrreplot(panel, plot)
-         # rp.tkrreplot(panel, location)
-         rp.tkrreplot(panel, band)
+         rp.tkrreplot(panel, 'plot')
+         # rp.tkrreplot(panel, 'location')
+         rp.tkrreplot(panel, 'band')
          # rp.widget.dispose(panel, textpane)
          panel$location.plot.showing <- FALSE
       }
@@ -381,8 +440,8 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          }
    	  }
    	  else {
-         rp.tkrreplot(panel, plot)
-         rp.tkrreplot(panel, band)
+         rp.tkrreplot(panel, 'plot')
+         rp.tkrreplot(panel, 'band')
       }
       panel
    }
@@ -416,9 +475,9 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    	  ylab <- ""
    }
    if (missing(group))
-   	  group <- factor(rep(1, length(y)))
+   	group <- factor(rep(1, length(y)))
    else
-   	  if (!is.factor(group)) stop("group is not a factor.")
+   	if (!is.factor(group)) stop("group is not a factor.")
    if (missing(group.level)) group.level <- levels(group)[1]
    if (missing(group.name))  group.name <- deparse(substitute(group))
 
@@ -453,6 +512,8 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    missing.col.labels <- missing(col.labels)
    if (missing.col.labels) col.labels <- NA
    key <- 0.25
+   if (missing(col.palette) || all(is.na(col.palette)))
+      col.palette <- topo.colors(20)
    if (missing.y & !is.list(model)) {
       ind         <- rep(1, length(z))
       if (!(all(col.palette == "black"))) col.palette <- "blue"
@@ -463,16 +524,14 @@ rp.plot4d <- function(x, z, y, model, group, subset,
       ind <- as.numeric(y)
    }
    else {
-      if (missing(col.palette) || all(is.na(col.palette)))
-          col.palette <- topo.colors(20)
       if (!missing(col.breaks)) {
           if (length(col.breaks) != length(col.palette) + 1)
              stop("the length of col.breaks should be length(col.palette) + 1.")
       	  brks <- col.breaks
       }
       else {
-      	 all.y <- if (is.list(model)) model$y else numeric(0)
-      	 if (!missing.y) all.y <- c(all.y, y)
+      	all.y <- if (is.list(model)) model$y else numeric(0)
+      	if (!missing.y) all.y <- c(all.y, y)
          rng   <- range(all.y, na.rm = TRUE)
          del   <- 0.04 * diff(rng)
          brks  <- seq(rng[1] - del, rng[2] + del, length = length(col.palette) + 1)
@@ -494,15 +553,9 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    circle <- matrix(c(cos(theta), sin(theta)), ncol = 2)
    n      <- length(z)
 
-   if (all(is.null(Display))) {
-      Display <- if (!all(is.na(y))) c("points" = TRUE) else NULL
-      if (!is.null(model)) {
-         Display <- c(Display, "model" = TRUE)
-         if ("reference" %in% names(model)) Display <- c(Display, "reference" = TRUE)
-      }
-   }
-   else
-      names(Display) <- c("points", "model", "reference")[1:length(Display)]
+   if (all(is.null(Display)))
+      Display <- c("points" = !all(is.na(y)), "model" = !is.null(model),
+                   "reference" = !is.null(model) && ("reference" %in% names(model)))
 
    if (!is.null(model)) {
       if (!is.list(model)) {
@@ -526,7 +579,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    if (panel.flag) {
       panel <- rp.control(x = x, y = y, z = z, missing.y = missing.y,
                   x1lab = x1lab, x2lab = x2lab, ylab = ylab, zlab = zlab,
-                  model = model, brks = brks,
+                  cex = cex, model = model, brks = brks,
                   col.palette = col.palette, col.labels = col.labels, natural = natural,
                   coords = rep(NA, 2), radius = radius, circle = circle,
                   col.circle = col.circle, lwd.circle = lwd.circle, n = n, sdz = sd(z),
@@ -536,24 +589,25 @@ rp.plot4d <- function(x, z, y, model, group, subset,
                   retain.location.plot = retain.location.plot,
                   group = group, group.level = group.level, group.name = group.name,
                   eqscplot = eqscplot, locind = integer(0),
+                  colour.key = colour.key, z.key = z.key,
                   background.plot = background.plot, foreground.plot = foreground.plot,
                   Display = Display, display = display, theta = -30, phi = 40,
                   panel.plot = TRUE)
       rp.grid(panel, "controls", row = 0, column = 0, sticky = "n", background = "grey")
       rp.grid(panel, "plots",    row = 0, column = 1, background = "white")
-      rp.tkrplot(panel, band, draw.band,
+      rp.tkrplot(panel, 'band', draw.band,
                 hscale = hscale, vscale = 0.12 * vscale,
                 grid = "plots", row = 0, column = 0, background = "white")
       if (location.plot)
-         rp.tkrplot(panel, plot, draw.plot, click, drag, release,
+         rp.tkrplot(panel, 'plot', draw.plot, click, drag, release,
                 hscale = hscale, vscale = vscale,
                 grid = "plots", row = 1, column = 0, background = "white")
       else
-         rp.tkrplot(panel, plot, draw.plot,
+         rp.tkrplot(panel, 'plot', draw.plot,
                 hscale = hscale, vscale = vscale,
                 grid = "plots", row = 1, column = 0, background = "white")
       if (!missing.y)
-         rp.tkrplot(panel, key,  draw.key, hscale = key * hscale, vscale = vscale,
+         rp.tkrplot(panel, 'key',  draw.key, hscale = key * hscale, vscale = vscale,
                 grid = "plots", row = 1, column = 1, background = "white")
       rp.slider(panel, z.window.pars, c(min(z), sd(z) / 20), c(max(z), sd(z) * 1.5), redraw4d,
                 labels = c("centre", "width"),
@@ -581,7 +635,10 @@ rp.plot4d <- function(x, z, y, model, group, subset,
       	 if (length(disp) > 1)
             rp.checkbox(panel, Display, redraw4d, disp,
                 grid = "controls", row = 5, column = 0, title = "location plot type")
-          rp.radiogroup(panel, display, c("image", "persp"), action = redraw4d,
+      	 rgp <- c("image", "persp")
+      	 if (requireNamespace("rgl", quietly = TRUE))
+      	    rgp <- c(rgp, "rgl")
+          rp.radiogroup(panel, display, c("image", "persp", "rgl"), action = redraw4d,
       						grid = "controls", row = 6, column = 0, title = "Display type")
           rp.slider(panel, theta, -180, 180, redraw4d, title = "persp left/right", grid = "controls", row = 8, column = 0)
           rp.slider(panel, phi,      0,  90, redraw4d, title = "persp up/down", grid = "controls", row = 9, column = 0, )
@@ -597,23 +654,24 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    else {
       panel <- list(x = x, y = y, z = z, missing.y = missing.y,
                   x1lab = x1lab, x2lab = x2lab, ylab = ylab, zlab = zlab,
-                  model = model, brks = brks, natural = natural,
+                  cex = cex, model = model, brks = brks, natural = natural,
                   col.palette = col.palette, brks = brks, col.labels = col.labels,
                   coords = coords, radius = radius, circle = circle,
                   col.circel = col.circle, lwd.circle = lwd.circle, n = n, sdz = sd(z),
                   colour = colour, clr = clr, eqscplot = eqscplot,
                   z.window = z.window, z.window.pars = z.window.pars,
                   group = group, group.level = group.level, group.name = group.name,
+                  colour.key = colour.key, z.key = z.key,
                   Display = Display, display = display, theta = -30, phi = 40,
                   background.plot = background.plot, foreground.plot = foreground.plot,
                   panel.plot = FALSE)
       if (all(!is.na(coords))) {
-   	     dr1          <- diff(range(panel$x[ , 1]))
-   	     dr2          <- diff(range(panel$x[ , 2]))
-   	     if (eqscplot) {
-   	        dr1 <- max(dr1, dr2)
-   	        dr2 <- max(dr1, dr2)
-   	     }
+   	   dr1          <- diff(range(panel$x[ , 1]))
+   	   dr2          <- diff(range(panel$x[ , 2]))
+   	   if (eqscplot) {
+   	      dr1 <- max(dr1, dr2)
+   	      dr2 <- max(dr1, dr2)
+   	   }
          d.pts        <- ((panel$x[ , 1] - panel$coords[1]) / dr1)^2 +
                          ((panel$x[ , 2] - panel$coords[2]) / dr2)^2
          panel$locind <- which(d.pts <= panel$radius^2)
@@ -622,22 +680,44 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          panel$z.window.pars["width"] <- panel$sdz * 4
          layout(matrix(c(2, 3, 5, 4, 6, 1), ncol = 3), widths = c(8, 1, 8), heights = c(1, 8))
          draw.location(panel)
+         draw.band(panel)
+         draw.plot(panel)
+         draw.key(panel)
       }
-      else
-        layout(matrix(c(1, 2, 4, 3), ncol = 2), widths = c(8, 1), heights = c(1, 8))
-      draw.band(panel)
-      draw.plot(panel)
-      draw.key(panel)
+      else if (panel$z.key & !panel$colour.key) {
+         layout(matrix(c(1, 2), ncol = 1),
+                heights = c(1 + 0.75 * (cex - 1), 8))
+         draw.band(panel)
+         draw.plot(panel)
+      }
+      else if (!panel$z.key & panel$colour.key) {
+         layout(matrix(c(1, 2), ncol = 2),
+                widths = c(8, 1 + 0.75 * (cex - 1)))
+         draw.plot(panel)
+         draw.key(panel)
+      }
+      else if (!panel$z.key & !panel$colour.key) {
+         layout(1)
+         draw.plot(panel)
+      }
+      else {
+         layout(matrix(c(1, 2, 4, 3), ncol = 2),
+                widths = c(8, 1 + 0.75 * (cex - 1)),
+                heights = c(1 + 0.75 * (cex - 1), 8))
+         draw.band(panel)
+         draw.plot(panel)
+         draw.key(panel)
+      }
       layout(1)
    }
 
-   invisible()
+   invisible(panel)
 }
 
    rp.spacetime <- function(space, time, y, model, group, subset,
                   col.palette, col.breaks, col.labels,
                   hscale = 1, vscale = hscale, panel = TRUE,
-                  x1lab, x2lab, zlab, ylab,
+                  x1lab, x2lab, zlab, ylab, cex = 1,
 						display = "image", Display = NULL,
 						background.plot = NULL, foreground.plot = NULL,
                   time.window = "normal",
@@ -645,6 +725,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
                   coords = rep(NA, 2), radius = 0.05, col.circle = "black", lwd.circle = 1,
                   location.plot = TRUE, retain.location.plot = FALSE,
                   group.level, group.name,
+						colour.key = TRUE, z.key = TRUE, new.window = TRUE,
                   eqscplot = TRUE, location.plot.type = "histogram") {
 
    xlab <- deparse(substitute(space))
@@ -669,14 +750,15 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    if (missing(Display)) Display <- NULL
 
       rp.plot4d(space, time, y, model, group, subset,
-                  col.palette = col.palette, col.breaks = col.breaks, col.labels = col.labels,
-                  hscale = hscale, vscale = vscale, panel = panel,
-                  x1lab = x1lab, x2lab = x2lab, zlab = zlab, ylab = ylab,
-   					display = display, Display = Display,
-                  background.plot = background.plot, foreground.plot = foreground.plot,
-                  z.window = time.window, z.window.pars = time.window.pars,
-                  coords = coords, radius = radius, location.plot = location.plot,
-                  retain.location.plot = retain.location.plot, eqscplot = eqscplot,
-                  group.level = group.level, group.name = group.name,
-                  location.plot.type = location.plot.type)
+                col.palette = col.palette, col.breaks = col.breaks, col.labels = col.labels,
+                hscale = hscale, vscale = vscale, panel = panel,
+                x1lab = x1lab, x2lab = x2lab, zlab = zlab, ylab = ylab,
+                cex = cex, display = display, Display = Display,
+                background.plot = background.plot, foreground.plot = foreground.plot,
+                z.window = time.window, z.window.pars = time.window.pars,
+                coords = coords, radius = radius, location.plot = location.plot,
+                retain.location.plot = retain.location.plot, eqscplot = eqscplot,
+                group.level = group.level, group.name = group.name,
+                colour.key = TRUE, z.key = TRUE, new.window = TRUE,
+                location.plot.type = location.plot.type)
 }

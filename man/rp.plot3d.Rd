@@ -11,7 +11,7 @@ This function produces a scatterplot of three variables, using the \pkg{rgl} pac
 \usage{
   rp.plot3d(x, y, z, xlab  = NA, ylab = NA, zlab = NA, 
                    axes = TRUE, new.window = TRUE, type = "p", size = 3, col = "red",
-                   xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...)
+                   cex = 1, xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...)
 }
 
 \arguments{
@@ -27,6 +27,8 @@ This function produces a scatterplot of three variables, using the \pkg{rgl} pac
                is set to "n", the points are not plotted.}
    \item{size}{the size of the plotted points.}
    \item{col}{the colour of the plotted points.}
+   \item{cex}{a numeric value allowing expansion or contractions of the size of the
+              text in the annotation of the axes.}
    \item{xlim}{the plotting range for the first variable.}
    \item{ylim}{the plotting range for the second variable.}
    \item{zlim}{the plotting range for the third variable.}
@@ -58,7 +60,7 @@ A scaling function is returned to allow further objects to be added to the plot.
   scaling <- rp.plot3d(x, y, z, xlim = c(-3, 3))
   # In addition you may add a line to the plot with these two lines;
   #  a <- scaling(c(-3,3), c(0,0), c(0,0))
-  #  lines3d(a$x, a$y, a$z, col = "green", size = 2) 
+  #  rgl::lines3d(a$x, a$y, a$z, col = "green", size = 2) 
 }}
 
 \keyword{iplot}

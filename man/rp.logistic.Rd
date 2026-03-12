@@ -25,7 +25,7 @@
 \item{ylab}{a character variable used for the response axis label.}
 \item{panel.plot}{a logical variable which determines whether the plot is placed inside the control panel.}
 \item{panel}{a logical variable which determines whether an interactive panel is created.}
-\item{hscale, vscale}{horizontal and vertical scaling factors for the size of the plots.  It can be useful to adjust these for projection on a screen, for example.  The default values are 1 on Unix platforms and 1.4 on Windows platforms.}
+\item{hscale, vscale}{horizontal and vertical scaling factors for the size of the plots.  It can be useful to adjust these for projection on a screen, for example.  The default values are 1.}
 \item{alpha}{the initial value of the intercept parameter.}
 \item{beta}{the initial value of the slope parameter.}
 \item{display}{the initial settings of the checkboxes which control whether the data are `jittered' for visual effect and whether the movable and fitted regression lines are displayed.}

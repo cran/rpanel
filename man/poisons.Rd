@@ -12,6 +12,8 @@ three poisons and four treatments, using a randomisation procedure.
 The data are used in the \code{\link{rp.anova}} example script. 
 
 The data were reported in the paper by Box and Cox (1964) referenced below.
+
+Note that from version 1.1.6 of the package, the poisons are treatments are defined as factors rather than as simple codes.
 }
 
 \references{

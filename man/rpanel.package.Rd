@@ -12,40 +12,33 @@
 up to more sophisticated mini-applications.  In addition to functions which create controls, a number of `cartoon' functions built on these controls are also available.}
 
 \details{
-\tabular{ll}{
-Package: \tab rpanel\cr
-Type: \tab Package\cr
-Version: \tab 1.1-5\cr
-Date: \tab 2021-09-02\cr
-License: \tab GNU\cr
-}
-
-This package contains a number of functions (with help and examples) and several 
-example scripts.\cr
+This package contains a number of functions (with help and examples) and several example scripts.\cr
 \cr
-Cartoon functions\cr
+Cartoon functions:\cr
 \cr
-\code{\link{rp.gulls}}: An interactive problem-solving exercise on deciding the sex of a herring gull\cr
 \code{\link{rp.ci}}: Confidence intervals\cr
-\code{\link{rp.anova}}: Analysis of variance\cr
-\code{\link{rp.ancova}}: Analysis of covariance\cr
-\code{\link{rp.power}}: Power calculations for a two-sample t-test\cr
+\code{\link{rp.coefficients}}: Visualisation of the effects of the coefficients in a linear model or glm\cr
+\code{\link{rp.contingency}}: Visualisation of two-way contingency tables with uncertainties\cr
+\code{\link{rp.drop1}}: Visualisation of the results of dropping all single terms from a model\cr
+\code{\link{rp.firth}}: Sampling in a firth\cr
+\code{\link{rp.geosim}}: Simulation of spatial processes\cr
+\code{\link{rp.gulls}}: An interactive problem-solving exercise on deciding the sex of a herring gull\cr
+\code{\link{rp.likelihood}}: Exploration of one and two parameter likelihood functions\cr
+\code{\link{rp.lm}}: Visualisation of linear models with one or two explanatory variables\cr
+\code{\link{rp.logistic}}: Interactive display of logistic regression with a single covariate\cr
+\code{\link{rp.mururoa}}: Sampling in Mururoa Atoll\cr
 \code{\link{rp.normal}}: Fitting a normal distribution to a single sample\cr
-\code{\link{rp.rmplot}}: Plotting of repeated measurement data\cr
-\code{\link{rp.tables}}: Interactive statistical tables\cr
-\code{\link{rp.regression}}: Regression with one or two covariates\cr
 \code{\link{rp.plot3d}}: Interactive display of a plot of three variables\cr
 \code{\link{rp.plot4d}}: Interactive display of a plot of four variables\cr
-\code{\link{rp.spacetime}}: A version of \code{rp.plot4d} designed for space-time data\cr
-\code{\link{rp.likelihood}}: Exploration of one and two parameter likelihood functions\cr
-\code{\link{rp.logistic}}: Interactive display of logistic regression with a single covariate\cr
-\code{\link{rp.cartoons}}: A menu-driven set of \code{rpanel} illustrations\cr
-\code{\link{rp.geosim}}: Simulation of spatial processes\cr
-\code{\link{rp.mururoa}}: Sampling in Mururoa Atoll\cr
-\code{\link{rp.firth}}: Sampling in a firth\cr
+\code{\link{rp.power}}: Power calculations for a two-sample t-test\cr
+\code{\link{rp.rmplot}}: Plotting of repeated measurement data\cr
+\code{\link{rp.sample}}: Interactive exploration of sampling variation\cr
 \code{\link{rp.surface}}: Displaying the uncertainty in an estimate of a surface\cr
+\code{\link{rp.t_test}}: Visualisation for inference in comparing the means of one or two samples\cr
+\code{\link{rp.tables}}: Interactive statistical tables\cr
+\code{\link{rp.spacetime}}: A version of \code{rp.plot4d} designed for space-time data\cr
 \cr
-Functions to create individual controls\cr
+Functions to create individual controls:\cr
 \cr
 \code{\link{rp.control}}: create an rpanel\cr
 \code{\link{rp.slider}}: add a slider to a panel, to graphically control a numeric variable\cr
@@ -63,8 +56,8 @@ Functions to create individual controls\cr
 \code{\link{rp.deleteline}}: removes a line from an rp.image\cr
 \code{\link{rp.clearlines}}: removes all lines from an rp.image\cr
 \code{\link{rp.messagebox}}: displays a message in a pop-up window\cr
-\code{\link{rp.tkrplot}}: calls Luke Tierney's \code{tkrplot} function to allow R graphics to be displayed in a panel\cr
-\code{\link{rp.tkrreplot}}: calls Luke Tierney's \code{tkrreplot} functions to allow R graphics to be refreshed in a panel.\cr
+\code{\link{rp.tkrplot}}:  allows R graphics to be displayed in a panel\cr
+\code{\link{rp.tkrreplot}}: allows R graphics to be refreshed in a panel.\cr
 \code{\link{rp.timer}}: executes an action function repeatedly until a condition is satisfied\cr
 \code{\link{rp.block}}: blocks use of the R console until a panel is closed\cr
 \code{\link{rp.panel}}: returns a named panel or the most recently created panel\cr

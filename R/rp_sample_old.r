@@ -1,13 +1,5 @@
-rp.sample <- function(mu = 0, sigma = 1, n = 25, panel.plot = TRUE,
+rp.sample.old <- function(mu = 0, sigma = 1, n = 25, panel.plot = TRUE,
                       hscale = NA, vscale = hscale) {
-
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
-      else                             hscale <- 1.4
-      }
-   if (is.na(vscale)) 
-      vscale <- hscale
-
 
    sample.draw <- function(panel) {
    	  mu    <- panel$pars["mu"]
@@ -103,6 +95,9 @@ rp.sample <- function(mu = 0, sigma = 1, n = 25, panel.plot = TRUE,
       panel
    }
 
+   if (is.na(hscale)) hscale <- 1
+   if (is.na(vscale)) vscale <- hscale
+   
    display.sample        <- c(TRUE, rep(FALSE, 3))
    display.mean          <- rep(FALSE, 4)
    names(display.sample) <- c("data", "population", "mean", "+/- 2 st.dev.")
@@ -127,4 +122,5 @@ rp.sample <- function(mu = 0, sigma = 1, n = 25, panel.plot = TRUE,
    rp.checkbox(panel, display.sample, action.fn, names(display.sample), title = "Sample")
    rp.checkbox(panel, display.mean,   action.fn, names(display.mean),   title = "Sample mean")
 
+   invisible(panel)
 }

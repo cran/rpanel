@@ -1,3 +1,5 @@
-# rpanel 1.1-5
+# rpanel 1.1-6
 
-* A check is now made on whether the BWidget Tcl/Tk module is available.  This allows the package to be installed under Macos.  If BWidget is not available then three functions (rp.combo, rp.notebook, rp.notebook.raise) are disabled and advisory messges printed if these functions are called.
+* A new function \code{rp.lm} is provided to allow interactive visualisation of linear models which involve one or two explanatory variables.
+* The new functions \code{rp.coefficients} and \code{rp.drop1} provide visualisations of the parameters and the highest order terms in linear models.
+* the new function \code{rp.t_test} provides visualisation of the inferences for one and two sample tests.

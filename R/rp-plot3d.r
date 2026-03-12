@@ -1,14 +1,14 @@
-rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
-    axes = TRUE, new.window = TRUE, type = "p", size = 3, col = "red",
-    xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...) {
-
+rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA, 
+    axes = TRUE, new.window = TRUE, type = "p", size = 3, col = "red", 
+    cex = 1, xlim = NA, ylim = NA, zlim = NA, plot = TRUE, ...) {
+    	
     if (requireNamespace("rgl", quietly = TRUE)) {
     	
         xname <- deparse(substitute(x))
         if (!missing(y)) yname <- deparse(substitute(y))
         if (!missing(z)) zname <- deparse(substitute(z))
         if (is.data.frame(x)) x <- as.matrix(x)
-
+        
         if (is.matrix(x)) {
            if (!is.null(colnames(x))) xname <- colnames(x)
            if (ncol(x) >= 3) {
@@ -31,7 +31,7 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
            if (is.na(ylab)) ylab <- yname
            if (is.na(zlab)) zlab <- zname
         }
-
+        
         xrange <- xlim
         yrange <- ylim
         zrange <- zlim
@@ -85,11 +85,11 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
               rgl::clear3d()
            rgl::view3d(-30, 30, fov = 1)
            if (axes) {
-               rgl::lines3d(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(1,
+               rgl::segments3d(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(1,
                    8)], rz[c(1, 1, 1, 2, 2, 2, 2, 1)], col = "black")
-               rgl::lines3d(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(2,
+               rgl::segments3d(rx[c(1, 2, 2, 2, 2, 1, 1, 1)], ry[rep(2,
                    8)], rz[c(1, 1, 1, 2, 2, 2, 2, 1)], col = "black")
-               for (i in 1:2) for (j in 1:2) rgl::lines3d(rx[c(i, i)],
+               for (i in 1:2) for (j in 1:2) rgl::segments3d(rx[c(i, i)],
                    ry[c(1, 2)], rz[c(j, j)], col = "black")
                rgl::text3d(mean(rx), min(rx), min(rx), "")
                delta <- 0.1
@@ -100,13 +100,13 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
                rgl::text3d(c(0, -1 - 2 * delta, -1 - 2 * delta), c(-1 -
                    2 * delta, ypos, -1 - 2 * delta), c(1 + 2 * delta,
                    -1 - 2 * delta, 0), c(xlab, ylab, zlab), adj = c(0.5,
-                   0.5), col = "blue")
+                   0.5), col = "blue", cex = cex)
                rgl::text3d((xscale - xadj1)/xadj2, -1 - delta, 1 +
-                   delta, as.character(xscale), col = "black")
+                   delta, as.character(xscale), col = "black", cex = cex)
                rgl::text3d(-1 - delta, (yscale - yadj1)/yadj2, -1 -
-                   delta, as.character(yscale), col = "black")
+                   delta, as.character(yscale), col = "black", cex = cex)
                rgl::text3d(-1 - delta, -1 - delta, (zscale - zadj1)/zadj2,
-                   as.character(zscale), col = "black")
+                   as.character(zscale), col = "black", cex = cex)
                scaling <- function(x, y, z) list(x = x, y = y, z = z)
                rgl.segments(xscale.adj, -1, 1, xscale.adj, -1 -
                    delta/4, 1 + delta/4, scaling = scaling, col = "black")
@@ -123,7 +123,7 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
               if (length(col) == length(x.orig))
                   clr <- col[ind]
               else clr <- col
-              rgl::points3d(x[ind], y[ind], z[ind], size = size, col = clr)
+              rgl::points3d(x[ind], y[ind], z[ind], size = size, col = clr, ...)
               }
            }
         scaling <- function(x, y, z) {
@@ -141,6 +141,6 @@ rp.plot3d <- function (x, y, z, xlab = NA, ylab = NA, zlab = NA,
 
 rgl.segments <- function(x0, y0, z0, x1, y1, z1, scaling, ...) {
          a <- scaling(c(rbind(x0, x1)), c(rbind(y0, y1)), c(rbind(z0, z1)))
-         rgl::lines3d(a$x, a$y, a$z, ...)
+         rgl::segments3d(a$x, a$y, a$z, ...)
          } 
          

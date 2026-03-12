@@ -5,13 +5,9 @@ rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, panel = T
                 display = c("jitter" = FALSE, "regression line" = FALSE, 
                             "fitted model" = FALSE)) {
 
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
-      else                             hscale <- 1.4
-      }
-   if (is.na(vscale)) 
-      vscale <- hscale
-      
+   if (is.na(hscale)) hscale <- 1
+   if (is.na(vscale)) vscale <- hscale
+   
    if (is.na(xlab))
       xlab <- deparse(substitute(x))
    if (is.na(ylab))
@@ -130,7 +126,7 @@ rp.logistic <- function(x, y, xlab = NA, ylab = NA, panel.plot = TRUE, panel = T
                      alpha = alpha, beta = beta, par.est = par.est, par.se = par.se,
                      xlab = xlab, ylab = ylab, jitter.old = FALSE,
                      hscale = hscale, vscale = vscale, display = display)
-      if (panel.plot & requireNamespace("tkrplot", quietly = TRUE)) {
+      if (panel.plot) {
          rp.tkrplot(panel, plot, plot.logistic, pos = "right", hscale = hscale, vscale = vscale,
                     background = "white")
          action <- replot.logistic

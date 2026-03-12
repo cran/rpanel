@@ -5,7 +5,7 @@
 \title{Interactive inspection of one- or two-parameter likelihood surfaces}
 
 \description{
-This function plots a likelihood surface for a model with one or two parameters.  It also creates a panel which allows the maximum likelihood estimate, a confidence region and other objects of interest to be added to the plot.  For one-parameter models, the \code{tkrplot} package is required.  For two-parameter models the \code{rgl} package is required.
+This function plots a likelihood surface for a model with one or two parameters.  It also creates a panel which allows the maximum likelihood estimate, a confidence region and other objects of interest to be added to the plot. For two-parameter models the \code{rgl} package is required.
 }
 
 \usage{
@@ -28,7 +28,7 @@ rp.likelihood(loglik.fn, data, theta.low, theta.high, form = "log-likelihood",
   \item{form}{a text variable which determines whether the likelihood or log-likelihood
         function is to be plotted.  This applies only to one-parameter models.  With
         two-parameter models, only the log-likelihood is plotted.}
-\item{hscale, vscale}{scaling parameters for the size of the plot when there is one covariate.  The default values are 1 on Unix platforms and 1.4 on Windows platforms.}
+\item{hscale, vscale}{scaling parameters for the size of the plot when there is one covariate.  The default values are 1.}
   }
 
 \details{

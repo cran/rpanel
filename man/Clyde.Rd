@@ -5,7 +5,7 @@
 \title{Water quality in the River Clyde}
 
 \description{
-These data record the water quality, in terms of dissolved oxygen (\code{DO}) on a percentage scale, at a number of sampling stations (\code{Station}) on the River Clyde.  The date (\code{Day}, \\code{Month}, \code{Year}) is also available, along with the day of the year (\code{Doy} between 1 and 365) and an identified (\code{id}) of the survey on which each measurement was made.
+These data record the water quality, in terms of dissolved oxygen (\code{DO}) on a percentage scale, at a number of sampling stations (\code{Station}) on the River Clyde.  The date (\code{Day}, \code{Month}, \code{Year}) is also available, along with the day of the year (\code{Doy} between 1 and 365) and an identified (\code{id}) of the survey on which each measurement was made.
 
 The data are used in the \code{\link{rp.plot4d}} example script. 
 

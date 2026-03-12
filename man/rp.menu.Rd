@@ -5,35 +5,45 @@
 \title{Top level menu for a panel}
 
 \description{
-This function adds a menu to the top of the panel window.  When a menu item is selected, a variable is set and an action function is called.
+This function adds a menu to the top of the panel window.  When a menu item
+is selected, a variable is set and an action function is called.
 }
 
 \usage{
-rp.menu(panel, variable, labels, initval=NULL, action=I,
-        foreground=NULL, background=NULL, font=NULL,
-        name=paste("menu", .nc(), sep="")) 
+rp.menu(panel, variable, labels, initval = NULL, action = I,
+        foreground = NULL, background = NULL, font = NULL,
+        name = paste("menu", .nc(), sep = "")) 
 }
 
 \arguments{
   \item{panel}{the panel to which the menu should be attached should appear.}
-  \item{variable}{the name of the variable whose value is set by the menu. (Renamed in 2.0 to \code{variable} from \code{var} as \code{var} is a reserved word.) }
-  \item{labels}{the labels for the menu options. These values are returned through var. The menu is defined by a 
-  list of lists of character strings. Each major menu heading should be the first item in the sub-lists with the 
-  submenu items listed afterwards in the same list. Please see the example.}
-  \item{initval}{the initial value of \code{variable} (optional). The initial value can also be specified in the call to \code{\link{rp.control}}.}
+  \item{variable}{the name of the variable whose value is set by the menu.}
+  \item{labels}{the labels for the menu options. These values are returned
+                through \code{variable}. The menu is defined by a list of
+                lists of character strings. In each sub-list, the first item is
+                the menu heading with the following items providing the options
+                available.}
+  \item{initval}{the initial value of \code{variable} (optional). The
+                 initial value can also be specified in the call to
+                 \code{\link{rp.control}}.}
   \item{action}{the function which is called when a menu item is chosen.}
-  \item{foreground}{this sets the colour of text e.g. "navy"}
-  \item{background}{this sets the background colour of text e.g. "white"}
-  \item{font}{this sets the text font e.g. "Arial"}
-  \item{name}{the name of the widget - this is used by \code{\link{rp.widget.dispose}} }
+  \item{foreground}{this sets the colour of text e.g. 'navy'}
+  \item{background}{this sets the background colour of text e.g. 'white'}
+  \item{font}{this sets the text font e.g. 'Arial'}
+  \item{name}{the name of the widget - this is used by
+              \code{\link{rp.widget.dispose}} }
 }
 
 \note{
-The former argument \code{parent} has been discontinued in version 1.1.
+The former argument \code{parent} was discontinued in version 1.1 and the
+name of the variables whose value is set by the menu was renamed as
+\code{variable} from \code{var} in version 2.0 as the latter is a reserved
+word.
 }
 
 \details{
-The function \code{action} should take one argument, which should be the panel to which the listbox is attached.
+The function \code{action} should take one argument, which should be the panel
+to which the listbox is attached.
 
 The list for a menu consisting of "File" and "Edit" only would be defined as
 \code{list(list("File"), list("Edit"))}.
@@ -43,9 +53,11 @@ The list for a menu consisting of "File" with subitem "Quit", and "Edit" with su
 }
 
 \section{Warning}{
-The \code{action} function should return the panel.  Without this assignment any widgets added or alterations made to panel parameters within the \code{action} function will be lost.
+The \code{action} function should return the panel.  Without this
+assignment any widgets added or alterations made to panel parameters within
+the \code{action} function will be lost.
 
-The action function must be defined before the \code{rp.menu} statement as it relies on the function already existing.
+The action function must be defined before \code{rp.menu} is called.
 }
 
 \references{

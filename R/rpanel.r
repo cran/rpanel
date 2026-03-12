@@ -35,13 +35,14 @@ handshakereverse <- function(fun, ...) {
 }
 
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("Package `rpanel', version 1.1-5: type help(rpanel) for summary information")
+   unlockBinding(".localdatadir", asNamespace("rpanel"))
+   packageStartupMessage("Package `rpanel', version 1.1-6: type help(rpanel) for summary information")
 }
 
 .nc <- function()
-   assign("counter", .rpenv$counter+1, envir=.rpenv)
+   assign("counter", .rpenv$counter + 1, envir = .rpenv)
 
-rp.setup <- function(getpanel=.rpenv$getpanel, setparent=.rpenv$setparent) {
+rp.setup <- function(getpanel = .rpenv$getpanel, setparent = .rpenv$setparent) {
    # rp.setup <- function(getpanel=.rpenv$getpanel, setparent=.rpenv$setparent,
    # setpanel=.rpenv$setpanel, savepanel=.rpenv$savepanel)
    assign("getpanel",  getpanel,  envir=.rpenv)

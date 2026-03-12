@@ -5,20 +5,14 @@ rp.rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all",
                           lwd = 1, col = NA, lty = NA, panel = TRUE, 
                           panel.plot = TRUE, hscale = NA, vscale = hscale, ...) {
 
-   if (!requireNamespace("tkrplot", quietly = TRUE)) stop("the tkrplot package is not available.")
-
-   if (is.na(hscale)) {
-      if (.Platform$OS.type == "unix") hscale <- 1
-      else                             hscale <- 1.4
-      }
-   if (is.na(vscale)) 
-      vscale <- hscale
-
+if (is.na(hscale)) hscale <- 1
+if (is.na(vscale)) vscale <- hscale
+   
 rmplot <- function(y, id = NA, timept = NA, fac = NA, type = "all", 
                    add = FALSE, xlab = NA, ylab = NA, xlabels = NA, 
                    lwd = 1, col = NA, lty = NA, ...) {
 
-   if (!is.na(fac) && !is.factor(fac)) stop("fac must be a factor.")
+   if (!is.factor(fac)) stop("fac must be a factor.")
 
    if (is.matrix(y) | is.data.frame(y)) 
       result <- rmplot.table(y, fac, type, timept, add = add, xlab = xlab, ylab = ylab,

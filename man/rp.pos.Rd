@@ -18,7 +18,7 @@ which can be used to specify the layout of the controls. It has various modes of
 operation and the mode is determined from the type of information provided in the 
 \code{pos} argument. The different modes are outlined below.
 
-\itemize{
+\describe{
 \item{default}{
 If \code{pos} is not specified, controls are arranged in a column with the most recent added to the bottom. Each control is aligned to the left hand side.
 }
@@ -31,7 +31,7 @@ If \code{pos} is set to a vector of four integer values, these are interpreted a
 \item{grid}{
 This mode provides greater flexibility in layout. The following arguments can be passed to \code{pos} in any of the function calls to create controls.  Alternatively, \code{pos} can be passed a list which has these named components.
 
-  \itemize{	
+  \describe{	
   \item{column}{An integer which specifies the column number. Columns count from 0. This is a mandatory field for grids.}
   \item{row}{An integer which specifies the row number. Rows count from 0. This is a mandatory field for grids.}
   \item{grid}{A string which gives the name of the grid the control has to be placed in. This field is optional. If omitted the default grid belonging to the panel is used.}
@@ -49,5 +49,4 @@ This mode provides greater flexibility in layout. The following arguments can be
   }
 }
 
-The example below illustrates the use of \code{pos}. Try resizing the windows to explore the behaviour.
 }

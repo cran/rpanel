@@ -5,7 +5,8 @@
 \title{Button control for rpanel}
 
 \description{
-  This function adds a button to the panel. A nominated function is called when the button is pressed.
+  This function adds a button to the panel. A nominated function is called when
+  the button is pressed.
 }
 
 \usage{
@@ -36,14 +37,17 @@ The arguments \code{id} and \code{parent} have been discontinued in version 1.1.
 }
 
 \details{
-  The function \code{action} should take one argument, which should be the panel.
-  See \code{\link{rp.grid}} for details of the grid layout system.
+Setting \code{repeatinterval} and \code{repeatdelay} to positive values has the
+effect of call the function repeatedly when the button is held down.
+
+The function \code{action} should take one argument, which should be the panel.
+See \code{\link{rp.grid}} for details of the grid layout system.
 }
 
 \section{Warning}{
-  The \code{action} function should return the panel. 
-  Without this assignment any widgets added or alterations made to panel parameters within 
-  the \code{action} function will be lost.
+The \code{action} function should return the panel. Without this assignment any
+widgets added or alterations made to panel parameters within the \code{action}
+function will be lost.
 }
 
 \references{

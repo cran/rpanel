@@ -13,8 +13,6 @@ measurements are given below for a variety of four-footed rodents.
 Notice that the measurements are not all recorded to the same
 level of accuracy since the results have been collated from the work
 of a number of different scientists.
-
-The data are used in \code{\link{rp.cartoons}}.
 }
 
 \references{
@@ -30,7 +28,6 @@ Corbet, G.B. & Hill, J.E. (1986).  A World List of Mammalian Species.
 
 rpanel: Simple interactive controls for R functions using the tcltk package.
       Journal of Statistical Software, 17, issue 9.
-
 }
 
 \examples{

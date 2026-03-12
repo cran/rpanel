@@ -1,5 +1,4 @@
-w.image <- function(parent, filename, action=NA, mousedrag=NA, mouseup=NA, pos=NULL)
-{
+w.image <- function(parent, filename, action=NA, mousedrag=NA, mouseup=NA, pos=NULL) {
  widget <- w.createwidget(parent, pos, NULL, expand="true")
  widget$.type = "image"
 

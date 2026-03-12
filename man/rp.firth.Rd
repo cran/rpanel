@@ -19,8 +19,7 @@ rp.firth(hscale = NA, col.palette = rev(heat.colors(40)), col.se = "blue", file 
   \item{hscale}{a scaling parameter which expands (>1) or contracts (<1) the size of the plot
                 within the panel.  This can be useful for projection onto a screen, for example.
                 The vertical scale is set to the same value as the horizontal scale, to ensure
-                that the plot is square.  The default values are 1 on Unix platforms and 1.4 on 
-                Windows platforms.}
+                that the plot is square.  The default values are 1.}
   \item{col.palette}{the colour palette used to display the predicted and true spatial surfaces.}
   \item{col.se}{the colour used to draw the standard error contours on the predicted surface.}
   \item{file}{the name of a file to which the sampled data will be written.}
