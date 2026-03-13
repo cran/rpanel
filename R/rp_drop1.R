@@ -64,7 +64,7 @@ rp.drop1 <- function(model, subset.terms, p.reference = c(0.05, 0.01), cols) {
    # Use facets when there are multiple degrees of freedom
    if (length(unique(tbl$Df)) > 1) {
       # Use the ggforce package, if available, to scale the height of the rows
-      if (requireNamespace('ggforce'))
+      if (requireNamespace('ggforce', quietly = TRUE))
          plt <- plt + ggforce::facet_col(Df ~ ., scales = 'free_y', space = 'free')
       else
          plt <- plt + ggplot2::facet_wrap(Df ~ ., scales = 'free_y') 

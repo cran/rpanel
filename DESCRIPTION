@@ -1,7 +1,7 @@
 Package: rpanel
 Type: Package
 Title: Simple Interactive Controls for R using the 'tcltk' Package
-Version: 1.1-6
+Version: 1.1-6.1
 Date: 2026-03-09
 Authors@R: 
   c(person(given = "Adrian",
@@ -33,11 +33,11 @@ BugReports: https://github.com/adrian-bowman/rpanel/issues
 LazyData: TRUE
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2026-03-11 23:59:16 UTC; adrianbowman
+Packaged: 2026-03-13 15:43:01 UTC; adrianbowman
 Author: Adrian Bowman [aut, cre, cph],
   Ewan Crawford [aut],
   Gavin Alexander [aut],
   Richard Bowman [aut]
 Maintainer: Adrian Bowman <adrian.bowman@glasgow.ac.uk>
 Repository: CRAN
-Date/Publication: 2026-03-12 06:10:10 UTC
+Date/Publication: 2026-03-13 17:30:02 UTC

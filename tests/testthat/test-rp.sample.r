@@ -37,8 +37,8 @@ test_that('Static mode', {
                              display.sample = c('mean' = TRUE, 'st.dev. scale' = TRUE,
                                                 'population' = TRUE),
                              display.mean = c('sample mean' = TRUE)))
-   print(result$sample)
-   print(result$mean)
+   expect_no_error(print(result$sample))
+   expect_no_error(print(result$mean))
    expect_no_error(rp.sample(n = 25, nbins = 10, display.sample = c(mean = TRUE), 
                              display.mean = c('sample mean' = TRUE), panel = FALSE))
    expect_no_error(rp.sample(n = 25, nbins = 10, nsim = 8, display.sample = c(mean = TRUE), 
@@ -55,8 +55,17 @@ test_that('Static mode', {
    print(result$sample + thm + ggplot2::ggtitle('Sample size: 25'))
 })
 
-test_that('Standard calls', {
+test_that('Standard graphics', {
    expect_no_error(pnl <- rp.sample(ggplot = FALSE))
    rp.control.dispose(pnl)
 })
 
+test_that('Data which previously caused an out-of-range error', {
+   set.seed(64318)
+   expect_no_error({
+      for (i in 1:2)
+         rp.sample(n = 25, mu = 5, sigma = 0.4, panel = FALSE, nbins = 10, nsim = 50,
+                   display.sample = c(mean = TRUE),
+                   display.mean = c('sample mean' = TRUE, 'accumulate' = FALSE))
+   })
+})

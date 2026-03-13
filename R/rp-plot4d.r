@@ -183,7 +183,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
          if (is.function(background.plot)) background.plot()
 
       	 if ((display == "image") & ((!is.list(model) | (is.list(model) & !Display["model"] & Display["points"])))) {
-      	 	  if (is.list(model)) z.window <- "uniform"
+      	 	if (is.list(model)) z.window <- "uniform"
             zsd1  <- if (zsd >= 1.49 * sdz) 4 * sdz else zsd
             alpha <- exp(-0.5 * (z - z0)^2 / zsd1^2)
             ord   <- order(alpha)

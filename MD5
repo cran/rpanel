@@ -1,5 +1,5 @@
-0a79626bbbfa0f3609962d5b55116efe *ChangeLog
-d08d93699916df394290f33caffcb68c *DESCRIPTION
+68b0a54a53717b725bbd4d2345cef3aa *ChangeLog
+4e0c99ce36e19b664c9768130430eceb *DESCRIPTION
 3854a327041d1a519eb2859c5c100525 *NAMESPACE
 a19e6a334236867c1d866234efb4f54a *NEWS.md
 8e49dc9c57d5d4d20ceeff217305c9d2 *R/button.r
@@ -22,7 +22,7 @@ e182b410069872a8d4b5bc627d58eb8e *R/rp-firth.r
 0321bc739132c81878c3c2b67f915cc9 *R/rp-logistic.r
 df7146727db5648b83e99bd742c4fc3b *R/rp-normal.r
 ec5e4f3a17e7cb18b6d5dd3e36fdd103 *R/rp-plot3d.r
-c6f54f23750b229781740a896cf9788f *R/rp-plot4d.r
+97bb0901e3f6bd53af4c0cb748cc9521 *R/rp-plot4d.r
 cacc86185796f2ef66967edb72ab3474 *R/rp-regression2.r
 41847c1c5f21bcd49813675dd24ab5d1 *R/rp-regression3.r
 4cea8198c030e679823570e133ca3f0d *R/rp-rmplot.r
@@ -34,7 +34,7 @@ bc5a6a7f86043975e6a1c49e3d21c325 *R/rp_coefficients.R
 688d7d56fe7a24b51514fe42a1c69046 *R/rp_colours.R
 3f3b6869eb2166b60fafff6957b93493 *R/rp_contingency.R
 609082ef8d9ed79ea5ba2606cb302b81 *R/rp_datalink.R
-0a2faca7d60065bd9ce8a86bd45dde75 *R/rp_drop1.R
+3503cd9deee0ff4ddb79a238fbb6f009 *R/rp_drop1.R
 426cc1b78c79852aede32634a885f8c8 *R/rp_geosim.r
 aaaa5f5fae82962437e581127703f311 *R/rp_gulls.r
 5c80e0e584a568c0520bcadf252f063a *R/rp_lm.R
@@ -43,12 +43,12 @@ f3d4bd7ea4030eba34cfec6e2021cf63 *R/rp_mururoa.r
 963bd9d87582b4c4048143d4389ffc56 *R/rp_regression.r
 ae382916bb6c7b0014c42a464d779ce4 *R/rp_regression2.r
 a916ab7a6d8b2793e37af0e97f323ee2 *R/rp_regression2_lm.r
-5bda821195c77897937b1b501a9dd87d *R/rp_sample.r
+eb6c5ee76aa278655f12a8990c7d1a54 *R/rp_sample.r
 99a6dc16d89cce9c611f4a66bacd7baf *R/rp_sample_old.r
 8f0e028f0d5a891c64d8861c6f27ae80 *R/rp_t_test.R
 c2c32d5992f4b12adb10df5200fffeeb *R/rp_tables.r
 23c333a3fa39049bed66cfec38f8c7f6 *R/rp_wrangle.R
-9855b6eb562f7aa6787380a4d38beeea *R/rpanel.r
+5ba1e3702fe934f91990c9e4562c22ec *R/rpanel.r
 dbd5c1efaabddee3bf610ce61c88d48a *R/slider.r
 da3918069a855cb27fe535415cfb53fb *R/sysdata.rda
 97a3da873ea9c398e1999b742bd31af8 *R/text.r
@@ -190,5 +190,5 @@ b98989aae1918ba52b858ee507b4c961 *tests/testthat/test-rp.drop1.R
 755f7d05ff939250337b1a3f07ba1b09 *tests/testthat/test-rp.lm.R
 eaa3de6ebc4a380c4802c3c32849f844 *tests/testthat/test-rp.plot4d.R
 8e580130032cea3799b77617525994d2 *tests/testthat/test-rp.power.R
-b1319b4a8d4b0ed149a1817b0be258c4 *tests/testthat/test-rp.sample.r
+4f156479ededd07f19876d2ab9ba0d68 *tests/testthat/test-rp.sample.r
 afad643c3030c9e5434541d1eeb9d0cf *tests/testthat/test-rp.t_test.R

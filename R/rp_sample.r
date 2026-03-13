@@ -74,7 +74,8 @@ rp.sample <- function(n, mu, sigma,
          orig  <- if (display == 'violin') 0.7 * d.cur else 0
          scl   <- if (display == 'violin') 0.5 else 1
          oorl  <- if (plot.mean & display.mean['t-statistic']) 3.5 else 3
-         oor   <- length(which(abs(y - m.cur) > oorl * s.cur))
+         oorx  <- which(abs(y - m.cur) > oorl * s.cur)
+         oor   <- length(oorx)
          if (plot.mean) {
             df.dens  <- if (display.mean['t-statistic']) d.tdens  else d.mdens
             df.densd <- if (display.mean['t-statistic']) d.tdensd else d.mdensd
@@ -160,7 +161,7 @@ rp.sample <- function(n, mu, sigma,
             if ((length(y) < nmin) | ((display != 'histogram') & (length(y) <= nmax))) {
                dsgn <- if (display == 'violin') df.densd$sgn else 1
                dft  <- if (plot.mean & display.mean['t-statistic']) d.tdensd else df.densd
-               if (oor > 0) dft <- dft[-ind, ]
+               if (oor > 0) dft <- dft[-oorx, ]
                plt <- plt +
                    ggplot2::geom_point(ggplot2::aes(x, orig + dsgn * r * scl * d),
                                        data = dft, size = 0.1 + 37 / max(nrow(dft), 25))

@@ -27,3 +27,5 @@
                Installation made possible without BWidget.
 11/03/2026: Version 1.1-6 released.
                new functions rp.t_test, rp.lm, rp.coefficients, rp.drop1 added.
+13/03/2026: Version 1.1-6.1 released.
+               Minor bug fix.

@@ -36,7 +36,7 @@ handshakereverse <- function(fun, ...) {
 
 .onAttach <- function(libname, pkgname) {
    unlockBinding(".localdatadir", asNamespace("rpanel"))
-   packageStartupMessage("Package `rpanel', version 1.1-6: type help(rpanel) for summary information")
+   packageStartupMessage("Package `rpanel', version 1.1-6.1: type help(rpanel) for summary information")
 }
 
 .nc <- function()
