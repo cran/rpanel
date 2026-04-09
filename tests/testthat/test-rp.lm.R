@@ -70,9 +70,8 @@ test_that('Static mode: select the null model to be displayed', {
                          display.model = ~ 1, residuals.showing = TRUE,
                          panel = FALSE))
 })
-cofe_2019 <- suppressMessages(rp.wrangle('cofe_2019'))
 test_that('Static mode: transformations with a data argument', {
-   expect_no_error(rp.lm(log(Giving_per_member) ~ Attachment + IMD, data = cofe_2019,
+   expect_no_error(rp.lm(log(Giving) ~ Elect + Attend, data = CofE,
                          panel = FALSE, residuals.showing = TRUE))
 })
 test_that('Old style', {
@@ -86,18 +85,18 @@ test_that('rp.regression', {
    rp.control.dispose(pnl)
 })
 
-Gpm <- cofe_2019$Giving_per_member
-Att <- cofe_2019$Attachment
-Imd <- cofe_2019$IMD
+cofemore <- CofE
+cofemore$Giving_per_member <- cofemore$Giving
+
 test_that('Static mode: transformations without a data argument', {
-   expect_no_error(rp.lm(log(Giving_per_member) ~ Attachment + IMD, panel = FALSE,
-                         residuals.showing = TRUE, data = cofe_2019))
-   expect_no_error(rp.lm(Giving_per_member ~ log(Attachment) + IMD, panel = FALSE,
-                         residuals.showing = TRUE, data = cofe_2019))
+   expect_no_error(rp.lm(log(Giving_per_member) ~ Attend + Employ, panel = FALSE,
+                         residuals.showing = TRUE, data = cofemore))
+   expect_no_error(rp.lm(Giving_per_member ~ log(Attend) + Employ, panel = FALSE,
+                         residuals.showing = TRUE, data = cofemore))
 })
 test_that('Model nodes when the names are long:', {
-   expect_no_error(rp.lm(log(Giving_per_member) ~ Attachment + IMD, panel = FALSE,
-                         data = cofe_2019, plot.nodes = TRUE))
+   expect_no_error(rp.lm(log(Giving_per_member) ~ Attend + Employ, panel = FALSE,
+                         data = cofemore, plot.nodes = TRUE))
 })
 
 # Remove rgl windows

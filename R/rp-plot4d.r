@@ -20,8 +20,14 @@ rp.plot4d <- function(x, z, y, model, group, subset,
    }
    
    if (display == "rgl") {
-      if (!requireNamespace("rgl", quietly = TRUE))
-         cat("The rgl package is not installed - reverting to image display.\n")
+      if (!requireNamespace("rgl", quietly = TRUE)) {
+         message("The rgl package is not installed - reverting to image display.")
+         display <- 'image'
+      }
+      else if (!requireNamespace("sm", quietly = TRUE)) {
+         message("The sm package is not installed - reverting to image display.")
+         display <- 'image'
+      }
       else if (new.window)
          rgl::open3d(windowRect = c(0, 0, 500, 500))
    }
@@ -140,7 +146,7 @@ rp.plot4d <- function(x, z, y, model, group, subset,
      	                       xlab = x1lab, ylab = x2lab, zlab = ylab, theta = theta, phi = phi,
   	                          zlim = range(brks))
   	                 else {
-  	                    sv <- par3d(skipRedraw = TRUE)
+  	                    sv <- rgl::par3d(skipRedraw = TRUE)
   	                    scaling <- rp.plot3d(rep(grdx, ngrid),
   	                                         dfrm$z,
   	                                         rep(grdy, each = ngrid),
@@ -148,12 +154,12 @@ rp.plot4d <- function(x, z, y, model, group, subset,
   	                                         new.window = FALSE, cex = cex,
   	                                         ylim = range(brks), 
   	                                         type = "n")
-  	                    surf.ids <- sm.surface3d(cbind(grdx, grdy),
+  	                    surf.ids <- sm::sm.surface3d(cbind(grdx, grdy),
   	                                             dfrm$z, scaling,
   	                                             col = c(clr),
   	                                             col.mesh = "black",
   	                                             alpha = 0.7, alpha.mesh = 1, lit = FALSE)
-  	                    par3d(sv)
+  	                    rgl::par3d(sv)
   	                 }
   	              }
    	        }
@@ -559,15 +565,15 @@ rp.plot4d <- function(x, z, y, model, group, subset,
 
    if (!is.null(model)) {
       if (!is.list(model)) {
-         cat("model is not a list and will not be used.\n")
+         message("model is not a list and will not be used.")
          model <- NULL
       }
       else if (nlevels(group) == 1 & length(dim(model$y)) != 3) {
-         cat("model$y is not a three-dimensional array and will not be used.\n")
+         message("model$y is not a three-dimensional array and will not be used.")
          model <- NULL
       }
       else if (nlevels(group) >  1 & length(dim(model$y)) != 4) {
-         cat("model$y is not a four-dimensional array and will not be used.\n")
+         message("model$y is not a four-dimensional array and will not be used.")
          model <- NULL
       }
    }
@@ -636,9 +642,9 @@ rp.plot4d <- function(x, z, y, model, group, subset,
             rp.checkbox(panel, Display, redraw4d, disp,
                 grid = "controls", row = 5, column = 0, title = "location plot type")
       	 rgp <- c("image", "persp")
-      	 if (requireNamespace("rgl", quietly = TRUE))
+      	 if (requireNamespace("rgl", quietly = TRUE) & requireNamespace("sm", quietly = TRUE))
       	    rgp <- c(rgp, "rgl")
-          rp.radiogroup(panel, display, c("image", "persp", "rgl"), action = redraw4d,
+          rp.radiogroup(panel, display, rgp, action = redraw4d,
       						grid = "controls", row = 6, column = 0, title = "Display type")
           rp.slider(panel, theta, -180, 180, redraw4d, title = "persp left/right", grid = "controls", row = 8, column = 0)
           rp.slider(panel, phi,      0,  90, redraw4d, title = "persp up/down", grid = "controls", row = 9, column = 0, )

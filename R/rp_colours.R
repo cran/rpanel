@@ -1,11 +1,11 @@
 #     Set standard colours to be used by other rpanel functions
 
 rp.colours <- function(cols) {
-   clrs <- c(estimate  = '#B3CDE3', estline = '#0093FF',
-             reference = '#FBB4AE', refline = '#FF7F00',
-             points    = 'grey50',  notch   = 'white',
-             density   = 'grey75',  bgdcol  = 'grey85',
-             node      = 'grey85')
+   clrs <- c(estimate  = '#B3CDE3', estline   = '#0093FF',
+             reference = '#FBB4AE', refline   = '#FF7F00',
+             points    = 'grey50',  notch     = 'white',
+             density   = 'grey75',  bgdcol    = 'grey85',
+             node      = 'grey85',  residuals = '#F1807E')
    if (!missing(cols)) {
       if (!is.character(cols)) {
          warning('cols must be a character variable. Default colours will be used.')

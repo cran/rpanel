@@ -4,7 +4,7 @@
 # library(devtools)
 # library(testthat)
 # load_all()
-
+# 
 # rp.datalink("~/iCloud/teaching/book/data", "set local directory")
 
 #----------------------------------------------------------------

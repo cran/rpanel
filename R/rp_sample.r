@@ -161,6 +161,7 @@ rp.sample <- function(n, mu, sigma,
             if ((length(y) < nmin) | ((display != 'histogram') & (length(y) <= nmax))) {
                dsgn <- if (display == 'violin') df.densd$sgn else 1
                dft  <- if (plot.mean & display.mean['t-statistic']) d.tdensd else df.densd
+               dft$dsgn <- dsgn
                if (oor > 0) dft <- dft[-oorx, ]
                plt <- plt +
                    ggplot2::geom_point(ggplot2::aes(x, orig + dsgn * r * scl * d),

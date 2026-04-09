@@ -59,8 +59,7 @@ test_that('Errors:', {
 })
 
 test_that('Transformation:', {
-   cofe_2019 <- suppressMessages(rp.wrangle('cofe_2019'))
-   model <- lm(log(Giving_per_member) ~ Attachment + IMD, data = cofe_2019)
+   model <- lm(log(Giving) ~ Employ + Attend, data = CofE)
    expect_no_error(rp.coefficients(model, ci = FALSE) + ggplot2::coord_flip())
 })
 

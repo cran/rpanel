@@ -1,6 +1,5 @@
 #     Tests for the rp.datalink
 
-# setwd('rpanel')
 # library(devtools)
 # library(testthat)
 # load_all()

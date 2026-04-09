@@ -120,9 +120,11 @@ rp.datalink <- function(name, action = "retrieve filename") {
       }
       else {
          for (i in name.match) {
-            cat("Downloading to", localfiles[i], "...\n")
-            return_code <- utils::download.file(datasets[i, 3], localfiles[i])
-            if (return_code != 0) cat("\nDownload unsuccessful.\n")
+            message("Downloading to", localfiles[i], "...")
+            return_code <- suppressWarnings(try(utils::download.file(datasets[i, 3],
+                                       localfiles[i], quiet = TRUE), silent = TRUE))
+            if (inherits(return_code, 'try-error'))
+               message(paste(datasets[name.match, 3], "could not be reached."))
          }
          return(invisible(localfiles[name.match]))
       }
@@ -144,8 +146,12 @@ rp.datalink <- function(name, action = "retrieve filename") {
             destfile <- tempfile()
             md <- if (substr(datasets[match.name, 2], 2, 4) %in% c("xls", "ods", "zip", "rda"))
                      'wb' else 'w'
-            utils::download.file(datasets[match.name, 3], destfile, mode = md)
-            return(destfile)
+            return_code <- suppressWarnings(try(utils::download.file(datasets[match.name, 3],
+                                   destfile, mode = md, quiet = TRUE), silent = TRUE))
+            if (inherits(return_code, 'try-error'))
+               message(paste(datasets[match.name, 3], "could not be reached."))
+            else
+               return(destfile)
          }
       }
    }

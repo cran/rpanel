@@ -1,6 +1,5 @@
 #     Tests for the rp.sample function
 
-# setwd('rpanel')
 # library(devtools)
 # library(testthat)
 # load_all()
@@ -24,6 +23,8 @@ test_that('Standard calls', {
                              display.sample = c('st.dev. scale' = TRUE))$sample)
 })
 
+# Repeated simulations to test different data configurations
+for (i in 1:100) {
 test_that('Static mode', {
    expect_no_error(rp.sample(n = 25, mu = 5, sigma = 0.4, panel = FALSE, nbins = 10, nsim = 5000,
                              display.sample = c(mean = TRUE), show.out.of.range = FALSE,
@@ -54,6 +55,7 @@ test_that('Static mode', {
                          plot.title = ggplot2::element_text(size = 22))
    print(result$sample + thm + ggplot2::ggtitle('Sample size: 25'))
 })
+}
 
 test_that('Standard graphics', {
    expect_no_error(pnl <- rp.sample(ggplot = FALSE))

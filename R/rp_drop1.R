@@ -71,6 +71,6 @@ rp.drop1 <- function(model, subset.terms, p.reference = c(0.05, 0.01), cols) {
    }
    
    print(plt)
-   plt
+   invisible(plt)
 
 }
